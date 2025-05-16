@@ -1,6 +1,6 @@
 # minda_application
 
-Minda application
+Sparring finder application
 
 ## Getting Started
 
