@@ -89,12 +89,12 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.mindaApp" "\0"
-            VALUE "FileDescription", "minda_application" "\0"
+            VALUE "CompanyName", "com.sparringFinderApp" "\0"
+            VALUE "FileDescription", "sparringFinder_application" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "minda_application" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.mindaApp. All rights reserved." "\0"
-            VALUE "OriginalFilename", "minda_application.exe" "\0"
+            VALUE "InternalName", "sparringFinder_application" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 com.sparringFinderApp. All rights reserved." "\0"
+            VALUE "OriginalFilename", "sparringFinder_application.exe" "\0"
             VALUE "ProductName", "minda_application" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END

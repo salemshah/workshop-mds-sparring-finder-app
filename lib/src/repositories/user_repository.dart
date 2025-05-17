@@ -1,5 +1,4 @@
 import 'package:sparring_finder/src/models/user/user_login_response.dart';
-import 'package:sparring_finder/src/models/user/user_model.dart';
 import 'package:sparring_finder/src/repositories/base_repository.dart';
 
 class UserRepository extends BaseRepository {

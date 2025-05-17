@@ -1,6 +1,6 @@
 {
-    "name": "minda_application",
-    "short_name": "minda_application",
+    "name": "sparringFinder_application",
+    "short_name": "sparringFinder_application",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,27 +1,31 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_verification_code_field/flutter_verification_code_field.dart';
 import 'package:sparring_finder/src/blocs/user/user_bloc.dart';
 import 'package:sparring_finder/src/blocs/user/user_event.dart';
 import 'package:sparring_finder/src/blocs/user/user_state.dart';
-import 'package:sparring_finder/src/config/routes.dart';
+import 'package:sparring_finder/src/config/app_routes.dart';
+import 'package:sparring_finder/src/ui/theme/app_colors.dart';
+import 'package:sparring_finder/src/ui/widgets/custom_button.dart';
 
-class UserEmailVerificationScreen extends StatefulWidget {
-  const UserEmailVerificationScreen({super.key});
+class VerifyEmailScreen extends StatefulWidget {
+  const VerifyEmailScreen({super.key});
 
   @override
-  State<UserEmailVerificationScreen> createState() => _UserEmailVerificationScreenState();
+  State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
 }
 
-class _UserEmailVerificationScreenState extends State<UserEmailVerificationScreen> {
+class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   String _code = '';
   bool _isFilled = false;
 
   Timer? _timer;
-  int _start = 120;
+  int _start = 60;
   bool _isResendEnabled = false;
   String _email = '';
+
+  final List<TextEditingController> _controllers =
+  List.generate(6, (_) => TextEditingController());
 
   @override
   void initState() {
@@ -31,7 +35,7 @@ class _UserEmailVerificationScreenState extends State<UserEmailVerificationScree
 
   void _startTimer() {
     setState(() {
-      _start = 120;
+      _start = 60;
       _isResendEnabled = false;
     });
 
@@ -61,68 +65,150 @@ class _UserEmailVerificationScreenState extends State<UserEmailVerificationScree
     _startTimer();
   }
 
+  void _updateCode() {
+    _code = _controllers.map((c) => c.text).join();
+    setState(() {
+      _isFilled = _code.length == 6;
+    });
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
+    for (final c in _controllers) {
+      c.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Email Verification')),
-      body: BlocConsumer<UserBloc, UserState>(
-        listener: (context, state) {
-          if (state is UserSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: BlocConsumer<UserBloc, UserState>(
+          listener: (context, state) {
+            if (state is UserSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+              );
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.loginScreen,
+                    (_) => false,
+              );
+            } else if (state is UserFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+              );
+            }
+          },
+          builder: (context, state) {
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.email,
+                    size: 120,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Verify Email",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                  const Text(
+                    "A Code Has Been Sent To Your Email.\nPlease Enter It Below.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.label),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Code input boxes
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(6, (i) {
+                      return Container(
+                        width: 50,
+                        height: 50,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.inputFill,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border, width: 2),
+                        ),
+                        child: Center(
+                          child: TextField(
+                            controller: _controllers[i],
+                            maxLength: 1,
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              color: AppColors.text,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              counterText: '',
+                            ),
+                            onChanged: (val) {
+                              if (val.isNotEmpty && i < 5) {
+                                FocusScope.of(context).nextFocus();
+                              } else if (val.isEmpty && i > 0) {
+                                FocusScope.of(context).previousFocus();
+                              }
+                              _updateCode();
+                            },
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+
+                  const SizedBox(height: 20),
+                  _isResendEnabled
+                      ? TextButton(
+                    onPressed: _resendCode,
+                    child: const Text(
+                      "Resend The Code",
+                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+                    ),
+                  )
+                      : Text(
+                    "Code Not Received? Resend The Code ($_start)",
+                    style: const TextStyle(color: AppColors.label),
+                  ),
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isFilled ? _submitCode : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: CustomButton(
+                        label: "Submit",
+                        onPressed: _submitCode,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             );
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              Routes.loginScreen,
-                  (route) => false,
-            );
-          } else if (state is UserFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error), backgroundColor: Colors.red),
-            );
-          }
-        },
-        builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                VerificationCodeField(
-                  autofocus: true,
-                  length: 6,
-                  hasError: false,
-                  spaceBetween: 10,
-                  size: const Size(40, 40),
-                  onFilled: (value) {
-                    setState(() {
-                      _code = value;
-                      _isFilled = value.length == 6;
-                    });
-                  },
-                ),
-                const SizedBox(height: 40),
-                ElevatedButton(
-                  onPressed: _isFilled ? _submitCode : null,
-                  child: const Text('Confirm'),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _isResendEnabled ? _resendCode : null,
-                  child: _isResendEnabled
-                      ? const Text('Resend Verification Code')
-                      : Text('Resend Code in $_start s'),
-                ),
-              ],
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }
