@@ -42,7 +42,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message), backgroundColor: Colors.green),
               );
-              Navigator.pushNamed(context, AppRoutes.loginScreen);
+              Navigator.pushNamed(context, AppRoutes.resetPasswordScreen);
             } else if (state is UserFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.error), backgroundColor: Colors.red),
