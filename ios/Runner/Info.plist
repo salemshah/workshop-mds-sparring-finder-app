@@ -14,10 +14,14 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+
     <key>NSPhotoLibraryUsageDescription</key>
     <string>We need access to your photo library to upload your profile image.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need permission to save your cropped image.</string>
     <key>NSCameraUsageDescription</key>
     <string>We need access to your camera to take a profile picture.</string>
+
 	<key>CFBundleName</key>
 	<string>sparringFinder</string>
 	<key>CFBundlePackageType</key>

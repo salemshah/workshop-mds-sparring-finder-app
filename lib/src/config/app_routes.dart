@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sparring_finder/src/ui/common/loading_screeen.dart';
 import 'package:sparring_finder/src/ui/screens/profile/create_profile_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/forgot_password_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/reset_password_screen.dart';
@@ -15,8 +16,10 @@ class AppRoutes {
   static const String forgotPasswordScreen = '/forgot-password';
   static const String resetPasswordScreen = '/reset-password';
   static const String createProfileScreen = '/create-profile';
+  static const String loadingScreen = '/loading-screen';
 
   static Map<String, WidgetBuilder> routes = {
+    loadingScreen: (_) => const LoadingScreen(),
     registerScreen: (_) => const RegisterScreen(),
     loginScreen: (_) => const LoginScreen(),
     verifyEmailScreen: (_) => const VerifyEmailScreen(),

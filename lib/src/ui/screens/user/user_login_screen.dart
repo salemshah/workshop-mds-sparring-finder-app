@@ -20,8 +20,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: "salemshahdev@gmail.com");
+  final _passwordController = TextEditingController(text: "111111");
 
   @override
   void dispose() {
@@ -53,13 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
             return BlocConsumer<UserBloc, UserState>(
               listener: (context, state) {
                 if (state is UserAuthenticated) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Login successful'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                  Navigator.pushNamed(context, AppRoutes.homeScreen);
+                  Navigator.pushNamed(context, AppRoutes.loadingScreen);
                 } else if (state is UserFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

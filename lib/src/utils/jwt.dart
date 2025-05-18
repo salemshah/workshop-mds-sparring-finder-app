@@ -1,19 +1,46 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-final storage = FlutterSecureStorage();
+class JwtStorageHelper {
+  static final _storage = FlutterSecureStorage();
 
-Future<bool> isTokenExpired() async {
-  final token = await getAccessToken();
-  return JwtDecoder.isExpired(token!);
-}
+  static const accessTokenKey = 'accessTokenUser';
+  static const refreshTokenKey = 'refreshTokenUser';
 
-Future<String?> getAccessToken() async {
-  final token = await storage.read(key: 'accessTokenUser');
-  return token;
-}
+  /// Save access & refresh tokens and user role to secure storage
+  static Future<void> saveTokens({
+    required String accessToken,
+    required String refreshToken,
+  }) async {
+    await _storage.write(key: accessTokenKey, value: accessToken);
+    await _storage.write(key: refreshTokenKey, value: refreshToken);
+  }
 
+  /// Get the access token
+  static Future<String?> getAccessToken() async {
+    return await _storage.read(key: accessTokenKey);
+  }
 
-Future<String?> getToken(String key) async {
-  return await storage.read(key: key);
+  /// Get the refresh token
+  static Future<String?> getRefreshToken() async {
+    return await _storage.read(key: refreshTokenKey);
+  }
+
+  /// Check if the stored access token is expired
+  static Future<bool> isTokenExpired() async {
+    final token = await getAccessToken();
+    if (token == null) return true;
+    return JwtDecoder.isExpired(token);
+  }
+
+  /// Generic getter by key
+  static Future<String?> getToken(String key) async {
+    return await _storage.read(key: key);
+  }
+
+  /// Optional: clear all tokens
+  static Future<void> clearTokens() async {
+    await _storage.delete(key: accessTokenKey);
+    await _storage.delete(key: refreshTokenKey);
+  }
 }

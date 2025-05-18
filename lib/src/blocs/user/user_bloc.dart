@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/src/blocs/user/user_event.dart';
 import 'package:sparring_finder/src/blocs/user/user_state.dart';
 import 'package:sparring_finder/src/repositories/user_repository.dart';
+import 'package:sparring_finder/src/utils/jwt.dart';
 
 
 class UserBloc extends Bloc<UserEvent, UserState> {
@@ -42,6 +43,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         email: event.email,
         password: event.password,
       );
+
+      await JwtStorageHelper.saveTokens(accessToken: loginResponse.accessToken, refreshToken: loginResponse.refreshToken);
+
       emit(UserAuthenticated(response: loginResponse));
     } catch (e) {
       emit(UserFailure(error: e.toString()));

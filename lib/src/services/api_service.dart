@@ -1,39 +1,31 @@
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:sparring_finder/src/utils/jwt.dart';
 
 class ApiService {
   final String baseUrl;
   final Map<String, String> defaultHeaders;
-  final FlutterSecureStorage secureStorage;
 
   ApiService({
     required this.baseUrl,
-    required this.secureStorage,
     Map<String, String>? headers,
   }) : defaultHeaders = headers ?? {"Content-Type": "application/json"};
 
-  /// Retrieves headers by merging the default headers with the Authorization header (if available)
+  /// Unified header resolver
   Future<Map<String, String>> _getHeaders() async {
-    final role = await secureStorage.read(key: 'role');
-    String? token;
-
-    if (role == 'parent') {
-      token = await secureStorage.read(key: 'accessToken_parent');
-    } else if (role == 'child') {
-      token = await secureStorage.read(key: 'accessToken_child');
-    }
-
-    if (token == null || token.isEmpty) {
-      return defaultHeaders;
-    }
+    final token = await JwtStorageHelper.getAccessToken();
 
     return {
       ...defaultHeaders,
-      'Authorization': 'Bearer $token',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
     };
   }
 
+  Future<Map<String, String>> getAuthHeaders() async {
+    return await _getHeaders();
+  }
+
+  /// GET request
   Future<Map<String, dynamic>> get(String endpoint) async {
     final url = Uri.parse('$baseUrl$endpoint');
     final headers = await _getHeaders();
@@ -41,6 +33,7 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  /// POST request
   Future<Map<String, dynamic>> post(String endpoint, dynamic data) async {
     final url = Uri.parse('$baseUrl$endpoint');
     final headers = await _getHeaders();
@@ -52,6 +45,7 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  /// PUT request
   Future<Map<String, dynamic>> put(String endpoint, dynamic data) async {
     final url = Uri.parse('$baseUrl$endpoint');
     final headers = await _getHeaders();
@@ -63,6 +57,7 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  /// DELETE request
   Future<Map<String, dynamic>> delete(String endpoint) async {
     final url = Uri.parse('$baseUrl$endpoint');
     final headers = await _getHeaders();
@@ -70,6 +65,28 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  /// Multipart handler
+  Future<Map<String, dynamic>> handleMultipartResponse(http.StreamedResponse response) async {
+    final responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      try {
+        return jsonDecode(responseBody);
+      } catch (_) {
+        throw Exception('Failed to parse JSON from multipart response');
+      }
+    } else {
+      try {
+        final errorData = jsonDecode(responseBody);
+        final message = errorData['message'] ?? 'Unknown error';
+        throw Exception('Error ${response.statusCode}: $message');
+      } catch (_) {
+        throw Exception('Error ${response.statusCode}: $responseBody');
+      }
+    }
+  }
+
+  /// JSON response handler
   Map<String, dynamic> _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(response.body);
