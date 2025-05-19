@@ -6,6 +6,8 @@ class CustomDropdown extends StatefulWidget {
   final List<String> levels;
   final String label;
   final String hint;
+  final double borderWeight;
+  final double height;
 
   const CustomDropdown({
     super.key,
@@ -13,6 +15,8 @@ class CustomDropdown extends StatefulWidget {
     required this.levels,
     required this.label,
     required this.hint,
+    this.borderWeight = 3,
+    this.height = 60,
   });
 
   @override
@@ -39,13 +43,13 @@ class _CustomDropdownState extends State<CustomDropdown> {
         ),
         const SizedBox(height: 10),
         Container(
-          height: 60,
+          height: widget.height,
           alignment: Alignment.center,
 
           decoration: BoxDecoration(
             color: AppColors.inputFill,
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: AppColors.border, width: 3),
+            border: Border.all(color: AppColors.border, width: widget.borderWeight),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: DropdownButtonFormField<String>(

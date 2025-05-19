@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const Color primary = Color(0xFFC64232);
-  static const Color background = Color(0xFF1C1E21);
-  static const Color inputFill = Color(0xFF2C2F33);
+  static const Color background = Color(0xFF1D2228);
+  static const Color inputFill = Color(0xFF282F35);
 
-  static const Color text = Colors.white;
+  static const Color text = Color(0xFFA3A5A9);
   static const Color white = Colors.white;
   static const Color hint = Colors.white38;
   static const Color label = Colors.white70;

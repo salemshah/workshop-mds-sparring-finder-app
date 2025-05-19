@@ -1,7 +1,8 @@
 import 'package:equatable/equatable.dart';
-import '../../models/profile/profile_model.dart';
-import '../../models/profile/profile_response.dart';
 
+import '../../models/profile/profile_model.dart';
+
+/// Base class for all states emitted by [ProfileBloc].
 abstract class ProfileState extends Equatable {
   const ProfileState();
 
@@ -9,49 +10,67 @@ abstract class ProfileState extends Equatable {
   List<Object?> get props => [];
 }
 
-class ProfileInitial extends ProfileState {}
+// ---------------------------------------------------------------------------
+// Primitive States
+// ---------------------------------------------------------------------------
 
-class ProfileLoading extends ProfileState {}
+class ProfileInitial extends ProfileState {
+  const ProfileInitial();
+}
 
-class ProfileSuccess extends ProfileState {
-  final bool isProfileExist;
-  const ProfileSuccess({required this.isProfileExist});
-  @override
-  List<Object?> get props => [isProfileExist];
+class ProfileLoadInProgress extends ProfileState {
+  const ProfileLoadInProgress();
 }
 
 class ProfileFailure extends ProfileState {
   final String error;
 
-  const ProfileFailure({required this.error});
+  const ProfileFailure(this.error);
 
   @override
   List<Object?> get props => [error];
 }
 
-class ProfileLoaded extends ProfileState {
-  final ProfileResponse response;
+// ---------------------------------------------------------------------------
+// Success States
+// ---------------------------------------------------------------------------
 
-  const ProfileLoaded({required this.response});
+/// Detailed single‑profile payload.
+class ProfileLoadSuccess extends ProfileState {
+  final Profile profile;
+
+  const ProfileLoadSuccess(this.profile);
 
   @override
-  List<Object?> get props => [response];
+  List<Object?> get props => [profile];
 }
 
-class ProfilesLoaded extends ProfileState {
-  final List<ProfileModel> profiles;
+/// Whether the current user already has a profile.
+class ProfileExistenceSuccess extends ProfileState {
+  final bool isProfileExist;
 
-  const ProfilesLoaded({required this.profiles});
+  const ProfileExistenceSuccess(this.isProfileExist);
+
+  @override
+  List<Object?> get props => [isProfileExist];
+}
+
+/// A list of profiles returned by discovery/api.
+class ProfileListLoadSuccess extends ProfileState {
+  final List<Profile> profiles;
+
+  const ProfileListLoadSuccess(this.profiles);
 
   @override
   List<Object?> get props => [profiles];
 }
 
-class ProfileSearchSuccess extends ProfileState {
-  final List<ProfileModel> results;
+/// Generic success message (e.g. delete profile).
+class ProfileOperationSuccess extends ProfileState {
+  final String message;
 
-  const ProfileSearchSuccess(this.results);
+  const ProfileOperationSuccess(this.message);
 
   @override
-  List<Object?> get props => [results];
+  List<Object?> get props => [message];
 }

@@ -1,18 +1,24 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sparring_finder/src/blocs/profile/profile_event.dart';
-import 'package:sparring_finder/src/blocs/profile/profile_state.dart';
-import 'package:sparring_finder/src/blocs/profile/profile_bloc.dart';
-import 'package:sparring_finder/src/ui/theme/app_colors.dart';
-import '../../widgets/custom_input_field.dart';
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_input_mutiline.dart';
-import '../../widgets/upload_image_field.dart';
-import '../../widgets/gender_selector.dart';
-import '../../widgets/custom_dropdown.dart';
 
+import '../../../blocs/profile/profile_bloc.dart';
+import '../../../blocs/profile/profile_event.dart';
+import '../../../blocs/profile/profile_state.dart';
+import '../../../config/app_routes.dart';
+import '../../theme/app_colors.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_dropdown.dart';
+import '../../widgets/custom_input_field.dart';
+import '../../widgets/custom_input_mutiline.dart';
+import '../../widgets/gender_selector.dart';
+import '../../widgets/upload_image_field.dart';
+
+/// Multi‑step form for creating a new fighter profile with lightweight local
+/// validation *before* advancing to the next step. After a successful API
+/// response the user is routed directly to the home screen.
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
 
@@ -21,118 +27,226 @@ class CreateProfileScreen extends StatefulWidget {
 }
 
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final int _lastStep = 4;
   int _currentStep = 0;
 
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _bioController = TextEditingController();
-  final _dobController = TextEditingController();
-  final _weightController = TextEditingController();
-  final _skillController = TextEditingController();
-  final _experienceController = TextEditingController();
-  final _stylesController = TextEditingController();
-  final _gymController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _countryController = TextEditingController();
+  // --------------------------- Controllers -------------------------------- //
+  final _firstName = TextEditingController();
+  final _lastName = TextEditingController();
+  final _bio = TextEditingController();
+  final _dob = TextEditingController();
+  final _weight = TextEditingController();
+  final _skill = TextEditingController();
+  final _experience = TextEditingController();
+  final _styles = TextEditingController();
+  final _gym = TextEditingController();
+  final _city = TextEditingController();
+  final _country = TextEditingController();
 
   String _gender = 'Male';
   File? _profileImage;
 
-  final List<String> levels = ['Beginner', 'Intermediate', 'Advanced', 'Professional'];
+  final _levels = const [
+    'Beginner',
+    'Intermediate',
+    'Advanced',
+    'Professional',
+  ];
 
-  void _onSubmit() {
-    if (_formKey.currentState!.validate()) {
-      final profileData = {
-        'first_name': _firstNameController.text,
-        'last_name': _lastNameController.text,
-        'bio': _bioController.text,
-        'date_of_birth': _dobController.text,
-        'gender': _gender,
-        'weight_class': _weightController.text,
-        'skill_level': _skillController.text,
-        'years_experience': _experienceController.text,
-        'preferred_styles': _stylesController.text,
-        'gym_name': _gymController.text,
-        'city': _cityController.text,
-        'country': _countryController.text,
-      };
+  // -------------------------------- Helpers ------------------------------ //
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 
-      context.read<ProfileBloc>().add(
-        ProfileCreateRequested(profileData: profileData, photo: _profileImage),
-      );
+  bool _validateCurrentStep() {
+    switch (_currentStep) {
+      case 0:
+        if (_firstName.text.isEmpty || _lastName.text.isEmpty) {
+          _showError('Please enter your first and last name');
+          return false;
+        }
+        return true;
+      case 1:
+        if (_profileImage == null) {
+          _showError('Please upload a profile photo');
+          return false;
+        }
+        return true;
+      case 2:
+        if (_dob.text.isEmpty) {
+          _showError('Please enter your date of birth');
+          return false;
+        }
+        return true;
+      case 3:
+        if (_weight.text.isEmpty ||
+            _skill.text.isEmpty ||
+            _experience.text.isEmpty) {
+          _showError('Please complete weight, skill level and experience');
+          return false;
+        }
+        return true;
+      case 4:
+        if (_gym.text.isEmpty || _city.text.isEmpty || _country.text.isEmpty) {
+          _showError('Please fill gym, city and country');
+          return false;
+        }
+        return true;
+      default:
+        return true;
     }
   }
 
   void _nextStep() {
-    if (_currentStep < 4) {
-      setState(() {
-        _currentStep++;
-      });
+    if (!_validateCurrentStep()) return;
+
+    if (_currentStep < _lastStep) {
+      setState(() => _currentStep++);
     } else {
-      _onSubmit();
+      _submit();
     }
   }
 
   void _previousStep() {
-    if (_currentStep > 0) {
-      setState(() {
-        _currentStep--;
-      });
-    }
+    if (_currentStep > 0) setState(() => _currentStep--);
   }
+
+  void _submit() {
+    final profileData = {
+      'first_name': _firstName.text,
+      'last_name': _lastName.text,
+      'bio': _bio.text,
+      'date_of_birth': _dob.text,
+      'gender': _gender,
+      'weight_class': _weight.text,
+      'skill_level': _skill.text,
+      'years_experience': _experience.text,
+      'preferred_styles': _styles.text,
+      'gym_name': _gym.text,
+      'city': _city.text,
+      'country': _country.text,
+    };
+
+    context.read<ProfileBloc>().add(
+      ProfileCreated(data: profileData, photo: _profileImage),
+    );
+
+  }
+
+  // --------------------------- UI Builders ------------------------------- //
+  Widget _buildStep0() => Column(
+    children: [
+      CustomInputField(
+        label: 'Name',
+        hint: 'Enter your name',
+        controller: _firstName,
+      ),
+      const SizedBox(height: 16),
+      CustomInputField(
+        label: 'Last name',
+        hint: 'Enter your last name',
+        controller: _lastName,
+      ),
+      const SizedBox(height: 16),
+      BioField(controller: _bio),
+    ],
+  );
+
+  Widget _buildStep1() => UploadImageField(
+    onImageSelected: (file) => _profileImage = file,
+  );
+
+  Widget _buildStep2() => Column(
+    children: [
+      CustomInputField(
+        label: 'Date of birth',
+        hint: 'dd/mm/yyyy',
+        controller: _dob,
+      ),
+      const SizedBox(height: 16),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text(
+            'Gender',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+      GenderSelector(onChanged: (value) => _gender = value),
+    ],
+  );
+
+  Widget _buildStep3() => Column(
+    children: [
+      CustomInputField(
+        label: 'Weight class',
+        hint: 'Enter your weight class',
+        controller: _weight,
+      ),
+      const SizedBox(height: 16),
+      CustomDropdown(
+        controller: _skill,
+        levels: _levels,
+        label: 'Skill level',
+        hint: 'Select your skill level',
+      ),
+      const SizedBox(height: 16),
+      CustomInputField(
+        label: 'Years experience',
+        hint: 'Enter your years experience',
+        controller: _experience,
+      ),
+      const SizedBox(height: 16),
+      CustomInputField(
+        label: 'Preferred styles',
+        hint: 'Enter your preferred styles',
+        controller: _styles,
+      ),
+    ],
+  );
+
+  Widget _buildStep4() => Column(
+    children: [
+      CustomInputField(
+        label: 'Gym name',
+        hint: 'Enter your gym name',
+        controller: _gym,
+      ),
+      const SizedBox(height: 16),
+      CustomInputField(
+        label: 'City',
+        hint: 'Enter your city name',
+        controller: _city,
+      ),
+      const SizedBox(height: 16),
+      CustomInputField(
+        label: 'Country',
+        hint: 'Enter your country name',
+        controller: _country,
+      ),
+    ],
+  );
 
   Widget _buildStepContent() {
     switch (_currentStep) {
       case 0:
-        return Column(
-          children: [
-            CustomInputField(label: 'Name', hint: 'Enter your name', controller: _firstNameController),
-            const SizedBox(height: 16),
-            CustomInputField(label: 'Last name', hint: 'Enter your last name', controller: _lastNameController),
-            const SizedBox(height: 16),
-            BioField(controller: _bioController),
-          ],
-        );
+        return _buildStep0();
       case 1:
-        return UploadImageField(onImageSelected: (file) => _profileImage = file);
+        return _buildStep1();
       case 2:
-        return Column(
-          children: [
-            CustomInputField(label: 'Date of birth', hint: 'dd/mm/yyyy', controller: _dobController),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text("Gender", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
-              ),
-            ),
-            GenderSelector(onChanged: (value) => _gender = value),
-          ],
-        );
+        return _buildStep2();
       case 3:
-        return Column(
-          children: [
-            CustomInputField(label: 'Weight class', hint: 'Enter your weight class', controller: _weightController),
-            const SizedBox(height: 16),
-            CustomDropdown(controller: _skillController, levels: levels, label: 'Skill level', hint: 'Select your skill level'),
-            const SizedBox(height: 16),
-            CustomInputField(label: 'Years experience', hint: 'Enter your years experience', controller: _experienceController),
-            const SizedBox(height: 16),
-            CustomInputField(label: 'Preferred styles', hint: 'Enter your preferred styles', controller: _stylesController),
-          ],
-        );
+        return _buildStep3();
       case 4:
-        return Column(
-          children: [
-            CustomInputField(label: 'Gym name', hint: 'Enter your gym name', controller: _gymController),
-            const SizedBox(height: 16),
-            CustomInputField(label: 'City', hint: 'Enter your city name', controller: _cityController),
-            const SizedBox(height: 16),
-            CustomInputField(label: 'Country', hint: 'Enter your country name', controller: _countryController),
-          ],
-        );
+        return _buildStep4();
       default:
         return const SizedBox();
     }
@@ -144,12 +258,18 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
     return BlocListener<ProfileBloc, ProfileState>(
       listener: (context, state) {
-        if (state is ProfileLoading) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Creating profile...')));
-        } else if (state is ProfileLoaded) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile created successfully!')));
+        print('Profile state: $state');
+
+        if (state is ProfileLoadInProgress) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Creating profile...')));
+        } else if (state is ProfileLoadSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Profile created successfully!')));
+          Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
         } else if (state is ProfileFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(state.error)));
         }
       },
       child: Scaffold(
@@ -157,52 +277,54 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  // if (_currentStep == 0)
-                    Stack(
-                      children: [
-                        Image.asset('assets/images/boxer.png', width: width - 50, fit: BoxFit.fill),
-                        Positioned(
-                          bottom: 30,
-                          left: 10,
-                          child: Text('Create your profile',
-                            style: GoogleFonts.montserrat(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    Image.asset(
+                      'assets/images/boxer.png',
+                      width: width - 50,
+                      fit: BoxFit.fill,
                     ),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: _buildStepContent(),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      if (_currentStep > 0)
-                        Expanded(
-                          child: CustomButton(label: 'Back', onPressed: _previousStep),
-                        ),
-                      if (_currentStep > 0) const SizedBox(width: 16),
-                      Expanded(
-                        child: CustomButton(
-                          label: _currentStep == 4 ? 'Submit' : 'Next',
-                          onPressed: _nextStep,
+                    Positioned(
+                      bottom: 30,
+                      left: 10,
+                      child: Text(
+                        'Create your profile',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: _buildStepContent(),
                   ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    if (_currentStep > 0)
+                      Expanded(
+                        child:
+                        CustomButton(label: 'Back', onPressed: _previousStep),
+                      ),
+                    if (_currentStep > 0) const SizedBox(width: 16),
+                    Expanded(
+                      child: CustomButton(
+                        label: _currentStep == _lastStep ? 'Submit' : 'Next',
+                        onPressed: _nextStep,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
         ),

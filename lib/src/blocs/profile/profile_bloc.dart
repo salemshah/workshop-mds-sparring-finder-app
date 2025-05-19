@@ -1,33 +1,41 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sparring_finder/src/blocs/profile/profile_event.dart';
-import 'package:sparring_finder/src/blocs/profile/profile_state.dart';
+import 'dart:async';
+import 'package:bloc/bloc.dart';
+import '../../models/profile/favorite_relation_to_profile_model.dart';
+import '../../models/profile/profile_response.dart';
 import '../../repositories/profile_rpository.dart';
+import 'profile_event.dart';
+import 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  final ProfileRepository profileRepository;
+  final ProfileRepository repository;
 
-  ProfileBloc({required this.profileRepository}) : super(ProfileInitial()) {
+  ProfileBloc({required this.repository}) : super(const ProfileInitial()) {
+    on<ProfileExistenceRequested>(_onProfileExistenceRequested);
     on<ProfileRequested>(_onProfileRequested);
-    on<ProfileCheckExists>(_onProfileCheckExists);
-    on<ProfileCreateRequested>(_onProfileCreateRequested);
-    on<ProfileUpdateRequested>(_onProfileUpdateRequested);
-    on<ProfilePhotoUpdateRequested>(_onProfilePhotoUpdateRequested);
-    on<ProfileDeleteRequested>(_onProfileDeleteRequested);
-    on<ProfileListRequested>(_onProfileListRequested);
-    on<ProfileSearchRequested>(_onProfileSearchRequested);
+    on<ProfileCreated>(_onProfileCreated);
+    on<ProfileUpdated>(_onProfileUpdated);
+    on<ProfilePhotoUpdated>(_onProfilePhotoUpdated);
+    on<ProfileDeleted>(_onProfileDeleted);
+    on<ProfilesFetchedAll>(_onProfilesFetchedAll);
+    on<ProfilesSearched>(_onProfilesSearched);
+    on<ProfilesFiltered>(_onProfilesFiltered);
+    on<FavoriteToggled>(_onFavoriteToggled);
   }
 
+  // ---------------------------------------------------------------------------
+  // Event Handlers
+  // ---------------------------------------------------------------------------
 
-  Future<void> _onProfileListRequested(
-      ProfileListRequested event,
+  Future<void> _onProfileExistenceRequested(
+      ProfileExistenceRequested event,
       Emitter<ProfileState> emit,
       ) async {
-    emit(ProfileLoading());
+    emit(const ProfileLoadInProgress());
     try {
-      final profiles = await profileRepository.getAllProfiles();
-      emit(ProfilesLoaded(profiles: profiles));
+      final exists = await repository.hasProfile();
+      emit(ProfileExistenceSuccess(exists));
     } catch (e) {
-      emit(ProfileFailure(error: e.toString()));
+      emit(ProfileFailure(e.toString()));
     }
   }
 
@@ -35,91 +43,172 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       ProfileRequested event,
       Emitter<ProfileState> emit,
       ) async {
-    emit(ProfileLoading());
+    emit(const ProfileLoadInProgress());
     try {
-      final response = await profileRepository.getProfile();
-      emit(ProfileLoaded(response: response));
+      final ProfileResponse response = await repository.getProfile();
+      emit(ProfileLoadSuccess(response.profiles.first));
     } catch (e) {
-      emit(ProfileFailure(error: e.toString()));
+      emit(ProfileFailure(e.toString()));
     }
   }
 
-  Future<void> _onProfileCheckExists(
-      ProfileCheckExists event,
+  Future<void> _onProfileCreated(
+      ProfileCreated event,
       Emitter<ProfileState> emit,
       ) async {
-    emit(ProfileLoading());
+    emit(const ProfileLoadInProgress());
     try {
-      final exists = await profileRepository.hasProfile();
-      emit(ProfileSuccess(isProfileExist: exists));
+      final ProfileResponse response =
+      await repository.createProfile(event.data, photo: event.photo);
+      emit(ProfileLoadSuccess(response.profiles.first));
     } catch (e) {
-      emit(ProfileFailure(error: e.toString()));
+      emit(ProfileFailure(e.toString()));
     }
   }
 
-  Future<void> _onProfileCreateRequested(
-      ProfileCreateRequested event,
+  Future<void> _onProfileUpdated(
+      ProfileUpdated event,
       Emitter<ProfileState> emit,
       ) async {
-    emit(ProfileLoading());
+    emit(const ProfileLoadInProgress());
     try {
-      final response = await profileRepository.createProfile(event.profileData, photo: event.photo);
-      emit(ProfileLoaded(response: response));
+      final ProfileResponse response =
+      await repository.updateProfile(event.data);
+      emit(ProfileLoadSuccess(response.profiles.first));
     } catch (e) {
-      emit(ProfileFailure(error: e.toString()));
+      emit(ProfileFailure(e.toString()));
     }
   }
 
-  Future<void> _onProfileUpdateRequested(
-      ProfileUpdateRequested event,
+  Future<void> _onProfilePhotoUpdated(
+      ProfilePhotoUpdated event,
       Emitter<ProfileState> emit,
       ) async {
-    emit(ProfileLoading());
+    emit(const ProfileLoadInProgress());
     try {
-      final response = await profileRepository.updateProfile(event.updateData);
-      emit(ProfileLoaded(response: response));
+      final ProfileResponse response =
+      await repository.updateProfilePhoto(event.photo);
+      emit(ProfileLoadSuccess(response.profiles.first));
     } catch (e) {
-      emit(ProfileFailure(error: e.toString()));
+      emit(ProfileFailure(e.toString()));
     }
   }
 
-  Future<void> _onProfilePhotoUpdateRequested(
-      ProfilePhotoUpdateRequested event,
+  Future<void> _onProfileDeleted(
+      ProfileDeleted event,
       Emitter<ProfileState> emit,
       ) async {
-    emit(ProfileLoading());
+    emit(const ProfileLoadInProgress());
     try {
-      final response = await profileRepository.updateProfilePhoto(event.photo);
-      emit(ProfileLoaded(response: response));
+      final message = await repository.deleteProfile();
+      emit(ProfileOperationSuccess(message));
     } catch (e) {
-      emit(ProfileFailure(error: e.toString()));
+      emit(ProfileFailure(e.toString()));
     }
   }
 
-  Future<void> _onProfileDeleteRequested(
-      ProfileDeleteRequested event,
+  Future<void> _onProfilesFetchedAll(
+      ProfilesFetchedAll event,
       Emitter<ProfileState> emit,
       ) async {
-    emit(ProfileLoading());
+    emit(const ProfileLoadInProgress());
     try {
-      await profileRepository.deleteProfile();
-      // emit(ProfileSuccess(isExist: true));
+      final profiles = await repository.getAllProfiles();
+      emit(ProfileListLoadSuccess(profiles));
     } catch (e) {
-      emit(ProfileFailure(error: e.toString()));
+      emit(ProfileFailure(e.toString()));
     }
   }
 
-
-  Future<void> _onProfileSearchRequested(
-      ProfileSearchRequested event,
+  Future<void> _onProfilesSearched(
+      ProfilesSearched event,
       Emitter<ProfileState> emit,
       ) async {
-    emit(ProfileLoading());
+    emit(const ProfileLoadInProgress());
     try {
-      final results = await profileRepository.searchProfiles(event.query);
-      emit(ProfileSearchSuccess(results));
+      final profiles = await repository.searchProfiles(event.query);
+      emit(ProfileListLoadSuccess(profiles));
     } catch (e) {
-      emit(ProfileFailure(error: e.toString()));
+      emit(ProfileFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onProfilesFiltered(
+      ProfilesFiltered event,
+      Emitter<ProfileState> emit,
+      ) async {
+    emit(const ProfileLoadInProgress());
+    try {
+      final profiles = await repository.filterProfiles(
+        level: event.level,
+        country: event.country,
+        city: event.city,
+        gender: event.gender,
+        maxWeight: event.maxWeight,
+        minWeight: event.minWeight,
+      );
+      emit(ProfileListLoadSuccess(profiles));
+    } catch (e) {
+      emit(ProfileFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onFavoriteToggled(
+      FavoriteToggled event,
+      Emitter<ProfileState> emit,
+      ) async {
+    // ------------------- Optimistic update for single profile ------------ //
+    if (state is ProfileLoadSuccess) {
+      final current = (state as ProfileLoadSuccess).profile;
+      final alreadyFav = current.favorites
+          .any((f) => f.favoritedUserId == event.targetUserId);
+
+      final updatedFavorites = alreadyFav
+          ? current.favorites
+          .where((f) => f.favoritedUserId != event.targetUserId)
+          .toList()
+          : [
+        ...current.favorites,
+        Favorite(
+          userId: event.currentUserId,
+          favoritedUserId: event.targetUserId,
+        ),
+      ];
+      emit(ProfileLoadSuccess(current.copyWith(favorites: updatedFavorites)));
+    }
+
+    // ------------------- Optimistic update for list ---------------------- //
+    if (state is ProfileListLoadSuccess) {
+      final profiles = (state as ProfileListLoadSuccess).profiles;
+
+      final updatedProfiles = profiles.map((p) {
+        if (p.userId == event.currentUserId) {
+          final alreadyFav =
+          p.favorites.any((f) => f.favoritedUserId == event.targetUserId);
+          final updatedFavs = alreadyFav
+              ? p.favorites
+              .where((f) => f.favoritedUserId != event.targetUserId)
+              .toList()
+              : [
+            ...p.favorites,
+            Favorite(
+              userId: event.currentUserId,
+              favoritedUserId: event.targetUserId,
+            ),
+          ];
+          return p.copyWith(favorites: updatedFavs);
+        }
+        return p;
+      }).toList();
+
+      emit(ProfileListLoadSuccess(updatedProfiles));
+    }
+
+    // ------------------- API call --------------------------------------- //
+    try {
+      await repository.toggleFavorite(targetUserId: event.targetUserId);
+    } catch (e) {
+      emit(ProfileFailure('Failed to toggle favorite: $e'));
     }
   }
 }

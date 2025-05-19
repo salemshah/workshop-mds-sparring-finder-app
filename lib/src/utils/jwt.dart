@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:sparring_finder/src/models/user/user_model.dart';
 
 class JwtStorageHelper {
   static final _storage = FlutterSecureStorage();
@@ -24,6 +25,12 @@ class JwtStorageHelper {
   /// Get the refresh token
   static Future<String?> getRefreshToken() async {
     return await _storage.read(key: refreshTokenKey);
+  }
+
+  static Future<Map<String, dynamic>> getDecodedAccessToken() async {
+    final token = await getAccessToken();
+    if (token == null) throw Exception('No access token found');
+    return JwtDecoder.decode(token);
   }
 
   /// Check if the stored access token is expired

@@ -19,7 +19,7 @@ class BlocProviders {
       create: (_) => UserBloc(userRepository: userRepository),
     ),
     BlocProvider<ProfileBloc>(
-      create: (_) => ProfileBloc(profileRepository: profileRepository),
+      create: (_) => ProfileBloc(repository: profileRepository),
     ),
   ];
 }

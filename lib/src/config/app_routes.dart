@@ -12,7 +12,7 @@ class AppRoutes {
   static const String registerScreen = '/register';
   static const String loginScreen = '/login';
   static const String verifyEmailScreen = '/verify-email';
-  static const String homeScreen = '/home';
+  static const String homeScreen = '/home-screen';
   static const String forgotPasswordScreen = '/forgot-password';
   static const String resetPasswordScreen = '/reset-password';
   static const String createProfileScreen = '/create-profile';

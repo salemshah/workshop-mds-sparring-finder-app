@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
+/// Base class for all profile‑related events consumed by [ProfileBloc].
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
 
@@ -8,54 +10,118 @@ abstract class ProfileEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// Load profile (GET /profile)
-class ProfileRequested extends ProfileEvent {}
+// ---------------------------------------------------------------------------
+// Single‑Profile Flow
+// ---------------------------------------------------------------------------
 
-class ProfileListRequested extends ProfileEvent {}
+/// Check whether the authenticated user already created a profile.
+class ProfileExistenceRequested extends ProfileEvent {
+  const ProfileExistenceRequested();
+}
 
-// Check if profile exists (GET /profile/exists)
-class ProfileCheckExists extends ProfileEvent {}
+/// Fetch the authenticated user's profile.
+class ProfileRequested extends ProfileEvent {
+  const ProfileRequested();
+}
 
-// Create a new profile (POST /profile)
-class ProfileCreateRequested extends ProfileEvent {
-  final Map<String, dynamic> profileData;
+/// Create a new profile; optionally uploads a photo.
+class ProfileCreated extends ProfileEvent {
+  final Map<String, dynamic> data;
   final File? photo;
 
-  const ProfileCreateRequested({required this.profileData, this.photo});
+  const ProfileCreated({required this.data, this.photo});
 
   @override
-  List<Object?> get props => [profileData, photo];
+  List<Object?> get props => [data, photo];
 }
 
-//️ Update an existing profile (PUT /profile)
-class ProfileUpdateRequested extends ProfileEvent {
-  final Map<String, dynamic> updateData;
+/// Update profile fields (no photo).
+class ProfileUpdated extends ProfileEvent {
+  final Map<String, dynamic> data;
 
-  const ProfileUpdateRequested({required this.updateData});
+  const ProfileUpdated(this.data);
 
   @override
-  List<Object?> get props => [updateData];
+  List<Object?> get props => [data];
 }
 
-// 📸 Update only the profile photo (PATCH /profile/photo)
-class ProfilePhotoUpdateRequested extends ProfileEvent {
+/// Update or upload a profile picture.
+class ProfilePhotoUpdated extends ProfileEvent {
   final File photo;
 
-  const ProfilePhotoUpdateRequested({required this.photo});
+  const ProfilePhotoUpdated(this.photo);
 
   @override
   List<Object?> get props => [photo];
 }
 
-// Delete profile (DELETE /profile)
-class ProfileDeleteRequested extends ProfileEvent {}
+/// Delete the authenticated user's profile.
+class ProfileDeleted extends ProfileEvent {
+  const ProfileDeleted();
+}
 
-class ProfileSearchRequested extends ProfileEvent {
+// ---------------------------------------------------------------------------
+// Collections Flow
+// ---------------------------------------------------------------------------
+
+/// Fetch all profiles (e.g. for discovery screen).
+class ProfilesFetchedAll extends ProfileEvent {
+  const ProfilesFetchedAll();
+}
+
+/// Full‑text search.
+class ProfilesSearched extends ProfileEvent {
   final String query;
 
-  const ProfileSearchRequested({required this.query});
+  const ProfilesSearched(this.query);
 
   @override
   List<Object?> get props => [query];
 }
 
+/// Parameterised filter search.
+class ProfilesFiltered extends ProfileEvent {
+  final String? level;
+  final String? country;
+  final String? city;
+  final String? gender;
+  final double? maxWeight;
+  final double? minWeight;
+
+  const ProfilesFiltered({
+    this.level,
+    this.country,
+    this.city,
+    this.gender,
+    this.maxWeight,
+    this.minWeight,
+  });
+
+  @override
+  List<Object?> get props => [
+    level,
+    country,
+    city,
+    gender,
+    maxWeight,
+    minWeight,
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Favorites
+// ---------------------------------------------------------------------------
+
+/// Toggle favorite relation with [targetUserId].
+class FavoriteToggled extends ProfileEvent {
+  final int targetUserId;
+  final int currentUserId;
+
+  const FavoriteToggled({
+    required this.targetUserId,
+    required this.currentUserId,
+  });
+
+  @override
+  List<Object?> get props => [targetUserId, currentUserId];
+}

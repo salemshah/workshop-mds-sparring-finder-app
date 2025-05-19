@@ -2,25 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
+
 import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/profile/profile_event.dart';
 import '../../blocs/profile/profile_state.dart';
 import '../theme/app_colors.dart';
 
+/// Splash screen that checks if the authenticated user already has a profile
+/// and routes to either Home or the Create‑Profile wizard.
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Use the existing ProfileBloc injected higher in the tree.
     return BlocProvider.value(
-      value: BlocProvider.of<ProfileBloc>(context)..add(ProfileCheckExists()),
+      value: BlocProvider.of<ProfileBloc>(context)
+        ..add(const ProfileExistenceRequested()),
       child: BlocListener<ProfileBloc, ProfileState>(
         listener: (context, state) {
-          if (state is ProfileSuccess) {
-            if (state.isProfileExist == true) {
+          if (state is ProfileExistenceSuccess) {
+            if (state.isProfileExist) {
               Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
             } else {
-              Navigator.pushReplacementNamed(context, AppRoutes.createProfileScreen);
+              Navigator.pushReplacementNamed(
+                  context, AppRoutes.createProfileScreen);
             }
           } else if (state is ProfileFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -35,7 +41,7 @@ class LoadingScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "Welcome Back",
+                  'Welcome Back',
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.white,
@@ -44,7 +50,7 @@ class LoadingScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "SPARRING FINDER",
+                  'SPARRING FINDER',
                   style: GoogleFonts.montserrat(
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
@@ -52,39 +58,74 @@ class LoadingScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 30),
-                Container(
-                  width: 200,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: AppColors.inputFill,
-                    border: Border.all(color: AppColors.white, width: 2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  alignment: Alignment.centerLeft,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return AnimatedContainer(
-                        duration: const Duration(seconds: 2),
-                        curve: Curves.easeInOut,
-                        width: constraints.maxWidth * 0.5,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                const _ProgressBar(),
                 const SizedBox(height: 20),
                 const Text(
-                  "Loading...",
+                  'Loading...',
                   style: TextStyle(color: Colors.white, fontSize: 14),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ProgressBar extends StatefulWidget {
+  const _ProgressBar();
+
+  @override
+  State<_ProgressBar> createState() => _ProgressBarState();
+}
+
+class _ProgressBarState extends State<_ProgressBar>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 200,
+      height: 20,
+      decoration: BoxDecoration(
+        color: AppColors.inputFill,
+        border: Border.all(color: AppColors.white, width: 2),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      alignment: Alignment.centerLeft,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Container(
+                width: constraints.maxWidth * (0.3 + 0.4 * _controller.value),
+                height: 20,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
