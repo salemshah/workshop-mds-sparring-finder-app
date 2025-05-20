@@ -10,6 +10,13 @@ import 'package:sparring_finder/src/ui/screens/user/user_login_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/user_email_verification_screen.dart';
 import 'package:sparring_finder/src/ui/screens/home/home_screen.dart';
 
+import '../ui/screens/application/application.dart';
+import '../ui/screens/onboarding/onboarding_screen.dart';
+import '../ui/screens/profile/profile.dart';
+import '../ui/screens/session/sparring_screen.dart';
+import '../ui/screens/settings/settings.dart';
+import '../ui/screens/splash/splash_screen.dart';
+
 class AppRoutes {
   static const String registerScreen = '/register';
   static const String loginScreen = '/login';
@@ -20,6 +27,13 @@ class AppRoutes {
   static const String createProfileScreen = '/create-profile';
   static const String loadingScreen = '/loading-screen';
   static const String athleteDetailsScreen = '/athlete-details';
+  static const String sparringScreen = '/sparring-screen';
+
+  static const String splashScreen = '/splash-screen';
+  static const String settingsScreen = '/settings';
+  static const String onBoardingScreen = '/onboarding';
+  static const String profileScreen = '/profile';
+  static const String applicationScreen = '/application';
 
   /// For routes that **don't require arguments**
   static final Map<String, WidgetBuilder> staticRoutes = {
@@ -31,6 +45,18 @@ class AppRoutes {
     forgotPasswordScreen: (_) => const ForgotPasswordScreen(),
     resetPasswordScreen: (_) => const ResetPasswordScreen(),
     createProfileScreen: (_) => const CreateProfileScreen(),
+
+
+    // Sessions screens
+    sparringScreen: (_) => const MatchCardScreen(),
+
+
+    splashScreen: (_) => const SplashScreen(),
+    settingsScreen: (_) => const SettingScreen(),
+    onBoardingScreen: (_) => const OnBoardingScreen(),
+    profileScreen: (_) => const ProfileScreen(),
+    applicationScreen: (_) => const ApplicationScreen(),
+
   };
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {

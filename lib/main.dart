@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/src/config/bloc_providers.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
+import 'package:sparring_finder/src/ui/screens/session/sparring_screen.dart';
+import 'package:sparring_finder/src/ui/screens/splash/splash_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/user_login_screen.dart';
 
 void main() async {
@@ -28,7 +30,7 @@ class MindaApp extends StatelessWidget {
       providers: BlocProviders.all,
       child: MaterialApp(
         onGenerateRoute: AppRoutes.generateRoute,
-        initialRoute: AppRoutes.loginScreen,
+        initialRoute: AppRoutes.splashScreen,
         debugShowCheckedModeBanner: false,
         navigatorObservers: [RouteObserver<PageRoute>()],
         home: LayoutBuilder(
@@ -37,7 +39,7 @@ class MindaApp extends StatelessWidget {
               designSize: constraints.biggest,
               minTextAdapt: true,
               splitScreenMode: true,
-              builder: (context, child) => const LoginScreen(),
+              builder: (context, child) =>  SplashScreen(),
             );
           },
         ),

@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sparring_finder/src/blocs/user/user_bloc.dart';
 import 'package:sparring_finder/src/repositories/user_repository.dart';
 import 'package:sparring_finder/src/services/api_service.dart';
+import '../blocs/onboarding/onboarding_bloc.dart';
 import '../blocs/profile/profile_bloc.dart';
 import '../repositories/profile_rpository.dart';
 
@@ -15,6 +16,9 @@ class BlocProviders {
   static final profileRepository = ProfileRepository(apiService: apiService);
 
   static List<BlocProvider> all = [
+    BlocProvider<OnBoardBloc>(
+      create: (_) => OnBoardBloc(),
+    ),
     BlocProvider<UserBloc>(
       create: (_) => UserBloc(userRepository: userRepository),
     ),
