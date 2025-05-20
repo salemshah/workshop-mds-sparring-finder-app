@@ -3,12 +3,12 @@ import '../theme/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const CustomButton({
     super.key,
     required this.label,
-    required this.onPressed,
+    this.onPressed,
   });
 
   @override

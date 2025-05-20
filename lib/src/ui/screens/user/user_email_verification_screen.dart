@@ -35,7 +35,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   void _startTimer() {
     setState(() {
-      _start = 60;
+      _start = 120;
       _isResendEnabled = false;
     });
 
@@ -189,21 +189,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   const SizedBox(height: 30),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _isFilled ? _submitCode : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: CustomButton(
+                    child: CustomButton(
                         label: "Submit",
-                        onPressed: _submitCode,
+                        onPressed: _isFilled ? _submitCode : null,
                       ),
                     ),
-                  )
                 ],
               ),
             );
