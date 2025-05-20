@@ -8,6 +8,7 @@ import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../../../blocs/profile/profile_bloc.dart';
 import '../../../blocs/profile/profile_event.dart';
 import '../../../blocs/profile/profile_state.dart';
+import '../../../config/app_routes.dart';
 import '../../../models/profile/profile_model.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/athlete_card.dart';
@@ -183,6 +184,13 @@ class _HomeScreenState extends State<HomeScreen> {
             level: p.skillLevel,
             image: p.photoUrl,
             gender: p.gender,
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.athleteDetailsScreen,
+                arguments: p,
+              );
+            },
             isFavorite: isFavorite,
             onFavoriteToggle: () {
               context.read<ProfileBloc>().add(
@@ -226,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     'Search profile partner',
                     style: GoogleFonts.montserrat(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -285,11 +293,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(50),
-                                borderSide: const BorderSide(color: AppColors.border, width: 2),
+                                borderSide: const BorderSide(color: AppColors.primary, width: 2),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(50),
-                                borderSide: const BorderSide(color: AppColors.border, width: 2),
+                                borderSide: const BorderSide(color: AppColors.primary, width: 2),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(50),

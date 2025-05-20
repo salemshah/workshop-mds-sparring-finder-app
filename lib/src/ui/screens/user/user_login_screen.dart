@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
             return BlocConsumer<UserBloc, UserState>(
               listener: (context, state) {
                 if (state is UserAuthenticated) {
-                  Navigator.pushNamed(context, AppRoutes.loadingScreen);
+                  Navigator.pushReplacementNamed(context, AppRoutes.loadingScreen);
                 } else if (state is UserFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

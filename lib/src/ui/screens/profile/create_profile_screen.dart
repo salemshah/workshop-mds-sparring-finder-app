@@ -18,7 +18,9 @@ import '../../widgets/upload_image_field.dart';
 
 /// Multi‑step form for creating a new fighter profile with lightweight local
 /// validation *before* advancing to the next step. After a successful API
-/// response the user is routed directly to the home screen.
+/// response the user is routed directly to the home screen. While the profile
+/// is being created a full‑screen opaque loader is displayed, blocking user
+/// interaction.
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
 
@@ -27,6 +29,7 @@ class CreateProfileScreen extends StatefulWidget {
 }
 
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
+  // --------------------------- Wizard state ------------------------------ //
   final int _lastStep = 4;
   int _currentStep = 0;
 
@@ -132,7 +135,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     context.read<ProfileBloc>().add(
       ProfileCreated(data: profileData, photo: _profileImage),
     );
-
   }
 
   // --------------------------- UI Builders ------------------------------- //
@@ -252,82 +254,112 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     }
   }
 
+  // --------------------------- Screen build ----------------------------- //
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    return BlocListener<ProfileBloc, ProfileState>(
+    // BlocConsumer gives us both listener (for side‑effects) and builder (for UI)
+    return BlocConsumer<ProfileBloc, ProfileState>(
+      listenWhen: (previous, current) => current is! ProfileLoadInProgress,
       listener: (context, state) {
-        print('Profile state: $state');
-
-        if (state is ProfileLoadInProgress) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Creating profile...')));
-        } else if (state is ProfileLoadSuccess) {
+        if (state is ProfileLoadSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Profile created successfully!')));
+            const SnackBar(content: Text('Profile created successfully!')),
+          );
           Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
         } else if (state is ProfileFailure) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.error)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.error)),
+          );
         }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    Image.asset(
-                      'assets/images/boxer.png',
-                      width: width - 50,
-                      fit: BoxFit.fill,
-                    ),
-                    Positioned(
-                      bottom: 30,
-                      left: 10,
-                      child: Text(
-                        'Create your profile',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+      builder: (context, state) {
+        final isLoading = state is ProfileLoadInProgress;
+
+        return Stack(
+          children: [
+            Scaffold(
+              backgroundColor: AppColors.background,
+              body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          Image.asset(
+                            'assets/images/boxer.png',
+                            width: width - 50,
+                            fit: BoxFit.fill,
+                          ),
+                          Positioned(
+                            bottom: 30,
+                            left: 10,
+                            child: Text(
+                              'Create your profile',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: _buildStepContent(),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: _buildStepContent(),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          if (_currentStep > 0)
+                            Expanded(
+                              child: CustomButton(
+                                label: 'Back',
+                                onPressed: _previousStep,
+                              ),
+                            ),
+                          if (_currentStep > 0) const SizedBox(width: 16),
+                          Expanded(
+                            child: CustomButton(
+                              label: _currentStep == _lastStep ? 'Submit' : 'Next',
+                              onPressed: _nextStep,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    if (_currentStep > 0)
-                      Expanded(
-                        child:
-                        CustomButton(label: 'Back', onPressed: _previousStep),
-                      ),
-                    if (_currentStep > 0) const SizedBox(width: 16),
-                    Expanded(
-                      child: CustomButton(
-                        label: _currentStep == _lastStep ? 'Submit' : 'Next',
-                        onPressed: _nextStep,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
-          ),
-        ),
+            if (isLoading) const _FullScreenLoader(),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// A reusable, opaque, pointer‑blocking loading overlay.
+class _FullScreenLoader extends StatelessWidget {
+  const _FullScreenLoader();
+
+  @override
+  Widget build(BuildContext context) {
+    return AbsorbPointer(
+      absorbing: true,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: AppColors.primary.withValues(alpha: 0.6),
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(),
       ),
     );
   }

@@ -10,10 +10,6 @@ abstract class ProfileEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// ---------------------------------------------------------------------------
-// Single‑Profile Flow
-// ---------------------------------------------------------------------------
-
 /// Check whether the authenticated user already created a profile.
 class ProfileExistenceRequested extends ProfileEvent {
   const ProfileExistenceRequested();
@@ -107,6 +103,12 @@ class ProfilesFiltered extends ProfileEvent {
     minWeight,
   ];
 }
+
+class ProfileRequestedById extends ProfileEvent {
+  final int userId;
+  const ProfileRequestedById(this.userId);
+}
+
 
 // ---------------------------------------------------------------------------
 // Favorites

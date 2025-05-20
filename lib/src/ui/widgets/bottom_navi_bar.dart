@@ -12,7 +12,7 @@ class BottomNavBar extends StatelessWidget {
       selectedItemColor: AppColors.primary,
       unselectedItemColor: Colors.white60,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.flash_on), label: 'Sparring'),
         BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
         BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),

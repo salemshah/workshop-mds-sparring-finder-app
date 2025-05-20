@@ -23,7 +23,7 @@ class LoadingScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is ProfileExistenceSuccess) {
             if (state.isProfileExist) {
-              Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
+              Navigator.pushReplacementNamed(context, AppRoutes.homeScreen); // Remove all previous routes);
             } else {
               Navigator.pushReplacementNamed(
                   context, AppRoutes.createProfileScreen);

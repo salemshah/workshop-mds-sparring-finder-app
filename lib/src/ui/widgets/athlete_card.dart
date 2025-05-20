@@ -12,6 +12,7 @@ class AthleteCard extends StatelessWidget {
   final bool isFavorite;
   final VoidCallback onFavoriteToggle;
   final String gender;
+  final VoidCallback onTap;
 
   const AthleteCard({
     super.key,
@@ -23,85 +24,119 @@ class AthleteCard extends StatelessWidget {
     required this.isFavorite,
     required this.onFavoriteToggle,
     required this.gender,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isNetworkImage = image.startsWith('http');
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(color: AppColors.text, width: 2),
-            ),
-            child: ClipOval(
-              child: SizedBox(
-                width: 44,
-                height: 44,
-                child: isNetworkImage
-                    ? Image.network(
-                  image,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.broken_image, color: Colors.white38);
-                  },
-                )
-                    : Image.asset(
-                  image,
-                  fit: BoxFit.cover,
+    final isNetworkImage = image?.startsWith('http');
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.inputFill,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            // Profile Image
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(color: AppColors.text, width: 2),
+              ),
+              child: ClipOval(
+                child: SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: isNetworkImage
+                      ? Image.network(
+                    image!,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.broken_image, color: Colors.white38);
+                    },
+                  )
+                      : Image.asset(
+                    image,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name.capitalizeEachWord(),
-                  style: const TextStyle(
-                    color: AppColors.text,
-                    fontWeight: FontWeight.bold,
+
+            const SizedBox(width: 12),
+
+            // Name + Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name.capitalizeEachWord().limit(20),
+                    style: const TextStyle(
+                      color: AppColors.text,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-
-                Row(
-                  children: [
-                    TextWithIcon(icon: Icons.fitness_center_rounded, text: weight.capitalizeEachWord().limit(5), iconSize: 18, iconColor: AppColors.primary),
-                    const SizedBox(width: 8),
-                    TextWithIcon(icon: Icons.location_city_rounded, text: city.capitalizeEachWord().limit(6), iconSize: 18, iconColor: AppColors.primary),
-                    const SizedBox(width: 8),
-                    TextWithIcon(icon: Icons.signal_cellular_alt, text: level.capitalizeEachWord().limit(8), iconSize: 18, iconColor: AppColors.primary),
-                    const SizedBox(width: 8),
-                    Icon(gender == "Female"? Icons.female_rounded : Icons.male_rounded, color: AppColors.primary),
-                  ],
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        TextWithIcon(
+                          icon: Icons.fitness_center_rounded,
+                          text: weight.capitalizeEachWord().limit(5),
+                          iconSize: 18,
+                          iconColor: AppColors.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        TextWithIcon(
+                          icon: Icons.location_city_rounded,
+                          text: city.capitalizeEachWord().limit(6),
+                          iconSize: 18,
+                          iconColor: AppColors.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        TextWithIcon(
+                          icon: Icons.signal_cellular_alt,
+                          text: level.capitalizeEachWord().limit(8),
+                          iconSize: 18,
+                          iconColor: AppColors.primary,
+                        ),
+                        if (gender.trim().isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Icon(
+                            gender == "Female" ? Icons.female_rounded : Icons.male_rounded,
+                            color: AppColors.primary,
+                            size: 18,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          IconButton(
-            icon: Icon(
-              isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: AppColors.primary
+            // Favorite Icon
+            IconButton(
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: AppColors.primary,
+              ),
+              onPressed: onFavoriteToggle,
             ),
-            onPressed: onFavoriteToggle,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
