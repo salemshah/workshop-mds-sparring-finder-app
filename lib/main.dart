@@ -28,7 +28,7 @@ class MindaApp extends StatelessWidget {
       providers: BlocProviders.all,
       child: MaterialApp(
         onGenerateRoute: AppRoutes.generateRoute,
-        initialRoute: AppRoutes.verifyEmailScreen,
+        initialRoute: AppRoutes.loginScreen,
         debugShowCheckedModeBanner: false,
         navigatorObservers: [RouteObserver<PageRoute>()],
         home: LayoutBuilder(
