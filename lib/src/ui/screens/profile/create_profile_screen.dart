@@ -267,7 +267,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Profile created successfully!')),
           );
-          Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
+          Navigator.pushReplacementNamed(context, AppRoutes.applicationScreen);
         } else if (state is ProfileFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error)),

@@ -3,9 +3,10 @@ class Assets {
   Assets._();
 
   static const String iconsAppleLogo = 'assets/icons/apple_logo.png';
+  static const String iconsEdit = 'assets/icons/edit.png';
   static const String iconsGoogleLogo = 'assets/icons/google_logo.png';
+  static const String iconsProfile = 'assets/icons/profile.png';
   static const String imagesBoxer = 'assets/images/boxer.png';
   static const String imagesHeroImage = 'assets/images/hero_image.png';
-  static const String srirachaSrirachaRegular = 'assets/fonts/Sriracha/Sriracha-Regular.ttf';
 
 }

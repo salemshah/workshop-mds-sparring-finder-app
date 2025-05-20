@@ -10,10 +10,6 @@ abstract class ProfileState extends Equatable {
   List<Object?> get props => [];
 }
 
-// ---------------------------------------------------------------------------
-// Primitive States
-// ---------------------------------------------------------------------------
-
 class ProfileInitial extends ProfileState {
   const ProfileInitial();
 }
@@ -30,10 +26,6 @@ class ProfileFailure extends ProfileState {
   @override
   List<Object?> get props => [error];
 }
-
-// ---------------------------------------------------------------------------
-// Success States
-// ---------------------------------------------------------------------------
 
 /// Detailed single‑profile payload.
 class ProfileLoadSuccess extends ProfileState {

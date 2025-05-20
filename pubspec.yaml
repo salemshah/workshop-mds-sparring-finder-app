@@ -31,9 +31,12 @@ dependencies:
   image_picker: ^1.1.2
   google_fonts: ^6.2.1
   syncfusion_flutter_sliders: ^29.2.4
-
-#  for youtube downloader
   url_launcher: ^6.1.11
+  smooth_page_indicator: ^1.2.1
+  cached_network_image: ^3.4.1
+  share_plus: ^11.0.0
+  shared_preferences: ^2.5.3
+  curved_navigation_bar: ^1.0.6
 
 
 flutter_launcher_icons:
@@ -57,11 +60,11 @@ flutter:
     - assets/images/
     - assets/icons/
 
-  fonts:
-    - family: Sriracha
-      fonts:
-        - asset: assets/fonts/Sriracha/Sriracha-Regular.ttf
-          style: normal
+#  fonts:
+#    - family: Sriracha
+#      fonts:
+#        - asset: assets/fonts/Sriracha/Sriracha-Regular.ttf
+#          style: normal
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
