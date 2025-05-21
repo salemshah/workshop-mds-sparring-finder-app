@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +9,7 @@ import 'package:sparring_finder/src/blocs/profile/profile_state.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
 import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/models/profile/profile_model.dart';
+import 'package:sparring_finder/src/utils/extensions.dart';
 import 'package:sparring_finder/src/utils/image_res.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -36,135 +36,158 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: primaryBackground,
-        appBar: AppBar(
-          backgroundColor: primaryBackground,
-          elevation: 0,
-          title: const Text(
-            'Profile',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          centerTitle: true,
-          actions: [
-            Visibility(
-                visible: isCurrentUser,
-                child: IconButton(
-                  icon: const Icon(Icons.settings_outlined,
-                      size: 28, color: Colors.white),
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.settingsScreen);
-                  },
-                )),
-          ],
-        ),
-        body: BlocBuilder<ProfileBloc, ProfileState>(
-          builder: (context, state) {
-            if (state is ProfileLoadInProgress) {
+        // appBar: AppBar(
+        //   backgroundColor: primaryBackground,
+        //   actions: [
+        //     Visibility(
+        //         visible: isCurrentUser,
+        //         child: IconButton(
+        //           icon: const Icon(Icons.settings_outlined,
+        //               size: 28, color: Colors.white),
+        //           onPressed: () {
+        //             Navigator.pushNamed(context, AppRoutes.settingsScreen);
+        //           },
+        //         )),
+        //   ],
+        // ),
+        body: SafeArea(
+          child: BlocBuilder<ProfileBloc, ProfileState>(
+            builder: (context, state) {
+              if (state is ProfileLoadInProgress) {
+                return const Center(
+                  child: CircularProgressIndicator(color: kRed),
+                );
+              } else if (state is ProfileFailure) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Failed to load profile',
+                        style: TextStyle(color: Colors.white, fontSize: 16.sp),
+                      ),
+                      SizedBox(height: 16.h),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kRed,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                        ),
+                        onPressed: () {
+                          context.read<ProfileBloc>().add(ProfileRequested());
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              } else if (state is ProfileLoadSuccess) {
+                final profile = state.profile;
+                return _buildProfileContent(profile);
+              }
+
+              // Default loading state
               return const Center(
                 child: CircularProgressIndicator(color: kRed),
               );
-            } else if (state is ProfileFailure) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Failed to load profile',
-                      style: TextStyle(color: Colors.white, fontSize: 16.sp),
-                    ),
-                    SizedBox(height: 16.h),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: kRed,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                      ),
-                      onPressed: () {
-                        context.read<ProfileBloc>().add(ProfileRequested());
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            } else if (state is ProfileLoadSuccess) {
-              final profile = state.profile;
-              return _buildProfileContent(profile);
-            }
-            
-            // Default loading state
-            return const Center(
-              child: CircularProgressIndicator(color: kRed),
-            );
-          },
+            },
+          ),
         ));
   }
   
   Widget _buildProfileContent(Profile profile) {
-    return SafeArea(
-      top: false,
-      bottom: false,
-      child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          // Profile Info Section
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.only(top: 20.h),
-              child: Column(
-                children: [
-                  _buildProfileImage(
-                    context, 
-                    profile.photoUrl, 
-                    isCurrentUser
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        // Profile Info Section
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.only(top: 20.h),
+            child: Column(
+              children: [
+                _buildProfileImage(
+                  context,
+                  profile.photoUrl,
+                  isCurrentUser
+                ),
+                // SizedBox(height: 16.h),
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
                   ),
-                  SizedBox(height: 16.h),
-                  AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 200),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.bold,
+                  child: Text(
+                    profile.firstName.capitalizeEachWord(),
+                    style: const TextStyle(
+                      color: kRed
                     ),
-                    child: Text(
-                      "${profile.firstName} ${profile.lastName}",
-                      style: const TextStyle(
+                  ),
+                ),
+
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  child: Text(
+                    profile.lastName.toUpperCase(),
+                    style: const TextStyle(
                         color: kRed
-                      ),
                     ),
                   ),
-                  if (profile.verified == true)
-                    Padding(
-                      padding: EdgeInsets.only(top: 4.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.verified,
-                            color: kRed,
-                            size: 16,
+                ),
+                if (profile.verified == true)
+                  Padding(
+                    padding: EdgeInsets.only(top: 4.h),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.verified,
+                          color: kRed,
+                          size: 16,
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          "Verified Fighter",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.sp,
                           ),
-                          SizedBox(width: 4.w),
-                          Text(
-                            "Verified Fighter",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.sp,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  Container(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: 25.w,
-                      vertical: 10.h,
+                  ),
+                Container(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 25.w,
+                    vertical: 10.h,
+                  ),
+                  child: Text(
+                    profile.bio ?? "",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 14.sp,
+                      height: 1.5,
                     ),
-                    child: Text(
-                      profile.bio ?? "",
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.location_pin,
+                      size: 20,
+                      color: kRed
+                    ),
+                    Text(
+                      " ${profile.city}, ${profile.country}",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.grey[400],
@@ -172,38 +195,19 @@ class _ProfileScreenState extends State<ProfileScreen>
                         height: 1.5,
                       ),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.location_pin,
-                        size: 20, 
-                        color: kRed
-                      ),
-                      Text(
-                        " ${profile.city}, ${profile.country}",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey[400],
-                          fontSize: 14.sp,
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 24.h),
-                  _buildStatsRow(profile),
-                  // SizedBox(height: 24.h),
-                  // _buildActionButtons(profile),
-                  SizedBox(height: 24.h),
-                  _buildProfileDetails(profile),
-                ],
-              ),
+                  ],
+                ),
+                SizedBox(height: 24.h),
+                _buildStatsRow(profile),
+                // SizedBox(height: 24.h),
+                // _buildActionButtons(profile),
+                SizedBox(height: 24.h),
+                _buildProfileDetails(profile),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -212,20 +216,12 @@ class _ProfileScreenState extends State<ProfileScreen>
       alignment: Alignment.center, 
       children: [
         Container(
-          width: 120.w,
-          height: 120.w,
+          width: 110.w,
+          height: 110.w,
           margin: EdgeInsets.only(top: 0.h, bottom: 10.h),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(60.w)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
           child: photoUrl != null && photoUrl.isNotEmpty
               ? CachedNetworkImage(
@@ -314,8 +310,6 @@ class _ProfileScreenState extends State<ProfileScreen>
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildStatItem('Weight Class', profile.weightClass),
-          _verticalDivider(),
-          _buildStatItem('Experience', '${profile.yearsExperience} years'),
           _verticalDivider(),
           _buildStatItem('Skill Level', profile.skillLevel),
         ],

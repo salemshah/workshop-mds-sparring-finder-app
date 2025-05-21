@@ -8,5 +8,6 @@ class Assets {
   static const String iconsProfile = 'assets/icons/profile.png';
   static const String imagesBoxer = 'assets/images/boxer.png';
   static const String imagesHeroImage = 'assets/images/hero_image.png';
+  static const String imagesOnboardingImage1 = 'assets/images/onboarding_image_1.png';
 
 }
