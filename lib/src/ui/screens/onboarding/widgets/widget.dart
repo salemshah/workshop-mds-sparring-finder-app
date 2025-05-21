@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sparring_finder/Global.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
 import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/ui/screens/onboarding/widgets/text.dart';
+
+import '../../../theme/app_colors.dart';
 
 class AppOnboardingPage extends StatelessWidget {
   final PageController controller;
@@ -28,102 +29,54 @@ class AppOnboardingPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Image with animation
           _buildImageSection(context),
-          
-          SizedBox(height: 40.h),
-          
-          // Content card
           _buildContentCard(context),
-          
-          SizedBox(height: 40.h),
-          
-          // Button
+          SizedBox(height: 20),
           _buildButton(context),
         ],
       ),
     );
   }
-  
+
   Widget _buildImageSection(BuildContext context) {
-    return Hero(
-      tag: 'onboarding-image-$index',
-      child: Container(
-        height: 280.h,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 15,
-              offset: const Offset(0, 10),
+    double height = MediaQuery.of(context).size.height;
+    return SizedBox(
+      height: height / 3.5,
+      width: double.infinity,
+      child: ClipRRect(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              imagePath,
+              fit: BoxFit.fitHeight,
             ),
           ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24.r),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.7),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
   }
-  
+
   Widget _buildContentCard(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(24.r),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
       child: Column(
         children: [
           FadeInText(
             title,
             style: TextStyle(
-              fontSize: 32.sp,
+              fontSize: 25.sp,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               fontFamily: 'Sriracha',
             ),
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 8.h),
           FadeInText(
             subTitle,
             style: TextStyle(
-              fontSize: 18.sp,
-              color: Colors.white.withOpacity(0.8),
+              fontSize: 16.sp,
+              color: AppColors.white,
               height: 1.5,
             ),
             maxLines: 3,
@@ -133,8 +86,9 @@ class AppOnboardingPage extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildButton(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: () async {
         if (index < 3) {
@@ -149,31 +103,19 @@ class AppOnboardingPage extends StatelessWidget {
         }
       },
       child: Container(
-        width: 325.w,
-        height: 60.h,
+        width: width / 2,
+        height: 40.h,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [kRed, kRed.withOpacity(0.8)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(30.r),
-          boxShadow: [
-            BoxShadow(
-              color: kRed.withOpacity(0.4),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-              spreadRadius: 0,
-            ),
-          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              index < 3 ? "Suivant" : "Commencer",
+              index < 3 ? "Next" : "Start",
               style: TextStyle(
-                fontSize: 20.sp,
+                fontSize: 18.sp,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
               ),

@@ -12,7 +12,6 @@ import '../../../config/app_routes.dart';
 import '../../../models/profile/profile_model.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/athlete_card.dart';
-import '../../widgets/bottom_navi_bar.dart';
 import '../../widgets/filter_bottom_sheet.dart';
 import '../../../utils/jwt.dart';
 
@@ -57,11 +56,17 @@ class _HomeScreenState extends State<HomeScreen> {
           _appliedWeightRange.start != 40.0 ||
           _appliedWeightRange.end != 150.0;
 
+  // ----------------------------- Init ------------------------------------- //
+  bool _hasFetched = false;
+
   @override
   void initState() {
     super.initState();
     _loadUserId();
-    context.read<ProfileBloc>().add(const ProfilesFetchedAll());
+    if (!_hasFetched) {
+      context.read<ProfileBloc>().add(const ProfilesFetchedAll());
+      _hasFetched = true;
+    }
   }
 
   Future<void> _loadUserId() async {

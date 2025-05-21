@@ -10,6 +10,8 @@ import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/ui/screens/onboarding/widgets/widget.dart';
 import 'package:sparring_finder/src/utils/image_res.dart';
 
+import '../../theme/app_colors.dart';
+
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
 
@@ -21,24 +23,25 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with SingleTickerPr
   final PageController pageController = PageController();
   late AnimationController _animationController;
   late Animation<double> _backgroundAnimation;
-  
+
   final List<Map<String, String>> onboardingData = [
     {
       'imagePath': ImageRes.onboarding,
-      'title': 'Bienvenue!',
-      'subTitle': 'Apprenez la boxe et améliorez vos compétences',
-    },
-    {
-      'imagePath': 'assets/images/boxer.png',
-      'title': 'Trouvez un Partenaire!',
-      'subTitle': 'Rencontrez d\'autres boxeurs pour l\'entraînement et le sparring',
+      'title': 'Welcome!',
+      'subTitle': 'Learn boxing and improve your skills',
     },
     {
       'imagePath': ImageRes.onboarding,
-      'title': 'Réservez une Session!',
-      'subTitle': 'Planifiez facilement des sessions de sparring et d\'entraînement',
+      'title': 'Find a Partner!',
+      'subTitle': 'Meet other boxers for training and sparring',
+    },
+    {
+      'imagePath': ImageRes.onboarding,
+      'title': 'Book a Session!',
+      'subTitle': 'Easily schedule sparring and training sessions',
     },
   ];
+
 
   @override
   void initState() {
@@ -63,62 +66,40 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF00796B),
       body: BlocBuilder<OnBoardBloc, OnBoardState>(
         builder: (context, state) {
           final isLastPage = state is OnBoardLastPageState && state.isLastPage;
-
           return Stack(
             children: [
-              // Animated background
-              AnimatedBuilder(
-                animation: _backgroundAnimation,
-                builder: (context, child) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          primaryBackground,
-                          Color.lerp(primaryBackground, kRed.withOpacity(0.7), _backgroundAnimation.value)!,
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-              
               // Content
               SafeArea(
                 child: Column(
                   children: [
-                    // Skip button
                     Align(
                       alignment: Alignment.topRight,
                       child: Padding(
-                        padding: EdgeInsets.only(top: 16.h, right: 16.w),
-                        child: isLastPage 
-                          ? const SizedBox.shrink()
-                          : TextButton(
-                              onPressed: () {
-                                pageController.animateToPage(
-                                  2,
-                                  duration: const Duration(milliseconds: 400),
-                                  curve: Curves.easeInOut,
-                                );
-                              },
-                              child: Text(
-                                'Passer',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 16.sp,
-                                ),
-                              ),
+                        padding: EdgeInsets.only(right: 16.w),
+                        child: isLastPage
+                            ? const SizedBox.shrink()
+                            : TextButton(
+                          onPressed: () {
+                            pageController.animateToPage(
+                              2,
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Text(
+                            'Skip',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16.sp,
                             ),
+                          ),
+                        ),
                       ),
                     ),
-                    
-                    // Page view
                     Expanded(
                       child: PageView.builder(
                         physics: isLastPage
@@ -126,11 +107,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with SingleTickerPr
                             : const AlwaysScrollableScrollPhysics(),
                         controller: pageController,
                         onPageChanged: (page) {
-                          context
-                              .read<OnBoardBloc>()
-                              .add(OnBoardLastPageChanged(isLastPage: page == 2));
-                          
-                          // Animate background on page change
+                          context.read<OnBoardBloc>().add(
+                              OnBoardLastPageChanged(isLastPage: page == 2));
                           _animationController.reset();
                           _animationController.forward();
                         },
@@ -146,28 +124,28 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with SingleTickerPr
                         },
                       ),
                     ),
-                    
-                    // Page indicator
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 32.h),
+
+
+                    Container(
+                      padding: EdgeInsets.only(bottom: 20.h),
                       child: isLastPage
                           ? const SizedBox.shrink()
                           : SmoothPageIndicator(
-                              controller: pageController,
-                              count: 3,
-                              effect: ExpandingDotsEffect(
-                                dotHeight: 10.h,
-                                dotWidth: 10.w,
-                                spacing: 8.w,
-                                expansionFactor: 3,
-                                dotColor: Colors.white30,
-                                activeDotColor: kRed,
-                              ),
-                            ),
+                        controller: pageController,
+                        count: 3,
+                        effect: ExpandingDotsEffect(
+                          dotHeight: 10.h,
+                          dotWidth: 10.w,
+                          spacing: 8.w,
+                          expansionFactor: 3,
+                          dotColor: Colors.white30,
+                          activeDotColor: kRed,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
+              )
             ],
           );
         },
