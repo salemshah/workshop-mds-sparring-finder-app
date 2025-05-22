@@ -111,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       fontWeight: FontWeight.bold,
                     ),
                     child: TextAutoScroll(
-                      style: TextStyle(color: AppColors.primary),
+                        style: TextStyle(color: AppColors.primary),
                         text: '${profile.firstName.capitalizeEachWord()} ${profile.lastName.capitalizeEachWord()}',
                         height: 30, velocity: 50),
                   ),
@@ -120,9 +120,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.location_pin,
-                      size: 20,
-                      color: kRed
+                        Icons.location_pin,
+                        size: 20,
+                        color: kRed
                     ),
                     Text(
                       " ${profile.city.capitalizeEachWord()}, ${profile.country.capitalizeEachWord()}",
@@ -138,10 +138,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                 Row(
                   children: [
                     _ActionButton(
-                      icon: Icons.insert_invitation_rounded,
-                      backgroundColor: AppColors.inputFill,
-                      iconColor: AppColors.text,
-                      label: 'Availability', onPressed: () {}),
+                        icon: Icons.insert_invitation_rounded,
+                        backgroundColor: AppColors.inputFill,
+                        iconColor: AppColors.text,
+                        label: 'Availability', onPressed: () {Navigator.pushNamed(context, AppRoutes.availabilityFormScreen);}),
                     _ActionButton(
                         icon: Icons.settings,
                         iconColor: AppColors.text,
@@ -161,6 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
                 SizedBox(height: 10.h),
                 _buildStatsRow(profile),
+
                 Container(
                   margin: EdgeInsets.symmetric(
                     horizontal: 25.w,
