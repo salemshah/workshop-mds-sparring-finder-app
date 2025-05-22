@@ -45,7 +45,7 @@ class ProfileUpdated extends ProfileEvent {
 class ProfilePhotoUpdated extends ProfileEvent {
   final File photo;
 
-  const ProfilePhotoUpdated(this.photo);
+  const ProfilePhotoUpdated({required this.photo});
 
   @override
   List<Object?> get props => [photo];

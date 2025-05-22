@@ -30,10 +30,6 @@ class _AvailabilityFormScreenState extends State<AvailabilityFormScreen> {
   @override
   void initState() {
     super.initState();
-
-    debugPrint('Widget availability: ${widget.availability}');
-    debugPrint('Is edit mode? $isEdit');
-
     if (isEdit) {
       final a = widget.availability!;
       _selectedDate = a.specificDate;
