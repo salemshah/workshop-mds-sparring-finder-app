@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -396,16 +398,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                       source: ImageSource.gallery,
                       imageQuality: 80,
                     );
-                    // if (image != null) {
-                    //   _updateProfilePhoto(File(image.path));
-                    // }
+                    if (image != null) {
+                      _updateProfilePhoto(File(image.path));
+                    }
                   },
                 ),
                 ListTile(
                   leading: Container(
                     padding: EdgeInsets.all(8.w),
                     decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.2),
+                      color: Colors.green.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Icon(Icons.photo_camera,
@@ -425,9 +427,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                       source: ImageSource.camera,
                       imageQuality: 80,
                     );
-                    // if (image != null) {
-                    //   _updateProfilePhoto(File(image.path));
-                    // }
+                    if (image != null) {
+                      _updateProfilePhoto(File(image.path));
+                    }
                   },
                 ),
                 SizedBox(height: 20.h),
@@ -439,9 +441,9 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  // void _updateProfilePhoto(File photo) {
-  //   context.read<ProfileBloc>().add(ProfilePhotoUpdateRequested(photo: photo));
-  // }
+  void _updateProfilePhoto(File photo) {
+    context.read<ProfileBloc>().add(ProfilePhotoUpdated(photo: photo));
+  }
 }
 
 
