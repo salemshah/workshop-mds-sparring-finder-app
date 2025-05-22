@@ -29,6 +29,7 @@ class MindaApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: BlocProviders.all,
       child: MaterialApp(
+        routes: AppRoutes.staticRoutes,
         onGenerateRoute: AppRoutes.generateRoute,
         initialRoute: AppRoutes.splashScreen,
         debugShowCheckedModeBanner: false,
