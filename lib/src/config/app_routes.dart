@@ -11,6 +11,7 @@ import 'package:sparring_finder/src/ui/screens/user/user_login_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/user_email_verification_screen.dart';
 import 'package:sparring_finder/src/ui/screens/home/home_screen.dart';
 
+import '../models/availability/availability_model.dart';
 import '../ui/screens/application/application.dart';
 import '../ui/screens/onboarding/onboarding_screen.dart';
 import '../ui/screens/profile/profile.dart';
@@ -66,6 +67,13 @@ class AppRoutes {
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
+
+      case availabilityFormScreen:
+        final availability = settings.arguments as Availability?;
+        return MaterialPageRoute(
+          builder: (_) => AvailabilityFormScreen(availability: availability),
+        );
+
       case athleteDetailsScreen:
         final profile = settings.arguments as Profile;
         return MaterialPageRoute(
@@ -74,9 +82,7 @@ class AppRoutes {
 
       default:
         final builder = staticRoutes[settings.name];
-        if (builder != null) {
-          return MaterialPageRoute(builder: builder);
-        }
+        if (builder != null) return MaterialPageRoute(builder: builder);
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
             body: Center(child: Text('No route defined')),
