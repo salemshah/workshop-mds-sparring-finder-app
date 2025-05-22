@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sparring_finder/src/models/profile/profile_model.dart';
 import 'package:sparring_finder/src/ui/common/loading_screeen.dart';
+import 'package:sparring_finder/src/ui/screens/availability/availability_form_screen.dart';
 import 'package:sparring_finder/src/ui/screens/home/athlete_screen.dart';
 import 'package:sparring_finder/src/ui/screens/profile/create_profile_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/forgot_password_screen.dart';
@@ -28,6 +29,7 @@ class AppRoutes {
   static const String loadingScreen = '/loading-screen';
   static const String athleteDetailsScreen = '/athlete-details';
   static const String sparringScreen = '/sparring-screen';
+  static const String availabilityFormScreen = '/availability-form';
 
   static const String splashScreen = '/splash-screen';
   static const String settingsScreen = '/settings';
@@ -49,6 +51,9 @@ class AppRoutes {
 
     // Sessions screens
     sparringScreen: (_) => const MatchCardScreen(),
+
+    // availability
+    availabilityFormScreen: (_) => const AvailabilityFormScreen(),
 
 
     splashScreen: (_) => const SplashScreen(),
