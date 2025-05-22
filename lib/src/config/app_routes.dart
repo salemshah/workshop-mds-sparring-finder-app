@@ -13,6 +13,7 @@ import 'package:sparring_finder/src/ui/screens/home/home_screen.dart';
 
 import '../models/availability/availability_model.dart';
 import '../ui/screens/application/application.dart';
+import '../ui/screens/availability/availability_list_screen.dart';
 import '../ui/screens/onboarding/onboarding_screen.dart';
 import '../ui/screens/profile/profile.dart';
 import '../ui/screens/session/sparring_screen.dart';
@@ -37,6 +38,7 @@ class AppRoutes {
   static const String onBoardingScreen = '/onboarding';
   static const String profileScreen = '/profile';
   static const String applicationScreen = '/application';
+  static const String availabilityListScreen = '/availability-list';
 
   /// For routes that **don't require arguments**
   static final Map<String, WidgetBuilder> staticRoutes = {
@@ -54,7 +56,7 @@ class AppRoutes {
     sparringScreen: (_) => const MatchCardScreen(),
 
     // availability
-    availabilityFormScreen: (_) => const AvailabilityFormScreen(),
+    availabilityListScreen: (_) => const AvailabilityListScreen(),
 
 
     splashScreen: (_) => const SplashScreen(),

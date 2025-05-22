@@ -257,10 +257,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   color: kRed,
                   borderRadius: BorderRadius.all(Radius.circular(40.w)),
                 ),
-                child: Image.asset(
-                  ImageRes.edit,
-                  color: Colors.white,
-                ),
+                child: Icon(Icons.add_a_photo_rounded, color: AppColors.white, size: 20.w),
               ),
               onTap: () {
                 _showPicker(context);
