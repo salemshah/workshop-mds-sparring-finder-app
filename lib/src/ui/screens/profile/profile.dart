@@ -9,8 +9,11 @@ import 'package:sparring_finder/src/blocs/profile/profile_state.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
 import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/models/profile/profile_model.dart';
+import 'package:sparring_finder/src/ui/widgets/text_auto_scroll.dart';
 import 'package:sparring_finder/src/utils/extensions.dart';
 import 'package:sparring_finder/src/utils/image_res.dart';
+
+import '../../theme/app_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -36,20 +39,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: primaryBackground,
-        // appBar: AppBar(
-        //   backgroundColor: primaryBackground,
-        //   actions: [
-        //     Visibility(
-        //         visible: isCurrentUser,
-        //         child: IconButton(
-        //           icon: const Icon(Icons.settings_outlined,
-        //               size: 28, color: Colors.white),
-        //           onPressed: () {
-        //             Navigator.pushNamed(context, AppRoutes.settingsScreen);
-        //           },
-        //         )),
-        //   ],
-        // ),
         body: SafeArea(
           child: BlocBuilder<ProfileBloc, ProfileState>(
             builder: (context, state) {
@@ -103,7 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         // Profile Info Section
         SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.only(top: 20.h),
+            padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 10.w),
             child: Column(
               children: [
                 _buildProfileImage(
@@ -111,58 +100,67 @@ class _ProfileScreenState extends State<ProfileScreen>
                   profile.photoUrl,
                   isCurrentUser
                 ),
-                // SizedBox(height: 16.h),
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 200),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
+                SizedBox(height: 16.h),
+                Container(
+                  alignment: Alignment.center,
+                  width: 200.w,
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 200),
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    child: TextAutoScroll(
+                      style: TextStyle(color: AppColors.primary),
+                        text: '${profile.firstName.capitalizeEachWord()} ${profile.lastName.capitalizeEachWord()}',
+                        height: 30, velocity: 50),
                   ),
-                  child: Text(
-                    profile.firstName.capitalizeEachWord(),
-                    style: const TextStyle(
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.location_pin,
+                      size: 20,
                       color: kRed
                     ),
-                  ),
-                ),
-
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 200),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  child: Text(
-                    profile.lastName.toUpperCase(),
-                    style: const TextStyle(
-                        color: kRed
+                    Text(
+                      " ${profile.city.capitalizeEachWord()}, ${profile.country.capitalizeEachWord()}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 14.sp,
+                        height: 1.5,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-                if (profile.verified == true)
-                  Padding(
-                    padding: EdgeInsets.only(top: 4.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.verified,
-                          color: kRed,
-                          size: 16,
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          "Verified Fighter",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                Row(
+                  children: [
+                    _ActionButton(
+                      icon: Icons.insert_invitation_rounded,
+                      backgroundColor: AppColors.inputFill,
+                      iconColor: AppColors.text,
+                      label: 'Availability', onPressed: () {}),
+                    _ActionButton(
+                        icon: Icons.settings,
+                        iconColor: AppColors.text,
+                        backgroundColor: AppColors.inputFill,
+                        label: 'Setting', onPressed: () {Navigator.pushNamed(context, AppRoutes.settingsScreen);}),
+                    // Expanded(child: Align(
+                    //   alignment: Alignment.centerRight,
+                    //   child: IconButton(
+                    //     icon: const Icon(Icons.settings_outlined,
+                    //         size: 28, color: AppColors.text),
+                    //     onPressed: () {
+                    //       Navigator.pushNamed(context, AppRoutes.settingsScreen);
+                    //     },
+                    //   ),
+                    // )),
+                  ],
+                ),
+                SizedBox(height: 10.h),
+                _buildStatsRow(profile),
                 Container(
                   margin: EdgeInsets.symmetric(
                     horizontal: 25.w,
@@ -178,31 +176,18 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.location_pin,
-                      size: 20,
-                      color: kRed
-                    ),
-                    Text(
-                      " ${profile.city}, ${profile.country}",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 14.sp,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-                _buildStatsRow(profile),
-                // SizedBox(height: 24.h),
-                // _buildActionButtons(profile),
-                SizedBox(height: 24.h),
-                _buildProfileDetails(profile),
+
+                _InfoRow(icon: Icons.verified, iconColor: Colors.blue, title: 'License', value: 'Verified'),
+                _InfoRow(icon: Icons.signal_cellular_alt_rounded, title: 'Level', value: profile.skillLevel),
+                _InfoRow(icon: Icons.cake_rounded, title: 'Age', value: '${_calculateAge(profile.dateOfBirth)} Years'),
+                _InfoRow(icon: Icons.fitness_center_rounded, title: 'Weight Class', value: profile.weightClass.limit(10).capitalizeEachWord()),
+                _InfoRow(icon: Icons.calendar_month_rounded, title: 'Experience', value: profile.yearsExperience.capitalizeEachWord()),
+                _InfoRow(icon: Icons.interests_rounded, title: 'Styles', value: profile.preferredStyles.limit(20).capitalizeEachWord()),
+                _InfoRow(icon: profile.gender == "Female" ?Icons.female_rounded :Icons.male_rounded, title: 'Gender', value: profile.gender.capitalizeEachWord()),
+                _InfoRow(icon: Icons.fmd_bad_rounded, title: 'Gym', value: profile.gymName.limit(15).capitalizeEachWord()),
+                _InfoRow(icon: Icons.location_city_rounded, title: 'Location', value: profile.city.limit(10).capitalizeEachWord()),
+                _InfoRow(icon: Icons.flag_circle_rounded, title: 'Location', value: profile.country.limit(15).capitalizeEachWord()),
+                _InfoRow(icon: Icons.link, title: 'Joined', value: '${profile.createdAt.month.toString().padLeft(2, '0')}/${profile.createdAt.year}'),
               ],
             ),
           ),
@@ -210,6 +195,9 @@ class _ProfileScreenState extends State<ProfileScreen>
       ],
     );
   }
+
+
+
 
   Widget _buildProfileImage(BuildContext context, String? photoUrl, bool isCurrentUser) {
     return Stack(
@@ -221,6 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           margin: EdgeInsets.only(top: 0.h, bottom: 10.h),
           decoration: BoxDecoration(
             color: Colors.white,
+            border: Border.all(color: AppColors.text, width: 3.w),
             borderRadius: BorderRadius.all(Radius.circular(60.w)),
           ),
           child: photoUrl != null && photoUrl.isNotEmpty
@@ -266,14 +255,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 decoration: BoxDecoration(
                   color: kRed,
                   borderRadius: BorderRadius.all(Radius.circular(40.w)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      spreadRadius: 1,
-                      blurRadius: 3,
-                      offset: const Offset(0, 1),
-                    ),
-                  ],
                 ),
                 child: Image.asset(
                   ImageRes.edit,
@@ -293,48 +274,45 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget _buildStatsRow(Profile profile) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16.h),
-      margin: EdgeInsets.symmetric(horizontal: 24.w),
       decoration: BoxDecoration(
         color: primaryColor,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildStatItem('Weight Class', profile.weightClass),
+          Expanded(
+            child: _buildStatItem('Weight', profile.weightClass.capitalizeEachWord(), Icons.fitness_center_rounded),
+          ),
           _verticalDivider(),
-          _buildStatItem('Skill Level', profile.skillLevel),
+          Expanded(child: _buildStatItem('Skill Level', profile.skillLevel.capitalizeEachWord(), Icons.signal_cellular_alt_rounded)),
+          _verticalDivider(),
+          Expanded(child:_buildStatItem('Style', profile.preferredStyles.capitalizeEachWord(), Icons.interests_rounded)),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(String label, String value) {
+  Widget _buildStatItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        Text(
-          value,
+        TextAutoScroll(
+          text: value,
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.sp,
+            color: AppColors.text,
+            fontSize: 12.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
         SizedBox(height: 4.h),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey[400],
-            fontSize: 12.sp,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: AppColors.primary),
+            SizedBox(width: 2),
+            Text(label, style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.text, fontSize: 12)),
+          ],
         ),
       ],
     );
@@ -342,88 +320,21 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Widget _verticalDivider() {
     return Container(
-      height: 30.h,
+      height: 40.h,
       width: 1.w,
-      color: Colors.grey[700],
-    );
-  }
-
-  Widget _buildProfileDetails(Profile profile) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24.w),
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: primaryColor,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Fighter Details',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 16.h),
-          _buildDetailRow('Preferred Styles', profile.preferredStyles),
-          _buildDetailRow('Gym', profile.gymName),
-          _buildDetailRow('Gender', profile.gender),
-          _buildDetailRow('Age', _calculateAge(profile.dateOfBirth).toString()),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120.w,
-            child: Text(
-              label,
-              style: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 14.sp,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14.sp,
-              ),
-            ),
-          ),
-        ],
-      ),
+      color: AppColors.text,
     );
   }
 
   int _calculateAge(DateTime birthDate) {
     final currentDate = DateTime.now();
     int age = currentDate.year - birthDate.year;
-    
-    if (currentDate.month < birthDate.month || 
+
+    if (currentDate.month < birthDate.month ||
         (currentDate.month == birthDate.month && currentDate.day < birthDate.day)) {
       age--;
     }
-    
+
     return age;
   }
 
@@ -533,4 +444,70 @@ class _ProfileScreenState extends State<ProfileScreen>
   // void _updateProfilePhoto(File photo) {
   //   context.read<ProfileBloc>().add(ProfilePhotoUpdateRequested(photo: photo));
   // }
+}
+
+
+class _InfoRow extends StatelessWidget {
+  final String title;
+  final String value;
+  final IconData icon;
+  final Color iconColor;
+  const _InfoRow({required this.title, required this.value, required this.icon, this.iconColor = AppColors.primary});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        decoration: BoxDecoration(
+          // color: AppColors.inputFill,
+          border: Border(
+            bottom: BorderSide(
+              color: AppColors.inputFill,
+              width: 1,
+            ),
+          ),
+          // borderRadius: BorderRadius.circular(6),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: iconColor),
+            SizedBox(width: 4),
+            Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.text, fontSize: 12))),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.text, fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+  final Color backgroundColor;
+  final Color iconColor;
+  const _ActionButton({required this.icon, required this.label, required this.onPressed, this.backgroundColor = AppColors.primary, this.iconColor = AppColors.white});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: ElevatedButton.icon(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: backgroundColor,
+            foregroundColor: iconColor,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+          ),
+          icon: Icon(icon, size: 18),
+          label: Text(label, style: const TextStyle(fontSize: 12, color: AppColors.white)),
+        ),
+      ),
+    );
+  }
 }
