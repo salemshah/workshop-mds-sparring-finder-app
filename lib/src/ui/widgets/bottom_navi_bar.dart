@@ -22,12 +22,11 @@ class BottomNavBar extends StatelessWidget {
         BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.flash_on), label: 'Sparring'),
         BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
-        BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
+        BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Availability'),
         BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
       ],
       currentIndex: currentIndex,
       onTap: onTap,
     );
-
   }
 }

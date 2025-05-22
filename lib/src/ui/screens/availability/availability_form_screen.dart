@@ -26,10 +26,14 @@ class _AvailabilityFormScreenState extends State<AvailabilityFormScreen> {
 
   bool get isEdit => widget.availability != null;
 
+
   @override
   void initState() {
     super.initState();
-    // Pre-fill fields when editing
+
+    debugPrint('Widget availability: ${widget.availability}');
+    debugPrint('Is edit mode? $isEdit');
+
     if (isEdit) {
       final a = widget.availability!;
       _selectedDate = a.specificDate;
@@ -40,6 +44,7 @@ class _AvailabilityFormScreenState extends State<AvailabilityFormScreen> {
       _locationCtrl = TextEditingController();
     }
   }
+
 
   /* ----------------------------- Pickers ----------------------------- */
 
