@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import '../../models/availability/availability_model.dart';
 
-/// Base class for every Availability state.
 abstract class AvailabilityState extends Equatable {
   const AvailabilityState();
 
@@ -25,6 +24,7 @@ class AvailabilityLoadSuccess extends AvailabilityState {
   @override
   List<Object?> get props => [availabilities];
 }
+
 
 /// Successful fetch of ONE slot
 class AvailabilitySingleSuccess extends AvailabilityState {

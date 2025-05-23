@@ -6,6 +6,7 @@ import '../../widgets/bottom_navi_bar.dart';
 import '../home/home_screen.dart';
 import '../profile/profile.dart';
 import '../../common/placeholder_screen.dart';
+import '../availability/time_table_screen.dart';
 
 class ApplicationScreen extends StatefulWidget {
   const ApplicationScreen({super.key});
@@ -21,6 +22,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     HomeScreen(),
     PlaceholderScreen(title: "Sparring", icon: Icons.flash_on),
     PlaceholderScreen(title: "Messages", icon: Icons.message),
+    // TimetableScreen(),
     AvailabilityListScreen(),
     ProfileScreen(),
   ];

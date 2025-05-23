@@ -4,6 +4,7 @@ import 'package:sparring_finder/src/ui/theme/app_colors.dart';
 import 'package:sparring_finder/src/utils/extensions.dart';
 import '../../../blocs/profile/profile_bloc.dart';
 import '../../../blocs/profile/profile_event.dart';
+import '../../../config/app_routes.dart';
 import '../../../models/profile/profile_model.dart';
 
 class AthleteDetailsPage extends StatelessWidget {
@@ -110,7 +111,9 @@ class _AthleteDetailsBody extends StatelessWidget {
                     _ActionButton(
                       icon: Icons.person_add_alt_1,
                       label: 'Invite',
-                      onPressed: () {}, // TODO: add invite action
+                      onPressed: () {
+                        Navigator.pushNamed(context, AppRoutes.availabilityListScreen, arguments: profile.userId);
+                      },
                     ),
                   ],
                 ),

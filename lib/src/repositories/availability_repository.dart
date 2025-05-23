@@ -6,9 +6,9 @@ import 'package:sparring_finder/src/models/availability/availability_response.da
 class AvailabilityRepository extends BaseRepository {
   AvailabilityRepository({required super.apiService});
 
-  // -------------------------------------------------------------------------
-  // GET `/availability` — all availabilities for the authenticated user
-  // -------------------------------------------------------------------------
+  /// -------------------------------------------------------------------------
+  /// GET `/availability` — all availabilities for the authenticated user
+  /// -------------------------------------------------------------------------
   Future<List<Availability>> getAvailabilities() async {
     final response = await apiService.get('/availability');
     final list = response['availabilities'] as List<dynamic>;
@@ -17,8 +17,19 @@ class AvailabilityRepository extends BaseRepository {
         .toList();
   }
 
+  /// -------------------------------------------------------------------------
+  /// GET /availability — all availabilities for targetUserId
+  /// -------------------------------------------------------------------------
+  Future<List<Availability>> getAvailabilitiesByTargetUserId(targetUserId) async {
+    final response = await apiService.get('/availability/all/$targetUserId');
+    final list = response['availabilities'] as List<dynamic>;
+    return list
+        .map((e) => Availability.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   // -------------------------------------------------------------------------
-  // GET `/availability/:id` — single availability by ID
+  // GET /availability/:id — single availability by ID
   // -------------------------------------------------------------------------
   Future<Availability?> getAvailabilityById(int id) async {
     final response = await apiService.get('/availability/$id');
@@ -28,7 +39,7 @@ class AvailabilityRepository extends BaseRepository {
   }
 
   // -------------------------------------------------------------------------
-  // POST `/availability` — create a new availability slot
+  // POST /availability — create a new availability slot
   // -------------------------------------------------------------------------
   Future<AvailabilityResponse> createAvailability(
       Map<String, dynamic> data) async {
@@ -37,7 +48,7 @@ class AvailabilityRepository extends BaseRepository {
   }
 
   // -------------------------------------------------------------------------
-  // PUT `/availability/:id` — update an existing slot
+  // PUT /availability/:id — update an existing slot
   // -------------------------------------------------------------------------
   Future<AvailabilityResponse> updateAvailability(
       int id, Map<String, dynamic> data) async {
@@ -46,11 +57,13 @@ class AvailabilityRepository extends BaseRepository {
   }
 
   // -------------------------------------------------------------------------
-  // DELETE `/availability/:id` — delete a slot
+  // DELETE /availability/:id — delete a slot
   // -------------------------------------------------------------------------
   Future<String> deleteAvailability(int id) async {
     final response = await apiService.delete('/availability/$id');
     // Backend returns { "message": "Availability deleted successfully" }
     return response['message'] ?? 'Availability deleted';
   }
+
+
 }
