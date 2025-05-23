@@ -14,7 +14,16 @@ class LoadAvailabilities extends AvailabilityEvent {
   const LoadAvailabilities();
 }
 
-/// GET `/availability/:id`
+/// GET /availability/all/:targetUserId
+class LoadAvailabilitiesByTargetUserId extends AvailabilityEvent {
+  final int targetUserId;
+  const LoadAvailabilitiesByTargetUserId(this.targetUserId);
+
+  @override
+  List<Object?> get props => [targetUserId];
+}
+
+/// GET /availability/:id
 class LoadAvailabilityById extends AvailabilityEvent {
   final int id;
   const LoadAvailabilityById(this.id);

@@ -9,6 +9,7 @@ class AvailabilityBloc extends Bloc<AvailabilityEvent, AvailabilityState> {
   AvailabilityBloc({required this.repository})
       : super(const AvailabilityInitial()) {
     on<LoadAvailabilities>(_onLoadAll);
+    on<LoadAvailabilitiesByTargetUserId>(_onLoadAllByTargetUserId);
     on<LoadAvailabilityById>(_onLoadOne);
     on<CreateAvailability>(_onCreate);
     on<UpdateAvailability>(_onUpdate);
@@ -22,6 +23,17 @@ class AvailabilityBloc extends Bloc<AvailabilityEvent, AvailabilityState> {
     emit(const AvailabilityLoadInProgress());
     try {
       final list = await repository.getAvailabilities();
+      emit(AvailabilityLoadSuccess(list));
+    } catch (e) {
+      emit(AvailabilityFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onLoadAllByTargetUserId(
+      LoadAvailabilitiesByTargetUserId event, Emitter<AvailabilityState> emit) async {
+    emit(const AvailabilityLoadInProgress());
+    try {
+      final list = await repository.getAvailabilitiesByTargetUserId(event.targetUserId);
       emit(AvailabilityLoadSuccess(list));
     } catch (e) {
       emit(AvailabilityFailure(e.toString()));

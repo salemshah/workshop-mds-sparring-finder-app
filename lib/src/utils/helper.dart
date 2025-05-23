@@ -1,10 +1,4 @@
 import 'dart:convert';
-
-String capitalize(String text) {
-  if (text.isEmpty) return text;
-  return text[0].toUpperCase() + text.substring(1);
-}
-
 /// Tries to extract a meaningful error message from an exception.
 String parseErrorMessage(Object error) {
   // Convert the error to string.
@@ -26,4 +20,20 @@ String parseErrorMessage(Object error) {
   }
   // Fallback: return the original error string.
   return errorStr;
+}
+
+class Helper {
+
+
+  // static Map<String, int> extractDateTimeFormIso(DateTime dateTime) {
+  //   final dateTime = DateTime(dateTime);
+  //
+  //   return {
+  //     'year': dateTime.year,
+  //     'month': dateTime.month,
+  //     'day': dateTime.day,
+  //     'hour': dateTime.hour,
+  //     'minute': dateTime.minute,
+  //   };
+  // }
 }

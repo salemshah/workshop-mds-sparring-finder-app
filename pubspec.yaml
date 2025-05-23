@@ -39,6 +39,7 @@ dependencies:
   curved_navigation_bar: ^1.0.6
   marquee: ^2.3.0
   flutter_slidable: ^4.0.0
+  syncfusion_flutter_calendar: ^29.2.5
 
 
 flutter_launcher_icons:
