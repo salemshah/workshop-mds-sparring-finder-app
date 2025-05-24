@@ -17,7 +17,7 @@ import '../ui/screens/application/application.dart';
 import '../ui/screens/availability/availability_list_screen.dart';
 import '../ui/screens/onboarding/onboarding_screen.dart';
 import '../ui/screens/profile/profile.dart';
-import '../ui/screens/session/sparring_screen.dart';
+import '../ui/screens/session/sparring_session_screen.dart';
 import '../ui/screens/settings/settings.dart';
 import '../ui/screens/splash/splash_screen.dart';
 
@@ -31,7 +31,7 @@ class AppRoutes {
   static const String createProfileScreen = '/create-profile';
   static const String loadingScreen = '/loading-screen';
   static const String athleteDetailsScreen = '/athlete-details';
-  static const String sparringScreen = '/sparring-screen';
+  static const String sparringSessionScreen = '/sparring-screen';
   static const String availabilityFormScreen = '/availability-form';
 
   static const String splashScreen = '/splash-screen';
@@ -55,8 +55,8 @@ class AppRoutes {
 
 
 
-    // Sessions screens
-    sparringScreen: (_) => const MatchCardScreen(),
+    // Sparring Sessions screens
+    sparringSessionScreen: (_) => const SparringSessionScreen(),
 
     splashScreen: (_) => const SplashScreen(),
     settingsScreen: (_) => const SettingScreen(),

@@ -29,12 +29,12 @@ class StorageService {
   }
 
   bool getDeviceFirstOpen() {
-    return _pref.getBool(AppConstants.STORAGE_DEVICE_OPEN_FIRST_KEY) ?? false;
+    return _pref.getBool(AppConstants.storageDeviceOpenFirstKey) ?? false;
   }
 
 
   bool isLoggedIn() {
-    return _pref.getString(AppConstants.STORAGE_USER_PROFILE_KEY) != null
+    return _pref.getString(AppConstants.storageUserProfileKey) != null
         ? true
         : false;
   }

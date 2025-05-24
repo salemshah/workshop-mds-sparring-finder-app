@@ -378,7 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   leading: Container(
                     padding: EdgeInsets.all(8.w),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.2),
+                      color: Colors.blue.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Icon(Icons.photo_library,

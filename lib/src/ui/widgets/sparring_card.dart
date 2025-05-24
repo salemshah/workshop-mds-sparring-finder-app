@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sparring_finder/src/ui/widgets/text_auto_scroll.dart';
 
 import '../theme/app_colors.dart';
 
@@ -14,20 +15,22 @@ class SparringCard extends StatefulWidget {
   final String scheduledDate;
   final String location;
   final String startTime;
+  final String cardStatus;
 
-  const SparringCard({super.key,
-    required this.firstName,
-    required this.lastName,
-    required this.age,
-    required this.photoUrl,
-    required this.scheduledDate,
-    required this.location,
-    required this.startTime,
-    required this.invitedFirstName,
-    required this.invitedLastName,
-    required this.invitedAge,
-    required this.invitedPhotoUrl,
-  });
+  const SparringCard(
+      {super.key,
+      required this.firstName,
+      required this.lastName,
+      required this.age,
+      required this.photoUrl,
+      required this.scheduledDate,
+      required this.location,
+      required this.startTime,
+      required this.invitedFirstName,
+      required this.invitedLastName,
+      required this.invitedAge,
+      required this.invitedPhotoUrl,
+      required this.cardStatus});
 
   @override
   State<SparringCard> createState() => _SparringCardState();
@@ -37,12 +40,25 @@ class _SparringCardState extends State<SparringCard> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+
+    final Color cardColor = widget.cardStatus == "PENDING"
+        ? AppColors.cardPending
+        : widget.cardStatus == "CONFIRMED"
+        ? AppColors.primary
+        : AppColors.cardCancelled;
+
+    final Color cardTextColor = widget.cardStatus == "PENDING"
+        ? AppColors.cardPendingText
+        : widget.cardStatus == "CONFIRMED"
+        ? AppColors.white
+        : AppColors.white;
+
     return Container(
       width: width - 10,
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        color: cardColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.primary, width: 1),
+        border: Border.all(color: cardColor, width: 2),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -51,7 +67,6 @@ class _SparringCardState extends State<SparringCard> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             decoration: const BoxDecoration(
-              // color: Color(0xFFD13D2F),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10),
                 topRight: Radius.circular(10),
@@ -59,27 +74,31 @@ class _SparringCardState extends State<SparringCard> {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children:[
+              children: [
                 Text(
                   widget.scheduledDate,
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: cardTextColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
                 ),
-                Text(
-                  widget.location,
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                    child: Align(
+                  alignment: Alignment.center,
+                  child: TextAutoScroll(
+                    text: widget.location,
+                    style: TextStyle(
+                      color: cardTextColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                )),
                 Text(
                   widget.startTime,
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: cardTextColor,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -91,43 +110,45 @@ class _SparringCardState extends State<SparringCard> {
           // Body with Fighter Info and VS line
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF2A2E33),
+              color: AppColors.inputFill,
               borderRadius: BorderRadius.circular(10),
             ),
-            height: 160,
+            height: 180,
             child: Stack(
               alignment: Alignment.center,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    FighterInfo(
+                    Expanded(
+                        child: FighterInfo(
                       firstName: widget.firstName,
                       lastName: widget.lastName,
                       age: widget.age,
                       photoUrl: widget.photoUrl,
-                    ),
-                    FighterInfo(
+                    )),
+                    SizedBox(width: 50),
+                    Expanded(
+                        child: FighterInfo(
                       firstName: widget.invitedFirstName,
                       lastName: widget.invitedLastName,
                       age: widget.invitedAge,
                       photoUrl: widget.invitedPhotoUrl,
-                    ),
+                    )),
                   ],
                 ),
                 CustomPaint(
                   size: const Size(300, 260),
-                  painter: VsLinePainter(),
+                  painter: VsLinePainter(color: cardColor),
                 ),
-                const Positioned(
+                Positioned(
                   child: Text(
-                    "VS",
+                    "V S",
                     style: TextStyle(
                         fontSize: 32,
-                        color: Color(0xFFD13D2F),
+                        color: cardColor,
                         fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic
-                    ),
+                        ),
                   ),
                 ),
               ],
@@ -138,7 +159,6 @@ class _SparringCardState extends State<SparringCard> {
     );
   }
 }
-
 
 class FighterInfo extends StatelessWidget {
   final String firstName;
@@ -172,18 +192,19 @@ class FighterInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          firstName,
+        TextAutoScroll(
+          text: firstName,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 13,
             color: AppColors.text,
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(
-          lastName,
+
+        TextAutoScroll(
+          text: lastName,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 13,
             color: AppColors.text,
             fontWeight: FontWeight.bold,
           ),
@@ -203,10 +224,14 @@ class FighterInfo extends StatelessWidget {
 }
 
 class VsLinePainter extends CustomPainter {
+  final Color color;
+
+  VsLinePainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFFD13D2F)
+      ..color = color
       ..strokeWidth = 2;
 
     canvas.drawLine(
@@ -214,7 +239,6 @@ class VsLinePainter extends CustomPainter {
       Offset(size.width * 0.40, size.height * 1.0),
       paint,
     );
-
   }
 
   @override

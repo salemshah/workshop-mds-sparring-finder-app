@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class InputDatePicker extends StatefulWidget {
   final DateTime? initialDate;
@@ -7,7 +8,8 @@ class InputDatePicker extends StatefulWidget {
   final ValueChanged<DateTime> onDateChanged;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
-  final String hintText;
+  final String label;
+  final String hint;
 
   const InputDatePicker({
     super.key,
@@ -17,11 +19,12 @@ class InputDatePicker extends StatefulWidget {
     required this.onDateChanged,
     this.controller,
     this.validator,
-    this.hintText = "Select Date",
+    this.label = "Date",
+    this.hint = "Select Date",
   });
 
   @override
-  _InputDatePickerState createState() => _InputDatePickerState();
+  State<InputDatePicker> createState() => _InputDatePickerState();
 }
 
 class _InputDatePickerState extends State<InputDatePicker> {
@@ -40,9 +43,8 @@ class _InputDatePickerState extends State<InputDatePicker> {
 
   void _updateController() {
     if (_selectedDate != null) {
-      // You can change the format as needed.
       _controller.text =
-          "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}";
+      "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}";
     }
   }
 
@@ -66,29 +68,67 @@ class _InputDatePickerState extends State<InputDatePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _controller,
-      readOnly: true,
-      validator: widget.validator,
-      decoration: InputDecoration(
-        hintText: widget.hintText,
-        prefixIcon: Icon(Icons.calendar_today),
-        enabledBorder: OutlineInputBorder( // Border when the field is not focused
-          borderSide: BorderSide(color: Color(0xFFBDBDBD), width: 2.0),
-          borderRadius: BorderRadius.circular(14.0),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.label,
+          textAlign: TextAlign.left,
+          style: const TextStyle(
+            color: AppColors.text,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14.0)),
-      ),
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
-        _pickDate();
-      },
+        const SizedBox(height: 5),
+        TextFormField(
+          controller: _controller,
+          readOnly: true,
+          validator: widget.validator,
+          style: const TextStyle(color: AppColors.text),
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+            _pickDate();
+          },
+          decoration: InputDecoration(
+            hintText: widget.hint,
+            hintStyle: const TextStyle(color: AppColors.hint),
+            filled: true,
+            fillColor: AppColors.inputFill,
+            contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            suffixIcon: Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: const Icon(Icons.calendar_today, color: AppColors.hint),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: const BorderSide(color: AppColors.border, width: 3),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: const BorderSide(color: AppColors.border, width: 3),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: const BorderSide(color: AppColors.primary, width: 3),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: const BorderSide(color: Colors.red, width: 3),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 3),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   @override
   void dispose() {
-    // Only dispose the controller if it was created internally.
     if (!_isExternalController) {
       _controller.dispose();
     }

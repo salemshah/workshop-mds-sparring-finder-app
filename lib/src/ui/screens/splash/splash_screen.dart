@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
-import 'package:sparring_finder/src/constants/app_contants.dart';
 
 import 'dart:ui';
 import 'dart:math' as math;
@@ -162,26 +161,6 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
   }
 
 
-  Widget _buildBlurredCircle(Color color, double size) {
-    return AnimatedBuilder(
-      animation: _pulseAnimation,
-      builder: (context, child) {
-        return Container(
-          width: size * _pulseAnimation.value,
-          height: size * _pulseAnimation.value,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color,
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-            child: Container(color: Colors.transparent),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildAppName() {
     return SlideTransition(
       position: _slideAnimation,
@@ -291,7 +270,7 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
         child: Text(
           "v1.0",
           style: TextStyle(
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.white.withValues(alpha:0.4),
             fontSize: 12.sp,
           ),
         ),
@@ -311,7 +290,7 @@ class GradientOverlayPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..shader = RadialGradient(
-        colors: [color, color.withOpacity(0)],
+        colors: [color, color.withValues(alpha:0)],
         stops: [0.0, 0.7],
       ).createShader(Rect.fromCircle(
         center: Offset(size.width / 2, size.height / 2),
@@ -339,7 +318,7 @@ class LoadingIndicatorPainter extends CustomPainter {
     final radius = size.width / 2;
 
     final bgPaint = Paint()
-      ..color = Colors.white.withOpacity(0.1)
+      ..color = Colors.white.withValues(alpha:0.1)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4;
 

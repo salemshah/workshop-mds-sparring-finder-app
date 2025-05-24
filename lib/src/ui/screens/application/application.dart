@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sparring_finder/src/ui/screens/availability/availability_list_screen.dart';
+import 'package:sparring_finder/src/ui/screens/session/sparring_session_screen.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/bottom_navi_bar.dart';
 import '../home/home_screen.dart';
 import '../profile/profile.dart';
 import '../../common/placeholder_screen.dart';
-import '../availability/time_table_screen.dart';
 
 class ApplicationScreen extends StatefulWidget {
   const ApplicationScreen({super.key});
@@ -20,7 +20,8 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    PlaceholderScreen(title: "Sparring", icon: Icons.flash_on),
+    SparringSessionScreen(),
+    // PlaceholderScreen(title: "Sparring", icon: Icons.flash_on),
     PlaceholderScreen(title: "Messages", icon: Icons.message),
     // TimetableScreen(),
     AvailabilityListScreen(),
@@ -83,7 +84,7 @@ class _BackgroundGradient extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [
             AppColors.background,
-            AppColors.background.withOpacity(0.8),
+            AppColors.background.withValues(alpha: 0.8),
           ],
         ),
       ),
@@ -172,7 +173,7 @@ class _BackgroundGradient extends StatelessWidget {
 //           end: Alignment.bottomCenter,
 //           colors: [
 //             AppColors.background,
-//             AppColors.background.withOpacity(0.8),
+//             AppColors.background.withValues(alpha:0.8),
 //           ],
 //         ),
 //       ),

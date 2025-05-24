@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
-import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/ui/screens/onboarding/widgets/text.dart';
 
 import '../../../theme/app_colors.dart';
