@@ -1,5 +1,4 @@
 import 'package:sparring_finder/src/repositories/base_repository.dart';
-import '../models/profile/profile_model.dart';
 
 class FavoriteRepository extends BaseRepository {
   FavoriteRepository({required super.apiService});

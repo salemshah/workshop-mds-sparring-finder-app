@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sparring_finder/Global.dart';
+import 'package:sparring_finder/global.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
 import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -195,7 +195,7 @@ class _SettingPage extends State<SettingScreen> {
                   child: Text(
                     "Paramètres",
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 1.2,
@@ -302,7 +302,7 @@ class _SettingPage extends State<SettingScreen> {
                     child: Text(
                       "Version 1.0.0",
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 12.sp,
                       ),
                     ),
@@ -326,14 +326,14 @@ class _SettingPage extends State<SettingScreen> {
             height: 60.w,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [kRed.withOpacity(0.8), kRed],
+                colors: [kRed.withValues(alpha: 0.8), kRed],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: kRed.withOpacity(0.3),
+                  color: kRed.withValues(alpha:0.3),
                   blurRadius: 15,
                   offset: Offset(0, 5),
                 ),
@@ -362,7 +362,7 @@ class _SettingPage extends State<SettingScreen> {
                 Text(
                   "john.doe@example.com",
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha:0.7),
                     fontSize: 14.sp,
                   ),
                 ),
@@ -383,15 +383,15 @@ class _SettingPage extends State<SettingScreen> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha:0.05),
         borderRadius: BorderRadius.circular(20.w),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha:0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha:0.2),
             blurRadius: 10,
             offset: Offset(0, 5),
           ),
@@ -412,7 +412,7 @@ class _SettingPage extends State<SettingScreen> {
                     Container(
                       padding: EdgeInsets.all(8.w),
                       decoration: BoxDecoration(
-                        color: iconColor.withOpacity(0.1),
+                        color: iconColor.withValues(alpha:0.1),
                         borderRadius: BorderRadius.circular(12.w),
                       ),
                       child: Icon(
@@ -436,7 +436,7 @@ class _SettingPage extends State<SettingScreen> {
               
               // Divider
               Divider(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha:0.1),
                 height: 1,
               ),
               
@@ -460,8 +460,8 @@ class _SettingPage extends State<SettingScreen> {
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
                 color: item.isDestructive 
-                    ? Colors.red.withOpacity(0.1) 
-                    : Colors.white.withOpacity(0.05),
+                    ? Colors.red.withValues(alpha:0.1)
+                    : Colors.white.withValues(alpha:0.05),
                 borderRadius: BorderRadius.circular(10.w),
               ),
               child: Icon(
@@ -483,8 +483,8 @@ class _SettingPage extends State<SettingScreen> {
             Icon(
               Icons.chevron_right,
               color: item.isDestructive 
-                  ? Colors.red.withOpacity(0.7) 
-                  : Colors.white.withOpacity(0.5),
+                  ? Colors.red.withValues(alpha:0.7)
+                  : Colors.white.withValues(alpha:0.5),
               size: 20.w,
             ),
           ],
@@ -506,7 +506,7 @@ class _SettingPage extends State<SettingScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.w),
                   side: BorderSide(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha:0.1),
                     width: 1,
                   ),
                 ),
@@ -521,7 +521,7 @@ class _SettingPage extends State<SettingScreen> {
                 content: Text(
                   "Êtes-vous sûr de vouloir vous déconnecter ?",
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha:0.7),
                     fontSize: 14.sp,
                   ),
                 ),
@@ -530,7 +530,7 @@ class _SettingPage extends State<SettingScreen> {
                     child: Text(
                       "Annuler",
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha:0.7),
                         fontSize: 14.sp,
                       ),
                     ),
@@ -601,7 +601,7 @@ class _SettingPage extends State<SettingScreen> {
         child: Container(
           margin: EdgeInsets.only(left: 10.w),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha:0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(

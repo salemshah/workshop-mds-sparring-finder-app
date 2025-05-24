@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
 
@@ -23,11 +22,11 @@ class PlaceholderScreen extends StatelessWidget {
             padding: EdgeInsets.all(AppTheme.spacingL),
             margin: EdgeInsets.symmetric(horizontal: AppTheme.spacingL),
             decoration: BoxDecoration(
-              color: AppColors.inputFill.withOpacity(0.7),
+              color: AppColors.inputFill.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -40,7 +39,7 @@ class PlaceholderScreen extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacingL),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

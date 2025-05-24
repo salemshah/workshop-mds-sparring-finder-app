@@ -4,9 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/src/config/bloc_providers.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
-import 'package:sparring_finder/src/ui/screens/session/sparring_screen.dart';
+import 'package:sparring_finder/src/config/repository_provider.dart';
 import 'package:sparring_finder/src/ui/screens/splash/splash_screen.dart';
-import 'package:sparring_finder/src/ui/screens/user/user_login_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,23 +26,26 @@ class MindaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: BlocProviders.all,
-      child: MaterialApp(
-        routes: AppRoutes.staticRoutes,
-        onGenerateRoute: AppRoutes.generateRoute,
-        initialRoute: AppRoutes.splashScreen,
-        debugShowCheckedModeBanner: false,
-        navigatorObservers: [RouteObserver<PageRoute>()],
-        home: LayoutBuilder(
-          builder: (context, constraints) {
-            return ScreenUtilInit(
-              designSize: constraints.biggest,
-              minTextAdapt: true,
-              splitScreenMode: true,
-              builder: (context, child) =>  SplashScreen(),
-            );
-          },
+    return MultiProvider(
+      providers: RepositoryProviders.all,
+      child: MultiBlocProvider(
+        providers: BlocProviders.all,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          routes: AppRoutes.staticRoutes,
+          onGenerateRoute: AppRoutes.generateRoute,
+          initialRoute: AppRoutes.splashScreen,
+          navigatorObservers: [RouteObserver<PageRoute>()],
+          home: LayoutBuilder(
+            builder: (context, constraints) {
+              return ScreenUtilInit(
+                designSize: constraints.biggest,
+                minTextAdapt: true,
+                splitScreenMode: true,
+                builder: (_, __) => const SplashScreen(),
+              );
+            },
+          ),
         ),
       ),
     );

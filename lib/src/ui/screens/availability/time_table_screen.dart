@@ -85,7 +85,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
                 ),
               ),
               selectionDecoration: BoxDecoration(
-                border: Border.all(color: AppColors.primary.withOpacity(0.5), width: 2),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.5), width: 2),
               ),
               cellBorderColor: AppColors.border,
               todayHighlightColor: AppColors.primary,
@@ -278,7 +278,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
           startTime: start,
           endTime: selectedEnd,
           enablePointerInteraction: true,
-          color: AppColors.primary.withOpacity(.40),
+          color: AppColors.primary.withValues(alpha: .40),
           text: 'Reserved',
         );
       });
@@ -370,6 +370,6 @@ class _TimetableScreenState extends State<TimetableScreen> {
 //   startTime: from,
 //   endTime: to,
 //   enablePointerInteraction: false,
-//   color: Colors.grey.withOpacity(.30),
+//   color: Colors.grey.withValues(alpha:.30),
 //   text: 'Blocked',
 // );

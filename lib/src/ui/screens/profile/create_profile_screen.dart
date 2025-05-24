@@ -14,7 +14,9 @@ import '../../widgets/custom_dropdown.dart';
 import '../../widgets/custom_input_field.dart';
 import '../../widgets/custom_input_mutiline.dart';
 import '../../widgets/gender_selector.dart';
+import '../../widgets/input_date_picker.dart';
 import '../../widgets/upload_image_field.dart';
+import 'package:intl/intl.dart';
 
 /// Multi‑step form for creating a new fighter profile with lightweight local
 /// validation *before* advancing to the next step. After a successful API
@@ -117,11 +119,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   void _submit() {
+
+    final DateFormat formatter = DateFormat('dd/MM/yyyy');
+    final DateTime dateOfBirth = formatter.parseStrict(_dob.text);
+
     final profileData = {
       'first_name': _firstName.text,
       'last_name': _lastName.text,
       'bio': _bio.text,
-      'date_of_birth': _dob.text,
+      'date_of_birth': dateOfBirth,
       'gender': _gender,
       'weight_class': _weight.text,
       'skill_level': _skill.text,
@@ -136,6 +142,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       ProfileCreated(data: profileData, photo: _profileImage),
     );
   }
+
+
 
   // --------------------------- UI Builders ------------------------------- //
   Widget _buildStep0() => Column(
@@ -162,10 +170,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   Widget _buildStep2() => Column(
     children: [
-      CustomInputField(
-        label: 'Date of birth',
-        hint: 'dd/mm/yyyy',
+      InputDatePicker(
+        firstDate: DateTime(1900),
+        lastDate: DateTime.now(),
+        onDateChanged: (date) {
+          // Format the date as dd/MM/yyyy (or any other format you prefer)
+          final formattedDate = DateFormat('dd/MM/yyyy').format(date);
+          _dob.text = formattedDate; // Update the controller with formatted date
+        },
         controller: _dob,
+        hint: 'Select your date of birth',
+        label: "Date of birth",
       ),
       const SizedBox(height: 16),
       Align(
@@ -357,7 +372,7 @@ class _FullScreenLoader extends StatelessWidget {
       child: Container(
         width: double.infinity,
         height: double.infinity,
-        color: AppColors.primary.withValues(alpha: 0.6),
+        color: AppColors.background.withValues(alpha: 0.7),
         alignment: Alignment.center,
         child: const CircularProgressIndicator(),
       ),

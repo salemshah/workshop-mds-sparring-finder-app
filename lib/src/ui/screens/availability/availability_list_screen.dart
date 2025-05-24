@@ -186,7 +186,6 @@ class _AvailabilityTile extends StatelessWidget {
             icon: Icons.send,
             label: 'Request',
             onPressed: (_) {
-              print(jsonEncode(slot));
               // TODO: dispatch a sparring request event
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Request sent')),

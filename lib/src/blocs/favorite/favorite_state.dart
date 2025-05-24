@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import '../../models/favorite/favorite_model.dart';
-import '../../models/profile/profile_model.dart';
 
 abstract class FavoriteState extends Equatable {
   const FavoriteState();

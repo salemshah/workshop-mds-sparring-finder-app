@@ -10,7 +10,6 @@ import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/ui/screens/onboarding/widgets/widget.dart';
 import 'package:sparring_finder/src/utils/image_res.dart';
 
-import '../../theme/app_colors.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});

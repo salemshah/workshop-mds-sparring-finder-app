@@ -59,7 +59,7 @@ class _AthleteDetailsBody extends StatelessWidget {
                   Image.network(profile.photoUrl!, fit: BoxFit.cover)
                 else
                   Image.asset('assets/images/placeholder.png', fit: BoxFit.cover),
-                Container(color: Colors.black.withOpacity(0.35)),
+                Container(color: Colors.black.withValues(alpha: 0.35)),
               ],
             ),
           ),
