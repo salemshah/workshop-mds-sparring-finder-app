@@ -4,6 +4,7 @@ import 'package:sparring_finder/src/blocs/sparring/sparring_bloc.dart';
 import 'package:sparring_finder/src/blocs/sparring/sparring_event.dart';
 import 'package:sparring_finder/src/blocs/sparring/sparring_state.dart';
 import 'package:sparring_finder/src/models/sparring/sparring_model.dart';
+import 'package:sparring_finder/src/ui/skeletons/sparring_screen_skeleton.dart';
 import 'package:sparring_finder/src/ui/widgets/sparring_card.dart';
 import 'package:sparring_finder/src/utils/extensions.dart';
 import '../../theme/app_colors.dart';
@@ -115,9 +116,7 @@ class SparringSessionBody extends StatelessWidget {
                 child: BlocBuilder<SparringBloc, SparringState>(
                   builder: (context, state) {
                     if (state is SparringLoadInProgress) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return SparringScreenSkeleton();
                     } else if (state is SparringLoadSuccess) {
                       return TabBarView(
                         children: [
@@ -133,7 +132,7 @@ class SparringSessionBody extends StatelessWidget {
                         style: const TextStyle(color: AppColors.primary),
                       ));
                     }
-                    return const SizedBox();
+                    return SparringScreenSkeleton();
                   },
                 ),
               ),
