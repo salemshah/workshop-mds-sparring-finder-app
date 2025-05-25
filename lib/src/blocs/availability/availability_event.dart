@@ -34,7 +34,7 @@ class LoadAvailabilityById extends AvailabilityEvent {
 
 /// POST `/availability`
 class CreateAvailability extends AvailabilityEvent {
-  final Map<String, dynamic> data; // JSON payload
+  final Map<String, dynamic> data;
   const CreateAvailability(this.data);
 
   @override

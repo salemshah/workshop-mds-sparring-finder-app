@@ -31,7 +31,7 @@ class TextAutoScroll extends StatelessWidget {
         final shouldScroll = textWidth > availableWidth;
 
         return SizedBox(
-          height: height,
+          // height: height
           child: shouldScroll
               ? Marquee(
             text: text,

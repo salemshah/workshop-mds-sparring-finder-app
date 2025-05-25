@@ -11,6 +11,7 @@ import 'package:sparring_finder/src/blocs/profile/profile_state.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
 import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/models/profile/profile_model.dart';
+import 'package:sparring_finder/src/ui/skeletons/profile_screen_skeleton.dart';
 import 'package:sparring_finder/src/ui/widgets/text_auto_scroll.dart';
 import 'package:sparring_finder/src/utils/extensions.dart';
 import 'package:sparring_finder/src/utils/image_res.dart';
@@ -45,9 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           child: BlocBuilder<ProfileBloc, ProfileState>(
             builder: (context, state) {
               if (state is ProfileLoadInProgress) {
-                return const Center(
-                  child: CircularProgressIndicator(color: kRed),
-                );
+                return ProfileSkeleton();
               } else if (state is ProfileFailure) {
                 return Center(
                   child: Column(
@@ -79,9 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               }
 
               // Default loading state
-              return const Center(
-                child: CircularProgressIndicator(color: kRed),
-              );
+              return ProfileSkeleton();
             },
           ),
         ));

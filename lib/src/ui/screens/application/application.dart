@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sparring_finder/src/ui/screens/availability/availability_calender_screen.dart';
 import 'package:sparring_finder/src/ui/screens/availability/availability_list_screen.dart';
 import 'package:sparring_finder/src/ui/screens/session/sparring_session_screen.dart';
 import '../../theme/app_colors.dart';
@@ -24,7 +25,8 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     // PlaceholderScreen(title: "Sparring", icon: Icons.flash_on),
     PlaceholderScreen(title: "Messages", icon: Icons.message),
     // TimetableScreen(),
-    AvailabilityListScreen(),
+    // AvailabilityListScreen(),
+    AvailabilityCalendarScreen(),
     ProfileScreen(),
   ];
 
