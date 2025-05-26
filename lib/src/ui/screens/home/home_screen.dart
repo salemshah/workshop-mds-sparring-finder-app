@@ -1,17 +1,14 @@
 import 'dart:async';
-
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sparring_finder/src/ui/skeletons/home_screen_skeleton.dart';
-import 'package:sparring_finder/src/ui/widgets/text_auto_scroll.dart';
-import 'package:sparring_finder/src/utils/extensions.dart';
+import 'package:sparring_finder/src/ui/screens/home/home_header.dart';
+import 'package:sparring_finder/src/ui/skeletons/home/home_athlete_skeleton.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
-import '../../../blocs/profile/profile_bloc.dart';
-import '../../../blocs/profile/profile_event.dart';
-import '../../../blocs/profile/profile_state.dart';
+import '../../../blocs/athletes/athletes_bloc.dart';
+import '../../../blocs/athletes/athletes_event.dart';
+import '../../../blocs/athletes/athletes_state.dart';
 import '../../../config/app_routes.dart';
 import '../../../models/profile/profile_model.dart';
 import '../../theme/app_colors.dart';
@@ -69,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadUserId();
 
     if (!_hasFetched) {
-      context.read<ProfileBloc>().add(const ProfilesFetchedAll());
+      context.read<AthletesBloc>().add(const AthletesFetched());
       _hasFetched = true;
     }
   }
@@ -84,9 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (query.trim().isEmpty) {
-        context.read<ProfileBloc>().add(const ProfilesFetchedAll());
+        context.read<AthletesBloc>().add(const AthletesFetched());
       } else {
-        context.read<ProfileBloc>().add(ProfilesSearched(query.trim()));
+        context.read<AthletesBloc>().add(AthletesSearched(query.trim()));
       }
     });
   }
@@ -105,13 +102,13 @@ class _HomeScreenState extends State<HomeScreen> {
     _appliedGender = null;
     _appliedWeightRange = const SfRangeValues(40.0, 150.0);
 
-    context.read<ProfileBloc>().add(const ProfilesFetchedAll());
+    context.read<AthletesBloc>().add(const AthletesFetched());
     setState(() {});
   }
 
   void _showFilterBottomSheet() {
-    final state = context.read<ProfileBloc>().state;
-    if (state is ProfileListLoadSuccess) {
+    final state = context.read<AthletesBloc>().state;
+    if (state is AthletesLoadSuccess) {
       _levels = state.profiles.map((e) => e.skillLevel).toSet().toList();
       _countries = state.profiles.map((e) => e.country).toSet().toList();
       _cities = state.profiles.map((e) => e.city).toSet().toList();
@@ -148,8 +145,8 @@ class _HomeScreenState extends State<HomeScreen> {
           _appliedGender = gender?.isEmpty == true ? null : gender;
           _appliedWeightRange = weightRange ?? const SfRangeValues(40.0, 150.0);
 
-          context.read<ProfileBloc>().add(
-                ProfilesFiltered(
+          context.read<AthletesBloc>().add(
+                AthletesFiltered(
                   level: _appliedLevel,
                   country: _appliedCountry,
                   city: _appliedCity,
@@ -185,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(
         children: [
           ListView.builder(
-            padding: EdgeInsets.only(top: 15),
+            padding: const EdgeInsets.only(top: 15),
             itemCount: profiles.length,
             itemBuilder: (context, index) {
               final p = profiles[index];
@@ -206,8 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
                 onFavoriteToggle: () {
-                  context.read<ProfileBloc>().add(
-                        FavoriteToggled(
+                  context.read<AthletesBloc>().add(
+                        FavoriteToggledForAthlete(
                           targetUserId: p.userId,
                           currentUserId: _currentUserId ?? 0,
                         ),
@@ -230,105 +227,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     end: Alignment.bottomCenter,
                     colors: [
                       AppColors.background,
-                      AppColors.background.withValues(alpha: .0),
+                      AppColors.background.withOpacity(0.0),
                     ],
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ------------------------------- Header ---------------------------------- //
-
-  Widget _header(double statusBarHeight, String firstName, String lastName,
-      String photoUrl) {
-    return Container(
-      padding: EdgeInsets.only(top: statusBarHeight, left: 14, right: 14),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppColors.primary,
-            AppColors.background,
-          ],
-        ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.text, width: 2),
-                      borderRadius: BorderRadius.circular(40.r),
-                    ),
-                    child: CircleAvatar(
-                      radius: 30.r,
-                      backgroundColor: AppColors.inputFill,
-                      backgroundImage: NetworkImage(photoUrl),
-                    ),
-                  ),
-                  SizedBox(width: 5.w),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextAutoScroll(
-                        text: firstName,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.text,
-                        ),
-                      ),
-                      TextAutoScroll(
-                        text: lastName,
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.notifications_active,
-                      color: AppColors.white,
-                      size: 35,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const Text(
-            "SPARRING FINDER",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: AppColors.text,
-                fontSize: 20,
-                fontWeight: FontWeight.bold),
-          ),
-          const Text(
-            "Find your ideal partner for sparring!",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.text, fontSize: 16),
           ),
         ],
       ),
@@ -431,53 +335,31 @@ class _HomeScreenState extends State<HomeScreen> {
   // ------------------------------- Build ---------------------------------- //
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
-    // ----------------------- List ------------------------------- //
-    return BlocBuilder<ProfileBloc, ProfileState>(
-      builder: (context, state) {
-        Widget header;
-        Widget body;
-
-        if (state is ProfileLoadInProgress) {
-          return HomeScreenSkeleton();
-        } else if (state is ProfileListLoadSuccess) {
-          body = _buildProfileList(state.profiles);
-
-          Profile? profile = state.profiles.firstWhereOrNull(
-            (profile) => profile.userId == _currentUserId,
-          );
-
-          final firstName = profile?.firstName.capitalizeEachWord() ?? '';
-          final lastName = profile?.lastName.capitalizeEachWord() ?? '';
-
-          if (profile == null) {
-            header = SizedBox();
-          } else {
-            header = _header(
-                statusBarHeight, firstName, lastName, profile.photoUrl!);
-          }
-        } else if (state is ProfileFailure) {
-          return Center(
-            child: Text(
-              'Error: ${state.error}',
-              style: const TextStyle(color: Colors.white),
-            ),
-          );
-        } else {
-          header = SizedBox();
-          body = SizedBox();
-        }
-
-        return Column(
-          children: [
-            header,
-            SizedBox(height: 20.h),
-            _searchAndFilters(),
-            Expanded(child: body)
-          ],
-        );
-      },
+    return Column(
+      children: [
+        HomeHeader(search: _searchAndFilters()),
+        // --------------------------------- Athletes ----------------------------------///
+        Expanded(
+          child: BlocBuilder<AthletesBloc, AthletesState>(
+            builder: (context, state) {
+              if (state is AthletesLoadInProgress) {
+                return const HomeAthleteSkeleton();
+              } else if (state is AthletesLoadSuccess) {
+                return _buildProfileList(state.profiles);
+              } else if (state is AthletesFailure) {
+                return Center(
+                  child: Text(
+                    'Error: ${state.error}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                );
+              } else {
+                return const SizedBox();
+              }
+            },
+          ),
+        )
+      ],
     );
   }
 }

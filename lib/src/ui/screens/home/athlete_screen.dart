@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/src/ui/theme/app_colors.dart';
 import 'package:sparring_finder/src/utils/extensions.dart';
-import '../../../blocs/profile/profile_bloc.dart';
-import '../../../blocs/profile/profile_event.dart';
+import '../../../blocs/athletes/athletes_bloc.dart';
+import '../../../blocs/athletes/athletes_event.dart';
 import '../../../config/app_routes.dart';
 import '../../../models/profile/profile_model.dart';
 
@@ -101,8 +101,8 @@ class _AthleteDetailsBody extends StatelessWidget {
                     _ActionButton(
                       icon: Icons.favorite,
                       label: 'Add',
-                      onPressed: () => context.read<ProfileBloc>().add(
-                        FavoriteToggled(
+                      onPressed: () => context.read<AthletesBloc>().add(
+                        FavoriteToggledForAthlete(
                           targetUserId: profile.userId,
                           currentUserId: 0, // TODO: replace with actual logged-in user ID
                         ),

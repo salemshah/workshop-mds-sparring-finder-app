@@ -13,7 +13,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/bottom_navi_bar.dart';
 import '../home/home_screen.dart';
-import '../profile/profile.dart';
+import '../profile/profile_screen.dart';
 
 /// Main entry screen with bottom navigation and Firebase message listener.
 /// Navigates based on tab selection and notification data.
@@ -155,7 +155,7 @@ class _BackgroundGradient extends StatelessWidget {
 // import '../../theme/app_colors.dart';
 // import '../../widgets/bottom_navi_bar.dart';
 // import '../home/home_screen.dart';
-// import '../profile/profile.dart';
+// import '../profile/profile_screen.dart';
 // import '../../common/placeholder_screen.dart';
 //
 // class ApplicationScreen extends StatefulWidget {

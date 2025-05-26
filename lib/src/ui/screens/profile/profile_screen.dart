@@ -5,9 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sparring_finder/src/blocs/profile/profile_bloc.dart';
-import 'package:sparring_finder/src/blocs/profile/profile_event.dart';
-import 'package:sparring_finder/src/blocs/profile/profile_state.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
 import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/models/profile/profile_model.dart';
@@ -15,7 +12,9 @@ import 'package:sparring_finder/src/ui/skeletons/profile_screen_skeleton.dart';
 import 'package:sparring_finder/src/ui/widgets/text_auto_scroll.dart';
 import 'package:sparring_finder/src/utils/extensions.dart';
 import 'package:sparring_finder/src/utils/image_res.dart';
-
+import '../../../blocs/profile/profile_bloc.dart';
+import '../../../blocs/profile/profile_event.dart';
+import '../../../blocs/profile/profile_state.dart';
 import '../../theme/app_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -25,65 +24,58 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen>
-    with SingleTickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
   bool isCurrentUser = true;
-  bool isFollowing = false;
   final ImagePicker _picker = ImagePicker();
-  
+
   @override
   void initState() {
     super.initState();
-    // Request profile data when screen initializes
-    context.read<ProfileBloc>().add(ProfileRequested());
+    context.read<MyProfileBloc>().add(MyProfileRequested());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: primaryBackground,
-        body: SafeArea(
-          child: BlocBuilder<ProfileBloc, ProfileState>(
-            builder: (context, state) {
-              if (state is ProfileLoadInProgress) {
-                return ProfileSkeleton();
-              } else if (state is ProfileFailure) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Failed to load profile',
-                        style: TextStyle(color: Colors.white, fontSize: 16.sp),
+      backgroundColor: primaryBackground,
+      body: SafeArea(
+        child: BlocBuilder<MyProfileBloc, MyProfileState>(
+          builder: (context, state) {
+            if (state is MyProfileLoadInProgress) {
+              return const ProfileSkeleton();
+            } else if (state is MyProfileFailure) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Failed to load profile', style: TextStyle(color: Colors.white, fontSize: 16.sp)),
+                    SizedBox(height: 16.h),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kRed,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
                       ),
-                      SizedBox(height: 16.h),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: kRed,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                        ),
-                        onPressed: () {
-                          context.read<ProfileBloc>().add(ProfileRequested());
-                        },
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                );
-              } else if (state is ProfileLoadSuccess) {
-                final profile = state.profile;
-                return _buildProfileContent(profile);
-              }
-
-              // Default loading state
-              return ProfileSkeleton();
-            },
-          ),
-        ));
+                      onPressed: () => context.read<MyProfileBloc>().add(MyProfileRequested()),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            } else if (state is MyProfileLoadSuccess) {
+              return _buildProfileContent(state.profile);
+            }
+            return const ProfileSkeleton();
+          },
+        ),
+      ),
+    );
   }
-  
+
+  void _updateProfilePhoto(File photo) {
+    context.read<MyProfileBloc>().add(MyProfilePhotoUpdated(photo: photo));
+  }
+
+
   Widget _buildProfileContent(Profile profile) {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
@@ -195,8 +187,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       ],
     );
   }
-
-
 
 
   Widget _buildProfileImage(BuildContext context, String? photoUrl, bool isCurrentUser) {
@@ -436,10 +426,6 @@ class _ProfileScreenState extends State<ProfileScreen>
         );
       },
     );
-  }
-
-  void _updateProfilePhoto(File photo) {
-    context.read<ProfileBloc>().add(ProfilePhotoUpdated(photo: photo));
   }
 }
 

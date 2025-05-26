@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:sparring_finder/src/repositories/availability_repository.dart';
+import '../../models/availability/availability_model.dart';
 import 'availability_event.dart';
 import 'availability_state.dart';
 
@@ -71,14 +72,17 @@ class AvailabilityBloc extends Bloc<AvailabilityEvent, AvailabilityState> {
       UpdateAvailability event, Emitter<AvailabilityState> emit) async {
     emit(const AvailabilityLoadInProgress());
     try {
-      final resp =
       await repository.updateAvailability(event.id, event.data);
-      emit(AvailabilityOperationSuccess(
-          resp.message ?? 'Updated successfully', resp.availabilities));
+
+      final fullList = await repository.getAvailabilities();
+
+      emit(AvailabilityLoadSuccess(fullList));
     } catch (e) {
       emit(AvailabilityFailure(e.toString()));
     }
   }
+
+
 
   Future<void> _onDelete(
       DeleteAvailability event, Emitter<AvailabilityState> emit) async {

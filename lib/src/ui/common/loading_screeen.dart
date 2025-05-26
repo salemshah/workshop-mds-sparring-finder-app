@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
-
 import '../../blocs/notification/notification_bloc.dart';
 import '../../blocs/notification/notification_event.dart';
 import '../../blocs/profile/profile_bloc.dart';
@@ -17,21 +16,19 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use the existing ProfileBloc injected higher in the tree.
     return BlocProvider.value(
-      value: BlocProvider.of<ProfileBloc>(context)
-        ..add(const ProfileExistenceRequested()),
-      child: BlocListener<ProfileBloc, ProfileState>(
+      value: BlocProvider.of<MyProfileBloc>(context)
+        ..add(const MyProfileExistenceChecked()),
+      child: BlocListener<MyProfileBloc, MyProfileState>(
         listener: (context, state) {
-          if (state is ProfileExistenceSuccess) {
+          if (state is MyProfileExistenceSuccess) {
             if (state.isProfileExist) {
               context.read<NotificationBloc>().add(const NotificationStarted());
               Navigator.pushReplacementNamed(context, AppRoutes.applicationScreen);
             } else {
-              Navigator.pushReplacementNamed(
-                  context, AppRoutes.createProfileScreen);
+              Navigator.pushReplacementNamed(context, AppRoutes.createProfileScreen);
             }
-          } else if (state is ProfileFailure) {
+          } else if (state is MyProfileFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Error: ${state.error}')),
             );
