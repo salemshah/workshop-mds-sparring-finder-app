@@ -1,33 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:sparring_finder/src/services/notification_service.dart';
+import 'package:sparring_finder/src/config/repository_provider.dart';
 import 'package:sparring_finder/src/config/bloc_providers.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
-import 'package:sparring_finder/src/config/repository_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sparring_finder/src/ui/screens/splash/splash_screen.dart';
-import 'package:provider/provider.dart';
+import 'firebase_options.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Force portrait orientation only
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const MindaApp());
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // the init() will be triggered after login, to store fcm token
+  final notificationService = NotificationService();
+
+  runApp(MindaApp(notificationService: notificationService));
 }
 
-
 class MindaApp extends StatelessWidget {
-  const MindaApp({super.key});
+  final NotificationService notificationService;
+
+  const MindaApp({super.key, required this.notificationService});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: RepositoryProviders.all,
+      providers: RepositoryProviders.getAll(notificationService),
       child: MultiBlocProvider(
         providers: BlocProviders.all,
         child: MaterialApp(

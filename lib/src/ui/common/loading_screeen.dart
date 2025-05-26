@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
 
+import '../../blocs/notification/notification_bloc.dart';
+import '../../blocs/notification/notification_event.dart';
 import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/profile/profile_event.dart';
 import '../../blocs/profile/profile_state.dart';
@@ -23,7 +25,8 @@ class LoadingScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is ProfileExistenceSuccess) {
             if (state.isProfileExist) {
-              Navigator.pushReplacementNamed(context, AppRoutes.applicationScreen); // Remove all previous routes);
+              context.read<NotificationBloc>().add(const NotificationStarted());
+              Navigator.pushReplacementNamed(context, AppRoutes.applicationScreen);
             } else {
               Navigator.pushReplacementNamed(
                   context, AppRoutes.createProfileScreen);

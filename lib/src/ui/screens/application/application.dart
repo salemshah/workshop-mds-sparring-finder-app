@@ -1,14 +1,22 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:sparring_finder/src/ui/screens/availability/availability_calender_screen.dart';
-import 'package:sparring_finder/src/ui/screens/availability/availability_list_screen.dart';
 import 'package:sparring_finder/src/ui/screens/session/sparring_session_screen.dart';
+import '../../../blocs/notification/notification_bloc.dart';
+import '../../../blocs/notification/notification_event.dart';
+import '../../../config/app_routes.dart';
+import '../../common/placeholder_screen.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/bottom_navi_bar.dart';
 import '../home/home_screen.dart';
 import '../profile/profile.dart';
-import '../../common/placeholder_screen.dart';
 
+/// Main entry screen with bottom navigation and Firebase message listener.
+/// Navigates based on tab selection and notification data.
 class ApplicationScreen extends StatefulWidget {
   const ApplicationScreen({super.key});
 
@@ -31,6 +39,48 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   ];
 
   void _onTabTapped(int index) => setState(() => _currentIndex = index);
+
+  @override
+  void initState() {
+    super.initState();
+    _requestNotificationPermission();
+
+    // ✅ Listen for foreground FCM notifications
+    FirebaseMessaging.onMessage.listen(_handleIncomingFCM);
+  }
+
+  /// Request push notification permission on iOS
+  void _requestNotificationPermission() async {
+    final settings = await FirebaseMessaging.instance.requestPermission();
+    if (kDebugMode) {
+      print('Notification permission application.dart: ${settings.authorizationStatus}');
+    }
+  }
+
+  /// Handle FCM message when app is in foreground
+  void _handleIncomingFCM(RemoteMessage message) {
+    if (kDebugMode) {
+      print("Foreground FCM received application.dart");
+      print("Title: ${message.notification?.title}");
+      print("Data: ${message.data}");
+    }
+
+    final data = message.data;
+
+
+    context.read<NotificationBloc>().add(NotificationReceived(
+      title: message.notification?.title,
+      body: message.notification?.body,
+    ));
+
+    // 🚦 Handle specific data types
+    if (data['type'] == 'sparring-confirmed') {
+      final sparringId = data['sparringId'];
+      if (sparringId != null) {
+        Navigator.pushNamed(context, AppRoutes.sparringSessionScreen);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +107,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     );
   }
 
+  /// Animates screen transitions
   Widget _transitionBuilder(Widget child, Animation<double> animation) {
     return FadeTransition(
       opacity: animation,
@@ -74,6 +125,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   }
 }
 
+/// Gradient background
 class _BackgroundGradient extends StatelessWidget {
   const _BackgroundGradient();
 
@@ -86,13 +138,14 @@ class _BackgroundGradient extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [
             AppColors.background,
-            AppColors.background.withValues(alpha: 0.8),
+            AppColors.background.withOpacity(0.8),
           ],
         ),
       ),
     );
   }
 }
+
 
 
 

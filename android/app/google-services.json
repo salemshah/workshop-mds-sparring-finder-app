@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "256001435980",
+    "project_id": "workshop-mds-20893",
+    "storage_bucket": "workshop-mds-20893.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:256001435980:android:9b506a961542ffb54187e9",
+        "android_client_info": {
+          "package_name": "com.sparringfinder.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCItT_VhLUVbebZhgV46UYR50gHdwThNqM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
