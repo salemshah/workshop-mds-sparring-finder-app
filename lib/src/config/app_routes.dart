@@ -16,7 +16,7 @@ import '../models/availability/availability_model.dart';
 import '../ui/screens/application/application.dart';
 import '../ui/screens/availability/availability_list_screen.dart';
 import '../ui/screens/onboarding/onboarding_screen.dart';
-import '../ui/screens/profile/profile.dart';
+import '../ui/screens/profile/profile_screen.dart';
 import '../ui/screens/session/sparring_session_screen.dart';
 import '../ui/screens/settings/settings.dart';
 import '../ui/screens/splash/splash_screen.dart';

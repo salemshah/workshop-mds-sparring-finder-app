@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sparring_finder/src/utils/jwt.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../blocs/availability/availability_bloc.dart';
 import '../../../blocs/availability/availability_event.dart';
@@ -92,7 +91,7 @@ class _AvailabilityCalendarScreenState
             } else if (state is AvailabilityFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(state.error),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.primary,
               ));
             }
           },
@@ -108,12 +107,12 @@ class _AvailabilityCalendarScreenState
               allowViewNavigation: true,
               viewHeaderStyle: const ViewHeaderStyle(
                 dayTextStyle: TextStyle(
-                  color: AppColors.text, // <– Day name like "Mon"
+                  color: AppColors.text, //  Day name like "Mon"
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
                 dateTextStyle: TextStyle(
-                  color: Colors.orangeAccent, // <– Date number like "24"
+                  color: Colors.orangeAccent, // Date number like "24"
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -130,17 +129,17 @@ class _AvailabilityCalendarScreenState
                 ),
                 agendaStyle: AgendaStyle(
                   dayTextStyle: TextStyle(
-                    color: Colors.greenAccent, // ← "Mon", "Tue", etc.
+                    color: Colors.greenAccent, // "Mon", "Tue", etc.
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                   dateTextStyle: TextStyle(
-                    color: AppColors.text, // ← Date number (e.g. "24")
+                    color: AppColors.text, // Date number (e.g. "24")
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                   appointmentTextStyle: TextStyle(
-                    color: Colors.orange, // ← Event text
+                    color: Colors.orange, // Event text
                   ),
                 ),
               ),

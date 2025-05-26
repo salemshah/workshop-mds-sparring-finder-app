@@ -9,11 +9,13 @@ import 'package:sparring_finder/src/repositories/availability_repository.dart';
 import 'package:sparring_finder/src/repositories/sparring_repository.dart';
 import 'package:sparring_finder/src/repositories/notification_repository.dart';
 
+import '../blocs/athletes/athletes_bloc.dart';
+
 class RepositoryProviders {
 
   // Unexpectedly found more than one Dart VM Service report for com.sparringfinder.app._dartVmService._tcp.local - using first one (50178).
-  // static final ApiService apiService = ApiService(baseUrl: "http://localhost:8000/api");
-  static final ApiService apiService = ApiService(baseUrl: "http://172.20.10.3:8000/api"); // for real iphone
+  static final ApiService apiService = ApiService(baseUrl: "http://localhost:8000/api");
+  // static final ApiService apiService = ApiService(baseUrl: "http://172.20.10.3:8000/api"); // for real iphone
 
   static final UserRepository userRepository = UserRepository(apiService: apiService);
   static final ProfileRepository profileRepository = ProfileRepository(apiService: apiService);

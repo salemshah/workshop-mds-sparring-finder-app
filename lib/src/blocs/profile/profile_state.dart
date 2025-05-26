@@ -1,67 +1,56 @@
 import 'package:equatable/equatable.dart';
-
 import '../../models/profile/profile_model.dart';
 
-/// Base class for all states emitted by [ProfileBloc].
-abstract class ProfileState extends Equatable {
-  const ProfileState();
+// ---------------------------------------------------------------------------
+// States related to the current user's own profile
+// ---------------------------------------------------------------------------
+
+abstract class MyProfileState extends Equatable {
+  const MyProfileState();
 
   @override
   List<Object?> get props => [];
 }
 
-class ProfileInitial extends ProfileState {
-  const ProfileInitial();
+class MyProfileInitial extends MyProfileState {
+  const MyProfileInitial();
 }
 
-class ProfileLoadInProgress extends ProfileState {
-  const ProfileLoadInProgress();
+class MyProfileLoadInProgress extends MyProfileState {
+  const MyProfileLoadInProgress();
 }
 
-class ProfileFailure extends ProfileState {
+class MyProfileFailure extends MyProfileState {
   final String error;
 
-  const ProfileFailure(this.error);
+  const MyProfileFailure(this.error);
 
   @override
   List<Object?> get props => [error];
 }
 
-/// Detailed single‑profile payload.
-class ProfileLoadSuccess extends ProfileState {
+class MyProfileLoadSuccess extends MyProfileState {
   final Profile profile;
 
-  const ProfileLoadSuccess(this.profile);
+  const MyProfileLoadSuccess(this.profile);
 
   @override
   List<Object?> get props => [profile];
 }
 
-/// Whether the current user already has a profile.
-class ProfileExistenceSuccess extends ProfileState {
+class MyProfileExistenceSuccess extends MyProfileState {
   final bool isProfileExist;
 
-  const ProfileExistenceSuccess(this.isProfileExist);
+  const MyProfileExistenceSuccess(this.isProfileExist);
 
   @override
   List<Object?> get props => [isProfileExist];
 }
 
-/// A list of profiles returned by discovery/api.
-class ProfileListLoadSuccess extends ProfileState {
-  final List<Profile> profiles;
-
-  const ProfileListLoadSuccess(this.profiles);
-
-  @override
-  List<Object?> get props => [profiles];
-}
-
-/// Generic success message (e.g. delete profile).
-class ProfileOperationSuccess extends ProfileState {
+class MyProfileOperationSuccess extends MyProfileState {
   final String message;
 
-  const ProfileOperationSuccess(this.message);
+  const MyProfileOperationSuccess(this.message);
 
   @override
   List<Object?> get props => [message];
