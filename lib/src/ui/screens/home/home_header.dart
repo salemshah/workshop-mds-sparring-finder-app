@@ -91,8 +91,17 @@ class _HomeHeaderState extends State<HomeHeader> {
                           ],
                         ),
                         const Spacer(),
-                        const Icon(Icons.notifications_active,
-                            color: AppColors.white, size: 35),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, AppRoutes.notificationScreen);
+                          },
+                          icon: const Icon(
+                            Icons.notifications_active,
+                            size: 35,
+                            color: AppColors.white,
+                          ),
+                        ),
                       ],
                     ),
                     const Text("SPARRING FINDER",

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
 import 'package:sparring_finder/src/ui/screens/onboarding/widgets/text.dart';
+import 'package:sparring_finder/src/utils/secure_storage_helper.dart';
 
+import '../../../../utils/jwt.dart';
 import '../../../theme/app_colors.dart';
 
 class AppOnboardingPage extends StatelessWidget {
@@ -88,6 +90,7 @@ class AppOnboardingPage extends StatelessWidget {
 
   Widget _buildButton(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+
     return GestureDetector(
       onTap: () async {
         if (index < 3) {
@@ -96,9 +99,15 @@ class AppOnboardingPage extends StatelessWidget {
             curve: Curves.easeInOutCubic,
           );
         } else {
-          // Global.storageService
-          //     .setBool(AppConstants.STORAGE_DEVICE_OPEN_FIRST_KEY, true);
-          Navigator.pushNamed(context, AppRoutes.loginScreen);
+          final navigator = Navigator.of(context);
+          await SecureStorageHelper.markOnboardingSeen();
+          final isLoggedIn = !(await JwtStorageHelper.isTokenExpired());
+
+          final targetRoute = isLoggedIn
+              ? AppRoutes.applicationScreen
+              : AppRoutes.loginScreen;
+
+          navigator.pushNamedAndRemoveUntil(targetRoute, (route) => false);
         }
       },
       child: Container(

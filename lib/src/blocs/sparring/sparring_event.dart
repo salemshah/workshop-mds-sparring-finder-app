@@ -13,6 +13,18 @@ abstract class SparringEvent extends Equatable {
 class LoadSparrings extends SparringEvent {}
 
 // -------------------------------------------------------------------------
+// GET /sparring — get all sparrings for current user
+// -------------------------------------------------------------------------
+class LoadSparringsByUserIdAndPartnerId extends SparringEvent {
+  final int partnerId;
+
+  const LoadSparringsByUserIdAndPartnerId(this.partnerId);
+
+  @override
+  List<Object?> get props => [partnerId];
+}
+
+// -------------------------------------------------------------------------
 // GET /sparring/:id — get single sparring
 // -------------------------------------------------------------------------
 class LoadSparringById extends SparringEvent {
@@ -29,8 +41,8 @@ class LoadSparringById extends SparringEvent {
 // -------------------------------------------------------------------------
 class CreateSparring extends SparringEvent {
   final Map<String, dynamic> data;
-
-  const CreateSparring(this.data);
+  final int partnerId;
+  const CreateSparring(this.data, this.partnerId);
 
   @override
   List<Object?> get props => [data];
@@ -41,12 +53,13 @@ class CreateSparring extends SparringEvent {
 // -------------------------------------------------------------------------
 class UpdateSparring extends SparringEvent {
   final int id;
+  final int partnerId;
   final Map<String, dynamic> data;
 
-  const UpdateSparring(this.id, this.data);
+  const UpdateSparring(this.id, this.data, this.partnerId);
 
   @override
-  List<Object?> get props => [id, data];
+  List<Object?> get props => [id, data, partnerId];
 }
 
 // -------------------------------------------------------------------------
@@ -66,10 +79,11 @@ class ConfirmSparring extends SparringEvent {
 // -------------------------------------------------------------------------
 class CancelSparring extends SparringEvent {
   final int id;
-  final Map<String, dynamic> data;
+  final int? partnerId;
+  final Map<String, dynamic>? data;
 
-  const CancelSparring(this.id, this.data);
+  const CancelSparring({required this.id, this.data, this.partnerId});
 
   @override
-  List<Object?> get props => [id, data];
+  List<Object?> get props => [id, data, partnerId];
 }

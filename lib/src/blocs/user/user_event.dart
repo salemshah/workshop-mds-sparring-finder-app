@@ -63,3 +63,7 @@ class UserResetPasswordRequested extends UserEvent {
   @override
   List<Object> get props => [code, newPassword];
 }
+
+class UserLogoutRequested extends UserEvent {
+  const UserLogoutRequested();
+}

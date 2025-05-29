@@ -3,10 +3,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sparring_finder/src/blocs/profile/profile_bloc.dart';
+import 'package:sparring_finder/src/blocs/profile/profile_event.dart';
+import 'package:sparring_finder/src/blocs/profile/profile_state.dart';
+import 'package:sparring_finder/src/blocs/notification/notification_bloc.dart';
+import 'package:sparring_finder/src/blocs/notification/notification_event.dart';
+import 'package:sparring_finder/src/utils/secure_storage_helper.dart';
 
 import 'dart:ui';
 import 'dart:math' as math;
 
+import '../../../utils/install_helper.dart';
+import '../../../utils/jwt.dart';
 import '../../theme/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -42,80 +51,118 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
     _fadeAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
+        vsync: this, duration: const Duration(milliseconds: 1500));
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeAnimationController, curve: Curves.easeOut),
-    );
+        CurvedAnimation(
+            parent: _fadeAnimationController, curve: Curves.easeOut));
 
     _rotateAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2000),
-    );
+        vsync: this, duration: const Duration(milliseconds: 2000));
     _rotateAnimation = Tween<double>(begin: 0, end: 0.1).animate(
-      CurvedAnimation(parent: _rotateAnimationController, curve: Curves.easeInOut),
-    );
+        CurvedAnimation(
+            parent: _rotateAnimationController, curve: Curves.easeInOut));
 
     _scaleAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1800),
-    );
+        vsync: this, duration: const Duration(milliseconds: 1800));
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _scaleAnimationController, curve: Curves.elasticOut),
-    );
+        CurvedAnimation(
+            parent: _scaleAnimationController, curve: Curves.elasticOut));
 
     _slideAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
-      CurvedAnimation(parent: _slideAnimationController, curve: Curves.easeOutCubic),
-    );
+        vsync: this, duration: const Duration(milliseconds: 1200));
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+            CurvedAnimation(
+                parent: _slideAnimationController, curve: Curves.easeOutCubic));
 
     _pulseAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat(reverse: true);
+        vsync: this, duration: const Duration(milliseconds: 1500))
+      ..repeat(reverse: true);
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
-      CurvedAnimation(parent: _pulseAnimationController, curve: Curves.easeInOut),
-    );
+        CurvedAnimation(
+            parent: _pulseAnimationController, curve: Curves.easeInOut));
 
     _loadingAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat();
+        vsync: this, duration: const Duration(milliseconds: 1500))
+      ..repeat();
     _loadingAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _loadingAnimationController, curve: Curves.linear),
-    );
+        CurvedAnimation(
+            parent: _loadingAnimationController, curve: Curves.linear));
 
-    _colorAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
+    _colorAnimationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 3))
+          ..repeat(reverse: true);
     _colorShiftAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _colorAnimationController, curve: Curves.linear),
-    );
+        CurvedAnimation(
+            parent: _colorAnimationController, curve: Curves.linear));
 
     _fadeAnimationController.forward();
     _rotateAnimationController.forward();
     _scaleAnimationController.forward();
     _slideAnimationController.forward();
 
-    // Navigate after delay
-    Future.delayed(const Duration(seconds: 5), () async {
-      // bool isFirstTime = Global.storageService.getDeviceFirstOpen();
-      Navigator.of(context).pushReplacementNamed(AppRoutes.onBoardingScreen);
-      // if (isFirstTime) {
-      //   Navigator.of(context).pushReplacementNamed(Routes.onBoardingScreen);
-      // } else {
-      //   bool isLoggedIn = Global.storageService.isLoggedIn();
-      //   if (isLoggedIn) {
-      //     Navigator.of(context).pushReplacementNamed(Routes.homeScreen);
-      //   } else {
-      //     Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
-      //   }
-      // }
+    Future.delayed(const Duration(seconds: 3), () async {
+      if (!mounted) return;
+      await InstallHelper.handleFreshInstall();
+      final hasSeenOnboarding = await SecureStorageHelper.hasSeenOnboarding();
+      if (!mounted) return;
+
+      if (!hasSeenOnboarding) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.onBoardingScreen,
+          (route) => false,
+        );
+        return;
+      }
+
+      final token = await JwtStorageHelper.getAccessToken();
+      final isInvalid =
+          token == null || await JwtStorageHelper.isTokenExpired();
+
+      if (isInvalid) {
+        await JwtStorageHelper.clearTokens();
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.loginScreen,
+          (route) => false,
+        );
+        return;
+      }
+
+      if (!mounted) return;
+      context.read<NotificationBloc>().add(const NotificationStarted());
+
+      context.read<MyProfileBloc>().add(const MyProfileExistenceChecked());
+
+      await for (final state in context.read<MyProfileBloc>().stream) {
+        if (!mounted) return;
+
+        if (state is MyProfileExistenceSuccess) {
+          if (state.isProfileExist) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.applicationScreen,
+              (route) => false,
+            );
+          } else {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.createProfileScreen,
+              (route) => false,
+            );
+          }
+          break;
+        } else if (state is MyProfileFailure) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.loginScreen,
+            (route) => false,
+          );
+          break;
+        }
+      }
     });
   }
 
@@ -139,18 +186,11 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
       backgroundColor: AppColors.primary,
       body: Stack(
         children: [
-          // _buildAnimatedBackground(),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // _buildMainImage(),
-                // SizedBox(height: 40.h),
                 _buildAppName(),
-                // SizedBox(height: 40.h),
-                // _buildLoadingIndicator(),
-                // SizedBox(height: 15.h),
-                // _buildLoadingText(),
               ],
             ),
           ),
@@ -159,7 +199,6 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
       ),
     );
   }
-
 
   Widget _buildAppName() {
     return SlideTransition(
@@ -173,22 +212,21 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
               AppColors.primary,
               AppColors.white,
               AppColors.primary,
-              AppColors.white,
+              AppColors.white
             ];
-
             final shader = LinearGradient(
               colors: colors,
               stops: [0.0, 0.5, 0.7, 1.0],
               begin: Alignment.topRight,
               end: Alignment.centerLeft,
-              transform: GradientRotation(_colorShiftAnimation.value * 2 * math.pi),
+              transform:
+                  GradientRotation(_colorShiftAnimation.value * 2 * math.pi),
             ).createShader(const Rect.fromLTWH(0.0, 0.0, 300.0, 70.0));
 
             return Column(
               children: [
                 Stack(
                   children: [
-                    // Outline
                     ShaderMask(
                       shaderCallback: (bounds) => shader,
                       child: Text(
@@ -204,7 +242,6 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
-                    // Fill
                     ShaderMask(
                       shaderCallback: (bounds) => shader,
                       child: Text(
@@ -222,7 +259,6 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
                 const SizedBox(height: 8),
                 Stack(
                   children: [
-                    // Outline
                     ShaderMask(
                       shaderCallback: (bounds) => shader,
                       child: Text(
@@ -238,7 +274,6 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
-                    // Fill
                     ShaderMask(
                       shaderCallback: (bounds) => shader,
                       child: Text(
@@ -270,79 +305,11 @@ class _SplashState extends State<SplashScreen> with TickerProviderStateMixin {
         child: Text(
           "v1.0",
           style: TextStyle(
-            color: Colors.white.withValues(alpha:0.4),
+            color: Colors.white.withAlpha(100),
             fontSize: 12.sp,
           ),
         ),
       ),
     );
-  }
-}
-
-// Painter classes remain the same as your original post...
-class GradientOverlayPainter extends CustomPainter {
-  final double animation;
-  final Color color;
-
-  GradientOverlayPainter({required this.animation, required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..shader = RadialGradient(
-        colors: [color, color.withValues(alpha:0)],
-        stops: [0.0, 0.7],
-      ).createShader(Rect.fromCircle(
-        center: Offset(size.width / 2, size.height / 2),
-        radius: size.width * animation,
-      ));
-
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant GradientOverlayPainter oldDelegate) {
-    return animation != oldDelegate.animation || color != oldDelegate.color;
-  }
-}
-
-class LoadingIndicatorPainter extends CustomPainter {
-  final double animation;
-  final Color color;
-
-  LoadingIndicatorPainter({required this.animation, required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
-
-    final bgPaint = Paint()
-      ..color = Colors.white.withValues(alpha:0.1)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4;
-
-    canvas.drawCircle(center, radius, bgPaint);
-
-    final arcPaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 4;
-
-    final arcRect = Rect.fromCircle(center: center, radius: radius);
-
-    canvas.drawArc(
-      arcRect,
-      -math.pi / 2 + (animation * 2 * math.pi),
-      math.pi / 2,
-      false,
-      arcPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant LoadingIndicatorPainter oldDelegate) {
-    return animation != oldDelegate.animation || color != oldDelegate.color;
   }
 }

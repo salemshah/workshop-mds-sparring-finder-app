@@ -12,6 +12,8 @@ class UserInitial extends UserState {}
 
 class UserLoading extends UserState {}
 
+class UserUnauthenticated extends UserState {}
+
 class UserSuccess extends UserState {
   final String message;
 
