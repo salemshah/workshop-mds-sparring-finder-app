@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sparring_finder/src/ui/screens/home/home_header.dart';
 import 'package:sparring_finder/src/ui/skeletons/home/home_athlete_skeleton.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -175,8 +174,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ----------------------------- List ------------------------------------- //
   Widget _buildProfileList(List<Profile> profiles) {
-    final favoriteIds = _currentUserFavoriteIds(profiles);
 
+    final favoriteIds = _currentUserFavoriteIds(profiles);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0),
       child: Stack(

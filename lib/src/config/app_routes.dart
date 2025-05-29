@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:sparring_finder/src/models/profile/profile_model.dart';
 import 'package:sparring_finder/src/ui/common/loading_screeen.dart';
 import 'package:sparring_finder/src/ui/screens/availability/availability_form_screen.dart';
-import 'package:sparring_finder/src/ui/screens/home/athlete_screen.dart';
+import 'package:sparring_finder/src/ui/screens/home/athlete_details_screen.dart';
+import 'package:sparring_finder/src/ui/screens/notification/notification_screen.dart';
 import 'package:sparring_finder/src/ui/screens/profile/create_profile_screen.dart';
-import 'package:sparring_finder/src/ui/screens/availability/time_table_screen.dart';
+import 'package:sparring_finder/src/ui/screens/home/athlete_availabilities_calender_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/forgot_password_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/reset_password_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/user_register_screen.dart';
@@ -33,6 +34,7 @@ class AppRoutes {
   static const String athleteDetailsScreen = '/athlete-details';
   static const String sparringSessionScreen = '/sparring-screen';
   static const String availabilityFormScreen = '/availability-form';
+  static const String notificationScreen = '/notification-screen';
 
   static const String splashScreen = '/splash-screen';
   static const String settingsScreen = '/settings';
@@ -40,7 +42,7 @@ class AppRoutes {
   static const String profileScreen = '/profile';
   static const String applicationScreen = '/application';
   static const String availabilityListScreen = '/availability-list';
-  static const String timeTableScreen = '/time-table';
+  static const String athleteAvailabilitiesCalenderScreen = '/athlete-availabilities-calender-screen';
 
   /// For routes that **don't require arguments**
   static final Map<String, WidgetBuilder> staticRoutes = {
@@ -52,6 +54,7 @@ class AppRoutes {
     forgotPasswordScreen: (_) => const ForgotPasswordScreen(),
     resetPasswordScreen: (_) => const ResetPasswordScreen(),
     createProfileScreen: (_) => const CreateProfileScreen(),
+    notificationScreen: (_) => const NotificationScreen(),
 
 
 
@@ -64,19 +67,22 @@ class AppRoutes {
     profileScreen: (_) => const ProfileScreen(),
     applicationScreen: (_) => const ApplicationScreen(),
 
-
-    // test routes
-    timeTableScreen: (_) => const TimetableScreen(),
-
   };
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
 
+        //TODO: must remove in feature ( replaced by
       case availabilityListScreen:
         final targetUserId = settings.arguments as int?;
         return MaterialPageRoute(
           builder: (_) => AvailabilityListScreen(targetUserId: targetUserId),
+        );
+
+      case athleteAvailabilitiesCalenderScreen:
+        final targetUserId = settings.arguments as int;
+        return MaterialPageRoute(
+          builder: (_) => AthleteAvailabilitiesCalenderScreen(targetUserId: targetUserId),
         );
 
       case availabilityFormScreen:
@@ -88,7 +94,7 @@ class AppRoutes {
       case athleteDetailsScreen:
         final profile = settings.arguments as Profile;
         return MaterialPageRoute(
-          builder: (_) => AthleteDetailsPage(profile: profile),
+          builder: (_) => AthleteDetailsScreen(profile: profile),
         );
 
       default:

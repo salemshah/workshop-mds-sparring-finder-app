@@ -21,3 +21,25 @@ class NotificationReceived extends NotificationEvent {
   @override
   List<Object?> get props => [title, body];
 }
+
+class LoadNotifications extends NotificationEvent {
+  const LoadNotifications();
+}
+
+class LoadNotificationById extends NotificationEvent {
+  final int id;
+
+  const LoadNotificationById(this.id);
+
+  @override
+  List<Object?> get props => [id];
+}
+
+class DeleteNotification extends NotificationEvent {
+  final int id;
+
+  const DeleteNotification(this.id);
+
+  @override
+  List<Object?> get props => [id];
+}

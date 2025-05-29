@@ -18,6 +18,17 @@ class SparringRepository extends BaseRepository {
   }
 
   // -------------------------------------------------------------------------
+  // GET `/sparring` — all sparrings for the authenticated user and by his partner id
+  // -------------------------------------------------------------------------
+  Future<List<Sparring>> getAllSparringsByRequestIdAndPartnerId(int partnerId) async {
+    final response = await apiService.get('/sparring/all/$partnerId');
+    final list = response['sparrings'] as List<dynamic>;
+    return list
+        .map((e) => Sparring.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  // -------------------------------------------------------------------------
   // GET `/sparring/:id` — get a single sparring
   // -------------------------------------------------------------------------
   Future<Sparring?> getSparringById(int id) async {
@@ -48,7 +59,9 @@ class SparringRepository extends BaseRepository {
   // POST `/sparring/:id/confirm` — confirm a sparring
   // -------------------------------------------------------------------------
   Future<SparringResponse> confirmSparring(int id) async {
+    print(id);
     final response = await apiService.post('/sparring/$id/confirm', {});
+
     return SparringResponse.fromJson(response);
   }
 

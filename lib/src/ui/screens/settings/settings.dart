@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sparring_finder/global.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
@@ -6,6 +7,9 @@ import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:ui';
+
+import '../../../blocs/user/user_bloc.dart';
+import '../../../blocs/user/user_event.dart';
 
 class SettingItem {
   final String title;
@@ -554,11 +558,7 @@ class _SettingPage extends State<SettingScreen> {
                       ),
                     ),
                     onPressed: () {
-                      Global.storageService.resetStorage();
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        AppRoutes.loginScreen,
-                        (Route<dynamic> route) => false,
-                      );
+                      context.read<UserBloc>().add(const UserLogoutRequested());
                     },
                   ),
                 ],

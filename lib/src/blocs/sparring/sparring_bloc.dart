@@ -13,6 +13,8 @@ class SparringBloc extends Bloc<SparringEvent, SparringState> {
     on<UpdateSparring>(_onUpdate);
     on<ConfirmSparring>(_onConfirm);
     on<CancelSparring>(_onCancel);
+    on<LoadSparringsByUserIdAndPartnerId>(
+        _onLoadAllSparringsByUserIdAndPartnerId);
   }
 
   /* --------------------------- Handlers --------------------------- */
@@ -25,6 +27,22 @@ class SparringBloc extends Bloc<SparringEvent, SparringState> {
     emit(const SparringLoadInProgress());
     try {
       final list = await repository.getSparrings();
+      emit(SparringLoadSuccess(list));
+    } catch (e) {
+      emit(SparringFailure(e.toString()));
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // GET /sparring — get all sparrings for current user and by his partner id
+  // -------------------------------------------------------------------------
+  Future<void> _onLoadAllSparringsByUserIdAndPartnerId(
+      LoadSparringsByUserIdAndPartnerId event,
+      Emitter<SparringState> emit) async {
+    emit(const SparringLoadInProgress());
+    try {
+      final list = await repository
+          .getAllSparringsByRequestIdAndPartnerId(event.partnerId);
       emit(SparringLoadSuccess(list));
     } catch (e) {
       emit(SparringFailure(e.toString()));
@@ -56,9 +74,10 @@ class SparringBloc extends Bloc<SparringEvent, SparringState> {
       CreateSparring event, Emitter<SparringState> emit) async {
     emit(const SparringLoadInProgress());
     try {
-      final resp = await repository.createSparring(event.data);
-      emit(SparringOperationSuccess(
-          resp.message ?? 'Created successfully', resp.sparrings));
+      await repository.createSparring(event.data);
+      final list = await repository
+          .getAllSparringsByRequestIdAndPartnerId(event.partnerId);
+      emit(SparringLoadSuccess(list));
     } catch (e) {
       emit(SparringFailure(e.toString()));
     }
@@ -71,9 +90,10 @@ class SparringBloc extends Bloc<SparringEvent, SparringState> {
       UpdateSparring event, Emitter<SparringState> emit) async {
     emit(const SparringLoadInProgress());
     try {
-      final resp = await repository.updateSparring(event.id, event.data);
-      emit(SparringOperationSuccess(
-          resp.message ?? 'Updated successfully', resp.sparrings));
+      await repository.updateSparring(event.id, event.data);
+      final list = await repository
+          .getAllSparringsByRequestIdAndPartnerId(event.partnerId);
+      emit(SparringLoadSuccess(list));
     } catch (e) {
       emit(SparringFailure(e.toString()));
     }
@@ -86,6 +106,7 @@ class SparringBloc extends Bloc<SparringEvent, SparringState> {
       ConfirmSparring event, Emitter<SparringState> emit) async {
     emit(const SparringLoadInProgress());
     try {
+      print("sparring id ${event.id}");
       final resp = await repository.confirmSparring(event.id);
       emit(SparringOperationSuccess(
           resp.message ?? 'Confirmed successfully', resp.sparrings));
@@ -101,9 +122,16 @@ class SparringBloc extends Bloc<SparringEvent, SparringState> {
       CancelSparring event, Emitter<SparringState> emit) async {
     emit(const SparringLoadInProgress());
     try {
-      final resp = await repository.cancelSparring(event.id, event.data);
-      emit(SparringOperationSuccess(
-          resp.message ?? 'Cancelled successfully', resp.sparrings));
+      final resp = await repository.cancelSparring(event.id, event.data ?? {});
+
+      if (event.partnerId != null) {
+        final list = await repository
+            .getAllSparringsByRequestIdAndPartnerId(event.partnerId!);
+        emit(SparringLoadSuccess(list));
+      } else {
+        emit(SparringOperationSuccess(
+            resp.message ?? 'Cancelled successfully', resp.sparrings));
+      }
     } catch (e) {
       emit(SparringFailure(e.toString()));
     }

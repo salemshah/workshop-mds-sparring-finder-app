@@ -162,19 +162,22 @@ class SparringSessionBody extends StatelessWidget {
         final requested = session.requesterProfile;
         final partner = session.partnerProfile;
 
-        return SparringCard(
-          firstName: requested?.firstName.capitalizeEachWord() ?? '',
-          lastName: requested?.lastName.capitalizeEachWord()  ?? '',
-          age: _calculateAge(requested?.dateOfBirth),
-          photoUrl: requested?.photoUrl ?? '',
-          scheduledDate: session.scheduledDate.date,
-          location: session.location.capitalizeEachWord() ,
-          startTime: session.startTime.time,
-          invitedFirstName: partner?.firstName.capitalizeEachWord()  ?? '',
-          invitedLastName: partner?.lastName.capitalizeEachWord()  ?? '',
-          invitedAge: _calculateAge(partner?.dateOfBirth),
-          invitedPhotoUrl: partner?.photoUrl ?? '',
-          cardStatus: session.status,
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: SparringCard(
+            firstName: requested?.firstName.capitalizeEachWord() ?? '',
+            lastName: requested?.lastName.capitalizeEachWord()  ?? '',
+            age: _calculateAge(requested?.dateOfBirth),
+            photoUrl: requested?.photoUrl ?? '',
+            scheduledDate: session.scheduledDate.date,
+            location: session.location.capitalizeEachWord() ,
+            startTime: session.startTime.time,
+            invitedFirstName: partner?.firstName.capitalizeEachWord()  ?? '',
+            invitedLastName: partner?.lastName.capitalizeEachWord()  ?? '',
+            invitedAge: _calculateAge(partner?.dateOfBirth),
+            invitedPhotoUrl: partner?.photoUrl ?? '',
+            cardStatus: session.status,
+          ),
         );
       },
     );
