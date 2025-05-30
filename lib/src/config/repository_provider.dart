@@ -33,7 +33,7 @@ class RepositoryProviders {
     }
 
     final baseUrl = isPhysicalDevice
-        ? 'http://172.20.10.3:8000/api'
+        ? 'http://172.20.10.3:8000/api' // local ip to test on my phone
         : 'http://localhost:8000/api';
 
     apiService = ApiService(baseUrl: baseUrl);

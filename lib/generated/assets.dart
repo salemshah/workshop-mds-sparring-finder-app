@@ -2,6 +2,9 @@
 class Assets {
   Assets._();
 
+  static const String animationsEvent = 'assets/animations/event.json';
+  static const String animationsRegister = 'assets/animations/register.json';
+  static const String animationsSuccess = 'assets/animations/success.json';
   static const String iconsAppleLogo = 'assets/icons/apple_logo.png';
   static const String iconsEdit = 'assets/icons/edit.png';
   static const String iconsGoogleLogo = 'assets/icons/google_logo.png';
@@ -9,5 +12,6 @@ class Assets {
   static const String imagesBoxer = 'assets/images/boxer.png';
   static const String imagesHeroImage = 'assets/images/hero_image.png';
   static const String imagesOnboardingImage1 = 'assets/images/onboarding_image_1.png';
+  static const String imagesSparringFinderAppLogo = 'assets/images/sparring_finder_app_logo.png';
 
 }
