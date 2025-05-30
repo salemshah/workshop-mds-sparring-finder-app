@@ -1,3 +1,5 @@
+import '../sparring/sparring_model.dart';
+
 class Availability {
   final int id;
   final int userId;
@@ -7,6 +9,7 @@ class Availability {
   final String location;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final List<Sparring> sparrings;
 
   Availability({
     required this.id,
@@ -17,18 +20,25 @@ class Availability {
     required this.location,
     required this.createdAt,
     required this.updatedAt,
+    this.sparrings = const [],
   });
 
   factory Availability.fromJson(Map<String, dynamic> json) {
+    // Parse nested sparrings array, if present
+    final sparringList = (json['sparrings'] as List<dynamic>?)
+        ?.map((e) => Sparring.fromJson(e as Map<String, dynamic>))
+        .toList() ?? <Sparring>[];
+
     return Availability(
-      id: json['id'],
-      userId: json['user_id'],
-      specificDate: DateTime.parse(json['specific_date']),
-      startTime: DateTime.parse(json['start_time']),
-      endTime: DateTime.parse(json['end_time']),
-      location: json['location'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      id: json['id'] as int,
+      userId: json['user_id'] as int,
+      specificDate: DateTime.parse(json['specific_date'] as String),
+      startTime: DateTime.parse(json['start_time'] as String),
+      endTime: DateTime.parse(json['end_time'] as String),
+      location: json['location'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      sparrings: sparringList,
     );
   }
 
@@ -42,10 +52,10 @@ class Availability {
       'location': location,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'sparrings': sparrings.map((s) => s.toJson()).toList(),
     };
   }
 
-  // Optional: For form updates
   Availability copyWith({
     int? id,
     int? userId,
@@ -55,6 +65,7 @@ class Availability {
     String? location,
     DateTime? createdAt,
     DateTime? updatedAt,
+    List<Sparring>? sparrings,
   }) {
     return Availability(
       id: id ?? this.id,
@@ -65,6 +76,7 @@ class Availability {
       location: location ?? this.location,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      sparrings: sparrings ?? this.sparrings,
     );
   }
 }
