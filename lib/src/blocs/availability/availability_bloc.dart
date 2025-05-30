@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:sparring_finder/src/repositories/availability_repository.dart';
-import '../../models/availability/availability_model.dart';
 import 'availability_event.dart';
 import 'availability_state.dart';
 
