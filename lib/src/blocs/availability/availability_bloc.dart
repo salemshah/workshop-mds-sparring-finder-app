@@ -29,11 +29,12 @@ class AvailabilityBloc extends Bloc<AvailabilityEvent, AvailabilityState> {
     }
   }
 
-  Future<void> _onLoadAllByTargetUserId(
-      LoadAvailabilitiesByTargetUserId event, Emitter<AvailabilityState> emit) async {
+  Future<void> _onLoadAllByTargetUserId(LoadAvailabilitiesByTargetUserId event,
+      Emitter<AvailabilityState> emit) async {
     emit(const AvailabilityLoadInProgress());
     try {
-      final list = await repository.getAvailabilitiesByTargetUserId(event.targetUserId);
+      final list =
+          await repository.getAvailabilitiesByTargetUserId(event.targetUserId);
       emit(AvailabilityLoadSuccess(list));
     } catch (e) {
       emit(AvailabilityFailure(e.toString()));
@@ -57,7 +58,7 @@ class AvailabilityBloc extends Bloc<AvailabilityEvent, AvailabilityState> {
 
   Future<void> _onCreate(
       CreateAvailability event, Emitter<AvailabilityState> emit) async {
-    emit(const AvailabilityLoadInProgress());
+    emit(const AvailabilityLoadInOperation());
     try {
       final resp = await repository.createAvailability(event.data);
       emit(AvailabilityOperationSuccess(
@@ -69,7 +70,7 @@ class AvailabilityBloc extends Bloc<AvailabilityEvent, AvailabilityState> {
 
   Future<void> _onUpdate(
       UpdateAvailability event, Emitter<AvailabilityState> emit) async {
-    emit(const AvailabilityLoadInProgress());
+    emit(const AvailabilityLoadInOperation());
     try {
       await repository.updateAvailability(event.id, event.data);
 
@@ -81,11 +82,9 @@ class AvailabilityBloc extends Bloc<AvailabilityEvent, AvailabilityState> {
     }
   }
 
-
-
   Future<void> _onDelete(
       DeleteAvailability event, Emitter<AvailabilityState> emit) async {
-    emit(const AvailabilityLoadInProgress());
+    emit(const AvailabilityLoadInOperation());
     try {
       final message = await repository.deleteAvailability(event.id);
       // reload fresh list afterwards

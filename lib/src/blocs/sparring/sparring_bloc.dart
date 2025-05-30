@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:sparring_finder/src/blocs/availability/availability_state.dart';
 import 'package:sparring_finder/src/repositories/sparring_repository.dart';
 import 'sparring_event.dart';
 import 'sparring_state.dart';
@@ -108,8 +109,7 @@ class SparringBloc extends Bloc<SparringEvent, SparringState> {
     try {
       print("sparring id ${event.id}");
       final resp = await repository.confirmSparring(event.id);
-      emit(SparringOperationSuccess(
-          resp.message ?? 'Confirmed successfully', resp.sparrings));
+      emit(SparringOperationSuccess(resp.message ?? 'Confirmed successfully', resp.sparrings));
     } catch (e) {
       emit(SparringFailure(e.toString()));
     }

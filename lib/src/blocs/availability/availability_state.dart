@@ -17,6 +17,10 @@ class AvailabilityLoadInProgress extends AvailabilityState {
   const AvailabilityLoadInProgress();
 }
 
+class AvailabilityLoadInOperation extends AvailabilityState {
+  const AvailabilityLoadInOperation();
+}
+
 class AvailabilityLoadSuccess extends AvailabilityState {
   final List<Availability> availabilities;
   const AvailabilityLoadSuccess(this.availabilities);

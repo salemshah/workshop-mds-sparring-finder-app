@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/src/blocs/user/user_bloc.dart';
 import 'package:sparring_finder/src/blocs/user/user_state.dart';
-import 'package:sparring_finder/src/ui/screens/availability/availability_calender_screen_new.dart';
+import 'package:sparring_finder/src/ui/screens/availability/availability_calender_screen.dart';
 import 'package:sparring_finder/src/ui/screens/session/sparring_session_screen.dart';
 import '../../../blocs/notification/notification_bloc.dart';
 import '../../../blocs/notification/notification_state.dart';
@@ -30,7 +30,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     HomeScreen(),
     SparringSessionScreen(),
     PlaceholderScreen(title: "Messages", icon: Icons.message),
-    AvailabilityCalendarScreenNew(),
+    AvailabilityCalendarScreen(),
     ProfileScreen(),
   ];
 

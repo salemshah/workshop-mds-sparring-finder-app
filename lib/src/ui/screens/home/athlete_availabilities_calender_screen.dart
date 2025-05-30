@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import '../../../../generated/assets.dart';
 import '../../../blocs/availability/availability_bloc.dart';
 import '../../../blocs/availability/availability_event.dart';
 import '../../../blocs/availability/availability_state.dart';
@@ -15,6 +16,7 @@ import '../../../models/sparring/sparring_model.dart';
 
 import '../../../utils/jwt.dart';
 import '../../theme/app_colors.dart';
+import '../../widgets/app_lottie_loader.dart';
 
 class AthleteAvailabilitiesCalenderScreen extends StatefulWidget {
   const AthleteAvailabilitiesCalenderScreen({
@@ -31,6 +33,10 @@ class AthleteAvailabilitiesCalenderScreen extends StatefulWidget {
 
 class _AthleteAvailabilitiesCalenderScreenState
     extends State<AthleteAvailabilitiesCalenderScreen> {
+  bool _isAvailabilityInLoading = false;
+  bool _isSparringInLoading = false;
+  String? _lottiePath;
+
   final CalendarController _cal = CalendarController();
 
   List<Appointment> _freeAppts = [];
@@ -55,6 +61,7 @@ class _AthleteAvailabilitiesCalenderScreenState
     final decoded = await JwtStorageHelper.getDecodedAccessToken();
     _currentUserId = decoded['id'] as int?;
 
+    if (!mounted) return;
     context
         .read<AvailabilityBloc>()
         .add(LoadAvailabilitiesByTargetUserId(widget.targetUserId));
@@ -65,20 +72,21 @@ class _AthleteAvailabilitiesCalenderScreenState
   }
 
   DateTime _toLocal(DateTime t) => t.isUtc ? t.toLocal() : t;
-  DateTime _toUtc(DateTime t)   => t.isUtc ? t : t.toUtc();
+
+  DateTime _toUtc(DateTime t) => t.isUtc ? t : t.toUtc();
 
   List<Appointment> _rawAvail(List<Availability> src) {
     return src.map((a) {
       final ls = _toLocal(a.startTime);
       final le = _toLocal(a.endTime);
       return Appointment(
-        startTime:     ls,
-        endTime:       le,
-        subject:       'Free',
-        id:            a.id,
-        location:      a.location,
+        startTime: ls,
+        endTime: le,
+        subject: 'Free',
+        id: a.id,
+        location: a.location,
         startTimeZone: _tzParis,
-        endTimeZone:   _tzParis,
+        endTimeZone: _tzParis,
       );
     }).toList();
   }
@@ -92,37 +100,36 @@ class _AthleteAvailabilitiesCalenderScreenState
           ? 'My SP : ${s.status.toLowerCase()}'
           : 'Booked ${s.status.toLowerCase()}';
       return Appointment(
-        startTime:     ls,
-        endTime:       le,
-        subject:       txt,
-        id:            s.id,
-        notes:         mine ? 'mine' : 'other',
-        location:      s.location,
-        color:         mine
+        startTime: ls,
+        endTime: le,
+        subject: txt,
+        id: s.id,
+        notes: mine ? 'mine' : 'other',
+        location: s.location,
+        color: mine
             ? (s.status == "PENDING"
-            ? Colors.yellowAccent.withOpacity(.3)
-            : s.status == "CANCELLED"
-            ? Colors.redAccent.withOpacity(.3)
-            : s.status == "CONFIRMED"
-            ? Colors.blue.withOpacity(.3)
-            : Colors.deepPurpleAccent)
+                ? Colors.yellowAccent.withOpacity(.3)
+                : s.status == "CANCELLED"
+                    ? Colors.redAccent.withOpacity(.3)
+                    : s.status == "CONFIRMED"
+                        ? Colors.blue.withOpacity(.3)
+                        : Colors.deepPurpleAccent)
             : Colors.deepPurpleAccent,
         startTimeZone: _tzParis,
-        endTimeZone:   _tzParis,
+        endTimeZone: _tzParis,
       );
     }).toList();
   }
 
-  List<Appointment> _splitFree(
-      List<Appointment> raw, List<Appointment> spars) {
+  List<Appointment> _splitFree(List<Appointment> raw, List<Appointment> spars) {
     final free = <Appointment>[];
     for (final av in raw) {
       final overlaps = spars
           .where((s) =>
-      s.startTime.isBefore(av.endTime) &&
-          s.endTime.isAfter(av.startTime))
+              s.startTime.isBefore(av.endTime) &&
+              s.endTime.isAfter(av.startTime))
           .toList()
-        ..sort((a,b)=>a.startTime.compareTo(b.startTime));
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
 
       DateTime cursor = av.startTime;
       for (final s in overlaps) {
@@ -138,16 +145,15 @@ class _AthleteAvailabilitiesCalenderScreenState
     return free;
   }
 
-  Appointment _frag(Appointment proto, DateTime st, DateTime en) =>
-      Appointment(
-        startTime:     st,
-        endTime:       en,
-        subject:       'Free',
-        id:            proto.id,
-        location:      proto.location,
-        color:         Colors.greenAccent.withOpacity(.35),
+  Appointment _frag(Appointment proto, DateTime st, DateTime en) => Appointment(
+        startTime: st,
+        endTime: en,
+        subject: 'Free',
+        id: proto.id,
+        location: proto.location,
+        color: Colors.greenAccent.withOpacity(.35),
         startTimeZone: _tzParis,
-        endTimeZone:   _tzParis,
+        endTimeZone: _tzParis,
       );
 
   void _refresh({List<Availability>? avail, List<Sparring>? spars}) {
@@ -165,8 +171,8 @@ class _AthleteAvailabilitiesCalenderScreenState
   }
 
   bool _hit(Appointment a, DateTime t) =>
-      t.isAfter(a.startTime.subtract(const Duration(minutes:1))) &&
-          t.isBefore(a.endTime);
+      t.isAfter(a.startTime.subtract(const Duration(minutes: 1))) &&
+      t.isBefore(a.endTime);
 
   void _toast(String m, Color c) => ScaffoldMessenger.of(context)
       .showSnackBar(SnackBar(content: Text(m), backgroundColor: c));
@@ -175,99 +181,145 @@ class _AthleteAvailabilitiesCalenderScreenState
   Widget build(BuildContext context) {
     final combined = [..._freeAppts, ..._myAppts, ..._otherAppts];
 
+    print("availability:   $_isAvailabilityInLoading");
+    print("sparring:       $_isSparringInLoading");
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: MultiBlocListener(
-          listeners: [
-            BlocListener<AvailabilityBloc, AvailabilityState>(
-              listener: (_, st) {
-                if (st is AvailabilityLoadSuccess) {
-                  _refresh(avail: st.availabilities);
-                }
-              },
-            ),
-            BlocListener<SparringBloc, SparringState>(
-              listener: (_, st) {
-                if (st is SparringLoadSuccess) {
-                  _refresh(spars: st.sparrings);
-                } else if (st is SparringOperationSuccess) {
-                  // reload to get the up-to-date list
-                  context.read<SparringBloc>().add(
-                      LoadSparringsByUserIdAndPartnerId(widget.targetUserId));
-                }
-              },
-            ),
-          ],
-          child: SfCalendar(
-            controller: _cal,
-            dataSource: _CalDS(combined),
-            view: CalendarView.month,
-            timeZone: _tzParis,  // calendar-wide timezone :contentReference[oaicite:1]{index=1}
-            onTap: _handleTap,
-            showNavigationArrow: true,
-            showTodayButton: true,
-            allowViewNavigation: true,
-            todayHighlightColor: AppColors.primary,
-            cellBorderColor: AppColors.border,
-            timeSlotViewSettings: const TimeSlotViewSettings(
-              endHour: 24,
-              startHour: 0,
-              timeFormat: 'HH:mm',
-              timeInterval: Duration(hours: 1),
-              timeTextStyle: TextStyle(color: AppColors.primary),
-            ),
-            headerStyle: CalendarHeaderStyle(
-              backgroundColor: AppColors.inputFill,
-              textStyle: const TextStyle(
-                color: AppColors.primary,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            viewHeaderStyle: const ViewHeaderStyle(
-              dayTextStyle: TextStyle(
-                color: AppColors.text,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-              dateTextStyle: TextStyle(
-                color: Colors.orangeAccent,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            monthViewSettings: const MonthViewSettings(
-              showAgenda: true,
-              dayFormat: 'EEE',
-              monthCellStyle: MonthCellStyle(
-                textStyle: TextStyle(color: AppColors.primary),
-                leadingDatesTextStyle: TextStyle(color: AppColors.text),
-                trailingDatesTextStyle: TextStyle(color: AppColors.text),
-              ),
-              agendaStyle: AgendaStyle(
-                dayTextStyle: TextStyle(
-                  color: Colors.greenAccent,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: MultiBlocListener(
+              listeners: [
+                BlocListener<AvailabilityBloc, AvailabilityState>(
+                  listener: (_, st) {
+                    if (st is AvailabilityLoadInProgress) {
+                      setState(() {
+                        _lottiePath = Assets.animationsCaledarLoading;
+                        _isAvailabilityInLoading = true;
+                      });
+                    } else if (st is AvailabilityLoadSuccess) {
+                      _refresh(avail: st.availabilities);
+                      setState(() {
+                        _lottiePath = null;
+                        _isAvailabilityInLoading = false;
+                      });
+                    }
+                  },
                 ),
-                dateTextStyle: TextStyle(
-                  color: AppColors.text,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                BlocListener<SparringBloc, SparringState>(
+                  listener: (_, st) {
+                    if (st is SparringLoadInProgress) {
+                      setState(() {
+                        _lottiePath = Assets.animationsCaledarLoading;
+                        _isSparringInLoading = true;
+                      });
+                    } else if (st is SparringFailure ||
+                        st is SparringOperationSuccess) {
+                      setState(() {
+                        _lottiePath = null;
+                        _isSparringInLoading = false;
+                      });
+                    } else if (st is SparringLoadSuccess) {
+                      _refresh(spars: st.sparrings);
+                      setState(() {
+                        _lottiePath = null;
+                        _isSparringInLoading = false;
+                      });
+                    } else if (st is SparringOperationSuccess) {
+                      context.read<SparringBloc>().add(
+                          LoadSparringsByUserIdAndPartnerId(
+                              widget.targetUserId));
+                    }
+                  },
                 ),
-                appointmentTextStyle: TextStyle(
-                  color: Colors.orange,
+              ],
+              child: SfCalendar(
+                controller: _cal,
+                dataSource: _CalDS(combined),
+                view: CalendarView.month,
+                timeZone: _tzParis,
+                // calendar-wide timezone :contentReference[oaicite:1]{index=1}
+                onTap: _handleTap,
+                showNavigationArrow: true,
+                showTodayButton: true,
+                allowViewNavigation: true,
+                todayHighlightColor: AppColors.primary,
+                cellBorderColor: AppColors.border,
+                timeSlotViewSettings: const TimeSlotViewSettings(
+                  endHour: 24,
+                  startHour: 0,
+                  timeFormat: 'HH:mm',
+                  timeInterval: Duration(hours: 1),
+                  timeTextStyle: TextStyle(color: AppColors.primary),
                 ),
+                headerStyle: CalendarHeaderStyle(
+                  backgroundColor: AppColors.inputFill,
+                  textStyle: const TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                viewHeaderStyle: const ViewHeaderStyle(
+                  dayTextStyle: TextStyle(
+                    color: AppColors.text,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  dateTextStyle: TextStyle(
+                    color: Colors.orangeAccent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                monthViewSettings: const MonthViewSettings(
+                  showAgenda: true,
+                  dayFormat: 'EEE',
+                  monthCellStyle: MonthCellStyle(
+                    textStyle: TextStyle(color: AppColors.primary),
+                    leadingDatesTextStyle: TextStyle(color: AppColors.text),
+                    trailingDatesTextStyle: TextStyle(color: AppColors.text),
+                  ),
+                  agendaStyle: AgendaStyle(
+                    dayTextStyle: TextStyle(
+                      color: Colors.greenAccent,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    dateTextStyle: TextStyle(
+                      color: AppColors.text,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    appointmentTextStyle: TextStyle(
+                      color: Colors.orange,
+                    ),
+                  ),
+                ),
+                allowedViews: const [
+                  CalendarView.day,
+                  CalendarView.week,
+                  CalendarView.month,
+                ],
               ),
             ),
-            allowedViews: const [
-              CalendarView.day,
-              CalendarView.week,
-              CalendarView.month,
-            ],
           ),
-        ),
+          if ((_isAvailabilityInLoading || _isSparringInLoading) &&
+              _lottiePath != null)
+            Positioned.fill(
+              child: AbsorbPointer(
+                absorbing: true,
+                child: Container(
+                    color: AppColors.background.withValues(alpha: .5),
+                    child: AppLottieLoader(
+                      size: MediaQuery.of(context).size.width / 2,
+                      animationPath: _lottiePath!,
+                      repeat: true,
+                    )),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -285,9 +337,9 @@ class _AthleteAvailabilitiesCalenderScreenState
       return;
     }
 
-    final mine  = _myAppts.firstWhereOrNull((a) => _hit(a, t));
+    final mine = _myAppts.firstWhereOrNull((a) => _hit(a, t));
     final other = _otherAppts.firstWhereOrNull((a) => _hit(a, t));
-    final free  = _freeAppts.firstWhereOrNull((a) => _hit(a, t));
+    final free = _freeAppts.firstWhereOrNull((a) => _hit(a, t));
 
     if (mine != null) {
       await _editOrDelete(mine);
@@ -309,7 +361,7 @@ class _AthleteAvailabilitiesCalenderScreenState
     final bloc = context.read<SparringBloc>();
     final hours = List.generate(24, (h) => TimeOfDay(hour: h, minute: 0));
     TimeOfDay startT = TimeOfDay(hour: base.hour, minute: 0);
-    TimeOfDay endT   = TimeOfDay(hour: (base.hour + 1) % 24, minute: 0);
+    TimeOfDay endT = TimeOfDay(hour: (base.hour + 1) % 24, minute: 0);
     final ctrl = TextEditingController(text: 'Gym XYZ');
 
     final ok = await showDialog<bool>(
@@ -324,22 +376,22 @@ class _AthleteAvailabilitiesCalenderScreenState
               isExpanded: true,
               items: hours
                   .where((t) =>
-                  DateTime(base.year, base.month, base.day, t.hour + 1)
-                      .isAfter(minStart))
+                      DateTime(base.year, base.month, base.day, t.hour + 1)
+                          .isAfter(minStart))
                   .where((t) =>
-                  DateTime(base.year, base.month, base.day, t.hour)
-                      .isBefore(maxEnd))
+                      DateTime(base.year, base.month, base.day, t.hour)
+                          .isBefore(maxEnd))
                   .map((t) => DropdownMenuItem(
-                value: t,
-                child: Text(t.format(ctx)),
-              ))
+                        value: t,
+                        child: Text(t.format(ctx)),
+                      ))
                   .toList(),
               onChanged: (t) {
                 if (t != null) {
                   set(() {
                     startT = t;
                     if (!(_endAfter(startT, endT))) {
-                      endT = TimeOfDay(hour:(startT.hour+1)%24, minute:0);
+                      endT = TimeOfDay(hour: (startT.hour + 1) % 24, minute: 0);
                     }
                   });
                 }
@@ -352,15 +404,17 @@ class _AthleteAvailabilitiesCalenderScreenState
               isExpanded: true,
               items: hours
                   .where((t) =>
-              _endAfter(startT, t) &&
-                  DateTime(base.year, base.month, base.day, t.hour)
-                      .isBefore(maxEnd.add(const Duration(minutes:1))))
+                      _endAfter(startT, t) &&
+                      DateTime(base.year, base.month, base.day, t.hour)
+                          .isBefore(maxEnd.add(const Duration(minutes: 1))))
                   .map((t) => DropdownMenuItem(
-                value: t,
-                child: Text(t.format(ctx)),
-              ))
+                        value: t,
+                        child: Text(t.format(ctx)),
+                      ))
                   .toList(),
-              onChanged: (t) { if (t != null) set(() => endT = t); },
+              onChanged: (t) {
+                if (t != null) set(() => endT = t);
+              },
             ),
             const SizedBox(height: 12),
             TextField(
@@ -383,10 +437,8 @@ class _AthleteAvailabilitiesCalenderScreenState
     );
     if (ok != true) return;
 
-    final startLocal = DateTime(
-        base.year, base.month, base.day, startT.hour);
-    final endLocal   = DateTime(
-        base.year, base.month, base.day, endT.hour);
+    final startLocal = DateTime(base.year, base.month, base.day, startT.hour);
+    final endLocal = DateTime(base.year, base.month, base.day, endT.hour);
 
     // ■ Overlap guard against existing sparrings
     final overlap = _latestSpars.any((s) {
@@ -403,9 +455,9 @@ class _AthleteAvailabilitiesCalenderScreenState
       'availability_id': availId,
       'partner_id': widget.targetUserId,
       'scheduled_date': _toUtc(startLocal).toIso8601String(),
-      'start_time':     _toUtc(startLocal).toIso8601String(),
-      'end_time':       _toUtc(endLocal).toIso8601String(),
-      'location':       ctrl.text,
+      'start_time': _toUtc(startLocal).toIso8601String(),
+      'end_time': _toUtc(endLocal).toIso8601String(),
+      'location': ctrl.text,
     }, widget.targetUserId));
   }
 
