@@ -2,6 +2,7 @@
 class Assets {
   Assets._();
 
+  static const String animationsCaledarLoading = 'assets/animations/caledar_loading.json';
   static const String animationsEvent = 'assets/animations/event.json';
   static const String animationsRegister = 'assets/animations/register.json';
   static const String animationsSuccess = 'assets/animations/success.json';

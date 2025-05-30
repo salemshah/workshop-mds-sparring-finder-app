@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sparring_finder/generated/assets.dart';
+import 'package:sparring_finder/src/ui/widgets/app_lottie_loader.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../blocs/availability/availability_bloc.dart';
 import '../../../blocs/availability/availability_event.dart';
@@ -18,201 +20,281 @@ class AvailabilityCalendarScreen extends StatefulWidget {
 
 class _AvailabilityCalendarScreenState
     extends State<AvailabilityCalendarScreen> {
-  /// All slots fetched from backend
+  final CalendarController _cal = CalendarController();
   List<Availability> _availabilities = [];
+  bool _isLoading = false;
+  String? _lottiePath;
 
-  // -------------------------------------------------------------- Helpers --------------------------------------------------------------
+  static const _tzParis = 'Romance Standard Time';
+
   DateTime _toLocal(DateTime t) => t.isUtc ? t.toLocal() : t;
 
   DateTime _toUtc(DateTime t) => t.isUtc ? t : t.toUtc();
 
   bool _intervalsOverlap(
-      DateTime aStart, DateTime aEnd, DateTime bStart, DateTime bEnd) {
-    return aStart.isBefore(bEnd) && bStart.isBefore(aEnd);
-  }
+          DateTime aStart, DateTime aEnd, DateTime bStart, DateTime bEnd) =>
+      aStart.isBefore(bEnd) && bStart.isBefore(aEnd);
 
   bool _overlapsExisting(DateTime start, DateTime end, List<Availability> list,
       [int? ignoreId]) {
     for (final a in list) {
       if (ignoreId != null && a.id == ignoreId) continue;
       if (_intervalsOverlap(
-          start, end, _toLocal(a.startTime), _toLocal(a.endTime))) {
-        return true;
-      }
+          start, end, _toLocal(a.startTime), _toLocal(a.endTime))) return true;
     }
     return false;
   }
 
-  bool _isEndAfterStart(TimeOfDay start, TimeOfDay end) =>
-      end.hour > start.hour;
+  bool _isEndAfterStart(TimeOfDay s, TimeOfDay e) => e.hour > s.hour;
 
   TimeOfDay _nextHourAfter(TimeOfDay t) =>
       TimeOfDay(hour: (t.hour + 1) % 24, minute: 0);
 
-  TimeRegion _regionFromAvailability(Availability a) {
-    final s = _toLocal(a.startTime);
-    final e = _toLocal(a.endTime);
-    return TimeRegion(
-      startTime: s,
-      endTime: e,
-      enablePointerInteraction: true,
-      color: AppColors.primary.withOpacity(0.8),
-      timeZone: 'Europe/Paris',
-      text: 'Available\n${a.location}',
-      textStyle: const TextStyle(
-        color: Colors.white,
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-  }
-
-  // -------------------------------------------------------------- Lifecycle --------------------------------------------------------------
   @override
   void initState() {
     super.initState();
     context.read<AvailabilityBloc>().add(const LoadAvailabilities());
   }
 
-  // -------------------------------------------------------------- UI --------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: BlocConsumer<AvailabilityBloc, AvailabilityState>(
-          listener: (context, state) {
-            if (state is AvailabilityLoadSuccess ||
-                state is AvailabilityOperationSuccess) {
-              final list = (state is AvailabilityLoadSuccess)
-                  ? state.availabilities
-                  : (state as AvailabilityOperationSuccess).availabilities;
-              setState(() => _availabilities = list);
-            } else if (state is AvailabilityFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(state.error),
-                backgroundColor: AppColors.primary,
-              ));
-            }
-          },
-          builder: (context, state) {
-            final regions =
-                _availabilities.map(_regionFromAvailability).toList();
-
-// ----------------------------------------------------------- Sf Calendar ------------------------------------------------------------
-
-            return SfCalendar(
-              showNavigationArrow: true,
-              showTodayButton: true,
-              allowViewNavigation: true,
-              viewHeaderStyle: const ViewHeaderStyle(
-                dayTextStyle: TextStyle(
-                  color: AppColors.text, //  Day name like "Mon"
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-                dateTextStyle: TextStyle(
-                  color: Colors.orangeAccent, // Date number like "24"
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              showDatePickerButton: true,
-              monthViewSettings: const MonthViewSettings(
-                showAgenda: true,
-                dayFormat: 'EEE',
-                monthCellStyle: MonthCellStyle(
-                  textStyle: TextStyle(color: AppColors.primary),
-                  // todayTextStyle: TextStyle(color: Colors.greenAccent),
-                  leadingDatesTextStyle: TextStyle(color: AppColors.text),
-                  trailingDatesTextStyle: TextStyle(color: AppColors.text),
-                ),
-                agendaStyle: AgendaStyle(
-                  dayTextStyle: TextStyle(
-                    color: Colors.greenAccent, // "Mon", "Tue", etc.
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  dateTextStyle: TextStyle(
-                    color: AppColors.text, // Date number (e.g. "24")
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  appointmentTextStyle: TextStyle(
-                    color: Colors.orange, // Event text
-                  ),
-                ),
-              ),
-              allowedViews: [
-                CalendarView.day,
-                CalendarView.month,
-                CalendarView.week
-              ],
-              view: CalendarView.week,
-              timeSlotViewSettings: const TimeSlotViewSettings(
-                timeInterval: Duration(minutes: 60),
-                timeTextStyle: TextStyle(color: AppColors.primary),
-              ),
-              headerStyle: CalendarHeaderStyle(
-                backgroundColor: AppColors.inputFill,
-                textStyle: const TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              todayHighlightColor: AppColors.primary,
-              cellBorderColor: AppColors.border,
-              specialRegions: regions,
-              onTap: (CalendarTapDetails details) async {
-                final DateTime? tappedLocal = details.date;
-                if (tappedLocal == null || tappedLocal.minute != 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Tap only on full-hour marks.'),
-                    backgroundColor: Colors.redAccent,
-                  ));
-                  return;
+      body: Stack(
+        children: [
+          // ───────────── Calendar + BLoC logic ─────────────
+          SafeArea(
+            child: BlocConsumer<AvailabilityBloc, AvailabilityState>(
+              listener: (context, state) {
+                // operation started?
+                if (state is AvailabilityLoadInProgress) {
+                  setState(() {
+                    _lottiePath = Assets.animationsCaledarLoading;
+                    _isLoading = true;
+                  });
+                } else if (state is AvailabilityLoadInOperation) {
+                  setState(() {
+                    _lottiePath = Assets.animationsEvent;
+                    _isLoading = true;
+                  });
+                }
+                // any success or failure => hide loader
+                if (state is AvailabilityOperationSuccess ||
+                    state is AvailabilityLoadSuccess ||
+                    state is AvailabilityFailure) {
+                  setState(() {
+                    _lottiePath = null;
+                    _isLoading = false;
+                  });
                 }
 
-                // Which slot (if any) did we hit?
-                final Availability? existing =
-                    _availabilities.firstWhereOrNull((a) {
-                  final s = _toLocal(a.startTime);
-                  final e = _toLocal(a.endTime);
-                  return tappedLocal.isAtSameMomentAs(s) ||
-                      (tappedLocal.isAfter(s) && tappedLocal.isBefore(e));
-                });
-
-                if (existing != null) {
-                  await _showEditOrDeleteDialog(existing);
-                } else {
-                  await _showCreateDialog(context, tappedLocal,
-                      tappedLocal.add(const Duration(hours: 6)));
+                if (state is AvailabilityLoadSuccess ||
+                    state is AvailabilityOperationSuccess) {
+                  final list = state is AvailabilityLoadSuccess
+                      ? state.availabilities
+                      : (state as AvailabilityOperationSuccess).availabilities;
+                  setState(() => _availabilities = list);
+                }
+                if (state is AvailabilityFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.error),
+                      backgroundColor: AppColors.primary,
+                    ),
+                  );
                 }
               },
-            );
-          },
-        ),
+              builder: (context, state) {
+                // build availabilities as green appointments
+                final availAppts = _availabilities.map((a) {
+                  final s = _toLocal(a.startTime);
+                  final e = _toLocal(a.endTime);
+                  return Appointment(
+                    startTime: s,
+                    endTime: e,
+                    subject: 'Available\n${a.location}',
+                    id: a.id,
+                    color: AppColors.primary.withOpacity(.5),
+                    startTimeZone: _tzParis,
+                    endTimeZone: _tzParis,
+                  );
+                });
+
+                // build sparrings as colored “Booked”
+                final sparAppts = _availabilities
+                    .expand<Appointment>((a) => a.sparrings.map((s) {
+                          final ls = _toLocal(s.startTime);
+                          final le = _toLocal(s.endTime);
+                          Color c;
+                          switch (s.status) {
+                            case 'PENDING':
+                              c = Colors.yellowAccent.withOpacity(.6);
+                              break;
+                            case 'CONFIRMED':
+                              c = Colors.blue.withOpacity(.6);
+                              break;
+                            case 'CANCELLED':
+                              c = Colors.redAccent.withOpacity(.6);
+                              break;
+                            default:
+                              c = Colors.deepPurpleAccent.withOpacity(.6);
+                          }
+                          return Appointment(
+                            startTime: ls,
+                            endTime: le,
+                            subject: 'Booked: ${s.status.toLowerCase()}',
+                            id: s.id,
+                            color: c,
+                            startTimeZone: _tzParis,
+                            endTimeZone: _tzParis,
+                          );
+                        }))
+                    .toList();
+
+                final allAppts = [...availAppts, ...sparAppts];
+
+                return SfCalendar(
+                  timeZone: _tzParis,
+                  dataSource: _CalDS(allAppts),
+                  view: CalendarView.month,
+                  allowedViews: const [
+                    CalendarView.day,
+                    CalendarView.week,
+                    CalendarView.month
+                  ],
+                  showNavigationArrow: true,
+                  showTodayButton: true,
+                  allowViewNavigation: true,
+                  headerStyle: CalendarHeaderStyle(
+                    backgroundColor: AppColors.inputFill,
+                    textStyle: const TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  viewHeaderStyle: const ViewHeaderStyle(
+                    dayTextStyle: TextStyle(
+                      color: AppColors.text,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    dateTextStyle: TextStyle(
+                      color: Colors.orangeAccent,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  monthViewSettings: const MonthViewSettings(
+                    showAgenda: true,
+                    dayFormat: 'EEE',
+                    monthCellStyle: MonthCellStyle(
+                      textStyle: TextStyle(color: AppColors.primary),
+                      leadingDatesTextStyle: TextStyle(color: AppColors.text),
+                      trailingDatesTextStyle: TextStyle(color: AppColors.text),
+                    ),
+                    agendaStyle: AgendaStyle(
+                      dayTextStyle: TextStyle(
+                        color: Colors.greenAccent,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      dateTextStyle: TextStyle(
+                        color: AppColors.text,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      appointmentTextStyle: TextStyle(
+                        color: Colors.orange,
+                      ),
+                    ),
+                  ),
+                  timeSlotViewSettings: const TimeSlotViewSettings(
+                    timeInterval: Duration(hours: 1),
+                    timeTextStyle: TextStyle(color: AppColors.primary),
+                  ),
+                  todayHighlightColor: AppColors.primary,
+                  cellBorderColor: AppColors.border,
+                  controller: _cal,
+                  onTap: (details) async {
+
+                    final t = details.date;
+                    if (t == null) return;
+
+                    if (_cal.view == CalendarView.month) {
+                      setState(() {
+                        _cal
+                          ..view = CalendarView.day
+                          ..displayDate = t;
+                      });
+                      return;
+                    }
+
+
+                    final tapped = details.date;
+                    if (tapped == null || tapped.minute != 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Tap only on full‐hour marks.'),
+                        backgroundColor: Colors.redAccent,
+                      ));
+                      return;
+                    }
+                    final existing = _availabilities.firstWhereOrNull((a) {
+                      final s = _toLocal(a.startTime);
+                      final e = _toLocal(a.endTime);
+                      return tapped.isAtSameMomentAs(s) ||
+                          (tapped.isAfter(s) && tapped.isBefore(e));
+                    });
+                    if (existing != null) {
+                      await _showEditOrDeleteDialog(existing);
+                    } else {
+                      await _showCreateDialog(
+                        context,
+                        tapped,
+                        tapped.add(const Duration(hours: 6)),
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+          ),
+          // ───────────── Loading Overlay ─────────────
+          if (_isLoading && _lottiePath != null)
+            Positioned.fill(
+              child: AbsorbPointer(
+                absorbing: true,
+                child: Container(
+                    color: AppColors.background.withValues(alpha: .5),
+                    child: AppLottieLoader(
+                      size: MediaQuery.of(context).size.width / 2,
+                      animationPath: _lottiePath!,
+                      repeat: true,
+                    )),
+              ),
+            ),
+        ],
       ),
     );
   }
 
-  // -------------------------------------------------------------- Dialogs --------------------------------------------------------------
+  // --------------------------------------------------------------
+  // Dialogs: unchanged from your original
+  // --------------------------------------------------------------
 
   Future<void> _showCreateDialog(
       BuildContext context, DateTime base, DateTime maxEnd) async {
     final bloc = context.read<AvailabilityBloc>();
-    final controller = TextEditingController(
-        text: '22 Rue Allonvile, Paris, France'); // default
+    final controller =
+        TextEditingController(text: '22 Rue Allonvile, Paris, France');
     final hours = List.generate(24, (i) => TimeOfDay(hour: i, minute: 0));
-
     TimeOfDay startT = TimeOfDay(hour: base.hour, minute: 0);
     TimeOfDay endT = TimeOfDay(hour: (base.hour + 1) % 24, minute: 0);
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
+      builder: (_) => StatefulBuilder(builder: (ctx, setState) {
+        return AlertDialog(
           title: const Text('Create Availability'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -222,10 +304,8 @@ class _AvailabilityCalendarScreenState
                 value: startT,
                 isExpanded: true,
                 items: hours
-                    .map((t) => DropdownMenuItem(
-                          value: t,
-                          child: Text(t.format(context)),
-                        ))
+                    .map((t) =>
+                        DropdownMenuItem(value: t, child: Text(t.format(ctx))))
                     .toList(),
                 onChanged: (t) {
                   if (t != null) {
@@ -245,10 +325,8 @@ class _AvailabilityCalendarScreenState
                 isExpanded: true,
                 items: hours
                     .where((t) => _isEndAfterStart(startT, t))
-                    .map((t) => DropdownMenuItem(
-                          value: t,
-                          child: Text(t.format(context)),
-                        ))
+                    .map((t) =>
+                        DropdownMenuItem(value: t, child: Text(t.format(ctx))))
                     .toList(),
                 onChanged: (t) {
                   if (t != null) setState(() => endT = t);
@@ -263,7 +341,7 @@ class _AvailabilityCalendarScreenState
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: () => Navigator.pop(ctx, false),
                 child: const Text('Cancel')),
             ElevatedButton(
                 onPressed: () {
@@ -272,7 +350,6 @@ class _AvailabilityCalendarScreenState
                       DateTime(base.year, base.month, base.day, startT.hour);
                   final end =
                       DateTime(base.year, base.month, base.day, endT.hour);
-
                   if (start.isBefore(now)) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text('Cannot create in the past'),
@@ -291,18 +368,17 @@ class _AvailabilityCalendarScreenState
                         backgroundColor: Colors.redAccent));
                     return;
                   }
-                  Navigator.pop(context, true);
+                  Navigator.pop(ctx, true);
                 },
                 child: const Text('Confirm')),
           ],
-        ),
-      ),
+        );
+      }),
     );
 
     if (confirmed == true && mounted) {
       final startLocal = DateTime(base.year, base.month, base.day, startT.hour);
       final endLocal = DateTime(base.year, base.month, base.day, endT.hour);
-
       bloc.add(CreateAvailability({
         'specific_date': _toUtc(base).toIso8601String(),
         'start_time': _toUtc(startLocal).toIso8601String(),
@@ -315,7 +391,6 @@ class _AvailabilityCalendarScreenState
   Future<void> _showEditOrDeleteDialog(Availability availability) async {
     final bloc = context.read<AvailabilityBloc>();
     final controller = TextEditingController(text: availability.location);
-
     final hours = List.generate(24, (i) => TimeOfDay(hour: i, minute: 0));
     TimeOfDay startT =
         TimeOfDay(hour: _toLocal(availability.startTime).hour, minute: 0);
@@ -325,7 +400,7 @@ class _AvailabilityCalendarScreenState
     final result = await showDialog<String>(
       context: context,
       builder: (_) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
+        builder: (ctx, setState) => AlertDialog(
           title: const Text('Edit / Delete Availability'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -335,10 +410,8 @@ class _AvailabilityCalendarScreenState
                 value: startT,
                 isExpanded: true,
                 items: hours
-                    .map((t) => DropdownMenuItem(
-                          value: t,
-                          child: Text(t.format(context)),
-                        ))
+                    .map((t) =>
+                        DropdownMenuItem(value: t, child: Text(t.format(ctx))))
                     .toList(),
                 onChanged: (t) {
                   if (t != null) {
@@ -351,16 +424,15 @@ class _AvailabilityCalendarScreenState
                   }
                 },
               ),
+              const SizedBox(height: 8),
               const Text('End Time:'),
               DropdownButton<TimeOfDay>(
                 value: endT,
                 isExpanded: true,
                 items: hours
                     .where((t) => _isEndAfterStart(startT, t))
-                    .map((t) => DropdownMenuItem(
-                          value: t,
-                          child: Text(t.format(context)),
-                        ))
+                    .map((t) =>
+                        DropdownMenuItem(value: t, child: Text(t.format(ctx))))
                     .toList(),
                 onChanged: (t) {
                   if (t != null) setState(() => endT = t);
@@ -375,21 +447,19 @@ class _AvailabilityCalendarScreenState
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context, 'delete'),
+                onPressed: () => Navigator.pop(ctx, 'delete'),
                 child: const Text('Delete')),
             TextButton(
-                onPressed: () => Navigator.pop(context, null),
+                onPressed: () => Navigator.pop(ctx, null),
                 child: const Text('Cancel')),
             ElevatedButton(
                 onPressed: () {
                   final now = DateTime.now();
-                  final base = _toLocal(availability.startTime); // original day
-
+                  final base = _toLocal(availability.startTime);
                   final startLocal =
                       DateTime(base.year, base.month, base.day, startT.hour);
                   final endLocal =
                       DateTime(base.year, base.month, base.day, endT.hour);
-
                   if (startLocal.isBefore(now)) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text('Cannot move into the past'),
@@ -409,7 +479,7 @@ class _AvailabilityCalendarScreenState
                         backgroundColor: Colors.redAccent));
                     return;
                   }
-                  Navigator.pop(context, 'save');
+                  Navigator.pop(ctx, 'save');
                 },
                 child: const Text('Save')),
           ],
@@ -418,7 +488,6 @@ class _AvailabilityCalendarScreenState
     );
 
     if (!mounted) return;
-
     final base = _toLocal(availability.startTime);
     final startLocal = DateTime(base.year, base.month, base.day, startT.hour);
     final endLocal = DateTime(base.year, base.month, base.day, endT.hour);
@@ -433,5 +502,12 @@ class _AvailabilityCalendarScreenState
         'location': controller.text,
       }));
     }
+  }
+}
+
+/// Feeds our flat list of Appointments into SfCalendar
+class _CalDS extends CalendarDataSource {
+  _CalDS(List<Appointment> source) {
+    appointments = source;
   }
 }
