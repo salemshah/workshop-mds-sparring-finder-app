@@ -24,10 +24,10 @@ class Availability {
   });
 
   factory Availability.fromJson(Map<String, dynamic> json) {
-    // Parse nested sparrings array, if present
     final sparringList = (json['sparrings'] as List<dynamic>?)
-        ?.map((e) => Sparring.fromJson(e as Map<String, dynamic>))
-        .toList() ?? <Sparring>[];
+            ?.map((e) => Sparring.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        <Sparring>[];
 
     return Availability(
       id: json['id'] as int,
@@ -78,5 +78,20 @@ class Availability {
       updatedAt: updatedAt ?? this.updatedAt,
       sparrings: sparrings ?? this.sparrings,
     );
+  }
+
+  @override
+  String toString() {
+    return 'Availability('
+        'id: $id, '
+        'userId: $userId, '
+        'specificDate: ${specificDate.toIso8601String()}, '
+        'startTime: ${startTime.toIso8601String()}, '
+        'endTime: ${endTime.toIso8601String()}, '
+        'location: $location, '
+        'createdAt: ${createdAt.toIso8601String()}, '
+        'updatedAt: ${updatedAt.toIso8601String()}, '
+        'sparrings: $sparrings'
+        ')';
   }
 }
