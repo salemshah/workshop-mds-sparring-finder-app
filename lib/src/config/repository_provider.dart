@@ -20,7 +20,8 @@ class RepositoryProviders {
   static late SparringRepository sparringRepository;
   static late NotificationRepository notificationRepository;
 
-  static Future<List<Provider>> init(NotificationService notificationService) async {
+  static Future<List<Provider>> init(
+      NotificationService notificationService) async {
     final deviceInfo = DeviceInfoPlugin();
 
     bool isPhysicalDevice = false;
@@ -32,9 +33,11 @@ class RepositoryProviders {
       isPhysicalDevice = iosInfo.isPhysicalDevice ?? false;
     }
 
-    final baseUrl = isPhysicalDevice
-        ? 'http://172.20.10.3:8000/api' // local ip to test on my phone
-        : 'http://localhost:8000/api';
+    // final baseUrl = isPhysicalDevice
+    //     ? 'http://172.20.10.3:8000/api' // local ip to test on my phone
+    //     : 'http://localhost:8000/api';
+
+    final baseUrl = 'https://sparring-finder-app.duckdns.org/api';
 
     apiService = ApiService(baseUrl: baseUrl);
     userRepository = UserRepository(apiService: apiService);
