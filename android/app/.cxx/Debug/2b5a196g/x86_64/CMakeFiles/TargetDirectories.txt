@@ -1,0 +1,2 @@
+/Users/salemshah/Documents/dev/workshop-mds/sparring_finder_mds_app/android/app/.cxx/Debug/2b5a196g/x86_64/CMakeFiles/edit_cache.dir
+/Users/salemshah/Documents/dev/workshop-mds/sparring_finder_mds_app/android/app/.cxx/Debug/2b5a196g/x86_64/CMakeFiles/rebuild_cache.dir

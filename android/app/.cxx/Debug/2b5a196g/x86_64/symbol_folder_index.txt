@@ -1,0 +1,1 @@
+/Users/salemshah/Documents/dev/workshop-mds/sparring_finder_mds_app/build/app/intermediates/cxx/Debug/2b5a196g/obj/x86_64

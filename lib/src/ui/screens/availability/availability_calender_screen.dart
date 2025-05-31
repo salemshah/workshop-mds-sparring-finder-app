@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/generated/assets.dart';
+import 'package:sparring_finder/src/ui/skeletons/calender_screen_skeleton.dart';
 import 'package:sparring_finder/src/ui/widgets/app_lottie_loader.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../blocs/availability/availability_bloc.dart';
@@ -24,6 +25,7 @@ class _AvailabilityCalendarScreenState
   List<Availability> _availabilities = [];
   bool _isLoading = false;
   String? _lottiePath;
+  bool _isOperation = false;
 
   static const _tzParis = 'Romance Standard Time';
 
@@ -71,11 +73,13 @@ class _AvailabilityCalendarScreenState
                   setState(() {
                     _lottiePath = Assets.animationsCaledarLoading;
                     _isLoading = true;
+                    _isOperation = false;
                   });
                 } else if (state is AvailabilityLoadInOperation) {
                   setState(() {
                     _lottiePath = Assets.animationsEvent;
-                    _isLoading = true;
+                    _isLoading = false;
+                    _isOperation = true;
                   });
                 }
                 // any success or failure => hide loader
@@ -85,6 +89,7 @@ class _AvailabilityCalendarScreenState
                   setState(() {
                     _lottiePath = null;
                     _isLoading = false;
+                    _isOperation = false;
                   });
                 }
 
@@ -217,7 +222,6 @@ class _AvailabilityCalendarScreenState
                   cellBorderColor: AppColors.border,
                   controller: _cal,
                   onTap: (details) async {
-
                     final t = details.date;
                     if (t == null) return;
 
@@ -229,7 +233,6 @@ class _AvailabilityCalendarScreenState
                       });
                       return;
                     }
-
 
                     final tapped = details.date;
                     if (tapped == null || tapped.minute != 0) {
@@ -260,12 +263,13 @@ class _AvailabilityCalendarScreenState
             ),
           ),
           // ───────────── Loading Overlay ─────────────
-          if (_isLoading && _lottiePath != null)
+          if(_isLoading)  CalendarScreenSkeleton(),
+          if (_isOperation && _lottiePath != null)
             Positioned.fill(
               child: AbsorbPointer(
                 absorbing: true,
                 child: Container(
-                    color: AppColors.background.withValues(alpha: .5),
+                    color: AppColors.background.withValues(alpha: .95),
                     child: AppLottieLoader(
                       size: MediaQuery.of(context).size.width / 2,
                       animationPath: _lottiePath!,

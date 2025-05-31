@@ -161,8 +161,6 @@ class SparringSessionBody extends StatelessWidget {
         final session = filtered[index];
         final requested = session.requesterProfile;
         final partner = session.partnerProfile;
-
-        print(session);
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: SparringCard(
