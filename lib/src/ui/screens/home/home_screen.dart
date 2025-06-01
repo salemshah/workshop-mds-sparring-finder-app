@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/src/ui/screens/home/home_header.dart';
 import 'package:sparring_finder/src/ui/skeletons/home/home_athlete_skeleton.dart';
+import 'package:sparring_finder/src/ui/widgets/custom_toggle_switch.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import '../../../blocs/athletes/athletes_bloc.dart';
@@ -14,6 +15,7 @@ import '../../theme/app_colors.dart';
 import '../../widgets/athlete_card.dart';
 import '../../widgets/filter_bottom_sheet.dart';
 import '../../../utils/jwt.dart';
+import '../test/map_screen.dart';
 
 /// Discovery screen: browse, search & filter athletes.
 class HomeScreen extends StatefulWidget {
@@ -55,6 +57,9 @@ class _HomeScreenState extends State<HomeScreen> {
       _appliedGender != null ||
       _appliedWeightRange.start != 40.0 ||
       _appliedWeightRange.end != 150.0;
+
+  // Track which “tab” is selected: 0 = list, 1 = map
+  int _currentTabIndex = 0;
 
   // ----------------------------- Init ------------------------------------- //
   bool _hasFetched = false;
@@ -174,7 +179,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ----------------------------- List ------------------------------------- //
   Widget _buildProfileList(List<Profile> profiles) {
-
     final favoriteIds = _currentUserFavoriteIds(profiles);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0),
@@ -212,6 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
+
           // Top fade effect
           Positioned(
             top: 0,
@@ -238,12 +243,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ------------- Search + Filters Row (with the toggle switch) ---------- //
   Widget _searchAndFilters() {
-    // ----------------------- Search & Filters -------------------- //
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0),
       child: Column(
         children: [
+          // --- SEARCH BAR ROW ---
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -295,6 +301,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 10),
+
+          // --- “Athletes” label, ToggleSwitch, Clear Filters button ---
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -324,6 +332,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
               ),
+
+              CustomToggleSwitch(
+                initialIndex: _currentTabIndex,
+                onChanged: (newIndex) {
+                  setState(() {
+                    _currentTabIndex = newIndex;
+                  });
+                },
+              ),
             ],
           ),
         ],
@@ -334,31 +351,42 @@ class _HomeScreenState extends State<HomeScreen> {
   // ------------------------------- Build ---------------------------------- //
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        HomeHeader(search: _searchAndFilters()),
-        // --------------------------------- Athletes ----------------------------------///
-        Expanded(
-          child: BlocBuilder<AthletesBloc, AthletesState>(
-            builder: (context, state) {
-              if (state is AthletesLoadInProgress) {
-                return const HomeAthleteSkeleton();
-              } else if (state is AthletesLoadSuccess) {
-                return _buildProfileList(state.profiles);
-              } else if (state is AthletesFailure) {
-                return Center(
-                  child: Text(
-                    'Error: ${state.error}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                );
-              } else {
-                return const SizedBox();
-              }
-            },
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Column(
+        children: [
+          HomeHeader(search: _searchAndFilters()),
+
+          // --------------------------------- Athletes ----------------------------------///
+          Expanded(
+            child: BlocBuilder<AthletesBloc, AthletesState>(
+              builder: (context, state) {
+                if (state is AthletesLoadInProgress) {
+                  return const HomeAthleteSkeleton();
+                } else if (state is AthletesLoadSuccess) {
+                  // ── Use IndexedStack to keep both children mounted ──
+                  return IndexedStack(
+                    index: _currentTabIndex,
+                    children: [
+                      _buildProfileList(state.profiles),
+                      MapScreen(state.profiles),
+                    ],
+                  );
+                } else if (state is AthletesFailure) {
+                  return Center(
+                    child: Text(
+                      'Error: ${state.error}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              },
+            ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 }

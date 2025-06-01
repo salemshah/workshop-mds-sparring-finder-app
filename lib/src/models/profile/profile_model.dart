@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import 'favorite_relation_to_profile_model.dart';
 
-
 /// Core domain model for a fighter profile.
 class Profile extends Equatable {
   final int id;
@@ -20,6 +19,9 @@ class Profile extends Equatable {
   final String gymName;
   final String city;
   final String country;
+  final String address;
+  final double latitude;
+  final double longitude;
   final bool? verified;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -41,6 +43,9 @@ class Profile extends Equatable {
     required this.gymName,
     required this.city,
     required this.country,
+    required this.address,
+    required this.latitude,
+    required this.longitude,
     this.verified,
     required this.createdAt,
     required this.updatedAt,
@@ -68,6 +73,9 @@ class Profile extends Equatable {
       gymName: json['gym_name'] as String? ?? '',
       city: json['city'] as String? ?? '',
       country: json['country'] as String? ?? '',
+      address: json['address'] as String? ?? '',
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
       verified: json['verified'] as bool?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
@@ -94,6 +102,9 @@ class Profile extends Equatable {
     'gym_name': gymName,
     'city': city,
     'country': country,
+    'address': address,
+    'latitude': latitude,
+    'longitude': longitude,
     'verified': verified,
     'created_at': createdAt.toIso8601String(),
     'updated_at': updatedAt.toIso8601String(),
@@ -122,6 +133,9 @@ class Profile extends Equatable {
     String? gymName,
     String? city,
     String? country,
+    String? address,
+    double? latitude,
+    double? longitude,
     bool? verified,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -143,6 +157,9 @@ class Profile extends Equatable {
       gymName: gymName ?? this.gymName,
       city: city ?? this.city,
       country: country ?? this.country,
+      address: address ?? this.address,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       verified: verified ?? this.verified,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -167,6 +184,9 @@ class Profile extends Equatable {
     gymName,
     city,
     country,
+    address,
+    latitude,
+    longitude,
     verified,
     createdAt,
     updatedAt,

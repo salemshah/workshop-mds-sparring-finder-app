@@ -5,8 +5,10 @@ class CustomInputField extends StatefulWidget {
   final String label;
   final String hint;
   final bool isPassword;
+  final bool readOnly;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
+  final VoidCallback? onTap;
 
   const CustomInputField({
     super.key,
@@ -15,6 +17,8 @@ class CustomInputField extends StatefulWidget {
     this.isPassword = false,
     this.controller,
     this.validator,
+    this.readOnly = false,
+    this.onTap
   });
 
   @override
@@ -52,6 +56,8 @@ class _CustomInputFieldState extends State<CustomInputField> {
         ),
         const SizedBox(height: 5),
         TextFormField(
+          readOnly: widget.readOnly,
+          onTap: widget.onTap,
           controller: widget.controller,
           obscureText: _obscureText,
           validator: widget.validator,

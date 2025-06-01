@@ -10,9 +10,16 @@ class Assets {
   static const String iconsEdit = 'assets/icons/edit.png';
   static const String iconsGoogleLogo = 'assets/icons/google_logo.png';
   static const String iconsProfile = 'assets/icons/profile.png';
+  static const String imagesAvatar1 = 'assets/images/avatar1.png';
+  static const String imagesAvatar2 = 'assets/images/avatar2.png';
+  static const String imagesAvatar3 = 'assets/images/avatar3.png';
   static const String imagesBoxer = 'assets/images/boxer.png';
+  static const String imagesBoxer1 = 'assets/images/boxer1.png';
+  static const String imagesBoxer2 = 'assets/images/boxer2.png';
   static const String imagesHeroImage = 'assets/images/hero_image.png';
   static const String imagesOnboardingImage1 = 'assets/images/onboarding_image_1.png';
   static const String imagesSparringFinderAppLogo = 'assets/images/sparring_finder_app_logo.png';
+  static const String mapStylesDarkMap = 'assets/map_styles/describe_dark_map_no_poi.js';
+  static const String mapStylesDarkMapNoPoi = 'assets/map_styles/dark_map_no_poi.json';
 
 }

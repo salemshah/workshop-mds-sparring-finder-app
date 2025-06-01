@@ -50,6 +50,8 @@ dependencies:
   firebase_messaging: ^15.2.6
   flutter_local_notifications: ^19.2.1
   lottie: ^3.3.1
+  google_place_plus: ^1.0.0
+  google_maps_flutter: ^2.12.2
 
 
 flutter_launcher_icons:
@@ -73,6 +75,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/animations/
+    - assets/map_styles/
 
 #  fonts:
 #    - family: Sriracha
