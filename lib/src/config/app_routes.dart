@@ -6,6 +6,7 @@ import 'package:sparring_finder/src/ui/screens/home/athlete_details_screen.dart'
 import 'package:sparring_finder/src/ui/screens/notification/notification_screen.dart';
 import 'package:sparring_finder/src/ui/screens/profile/create_profile_screen.dart';
 import 'package:sparring_finder/src/ui/screens/home/athlete_availabilities_calender_screen.dart';
+import 'package:sparring_finder/src/ui/screens/test/address_picker_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/forgot_password_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/reset_password_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/user_register_screen.dart';
@@ -43,6 +44,9 @@ class AppRoutes {
   static const String applicationScreen = '/application';
   static const String availabilityListScreen = '/availability-list';
   static const String athleteAvailabilitiesCalenderScreen = '/athlete-availabilities-calender-screen';
+  static const String athletesMapScreen = 'athletes-map-screen';
+  static const String addressPickerScreen = 'address-picker-screen';
+  static const String testForm = 'test-form-screen';
 
   /// For routes that **don't require arguments**
   static final Map<String, WidgetBuilder> staticRoutes = {
@@ -55,8 +59,7 @@ class AppRoutes {
     resetPasswordScreen: (_) => const ResetPasswordScreen(),
     createProfileScreen: (_) => const CreateProfileScreen(),
     notificationScreen: (_) => const NotificationScreen(),
-
-
+    addressPickerScreen: (_) => const AddressPickerScreen(),
 
     // Sparring Sessions screens
     sparringSessionScreen: (_) => const SparringSessionScreen(),
@@ -66,13 +69,11 @@ class AppRoutes {
     onBoardingScreen: (_) => const OnBoardingScreen(),
     profileScreen: (_) => const ProfileScreen(),
     applicationScreen: (_) => const ApplicationScreen(),
-
   };
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
-
-        //TODO: must remove in feature ( replaced by
+      //TODO: must remove in feature ( replaced by
       case availabilityListScreen:
         final targetUserId = settings.arguments as int?;
         return MaterialPageRoute(
@@ -82,7 +83,8 @@ class AppRoutes {
       case athleteAvailabilitiesCalenderScreen:
         final targetUserId = settings.arguments as int;
         return MaterialPageRoute(
-          builder: (_) => AthleteAvailabilitiesCalenderScreen(targetUserId: targetUserId),
+          builder: (_) =>
+              AthleteAvailabilitiesCalenderScreen(targetUserId: targetUserId),
         );
 
       case availabilityFormScreen:

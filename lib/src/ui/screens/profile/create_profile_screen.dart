@@ -18,6 +18,7 @@ import '../../widgets/custom_input_mutiline.dart';
 import '../../widgets/gender_selector.dart';
 import '../../widgets/input_date_picker.dart';
 import '../../widgets/upload_image_field.dart';
+import '../test/address_picker_screen.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
@@ -49,6 +50,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
 
   @override
   void dispose() {
+    _addressController.dispose();
     _successController.dispose();
     super.dispose();
   }
@@ -56,17 +58,22 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
   final int _lastStep = 4;
   int _currentStep = 0;
 
-  final _firstName = TextEditingController();
-  final _lastName = TextEditingController();
-  final _bio = TextEditingController();
-  final _dob = TextEditingController();
-  final _weight = TextEditingController();
-  final _skill = TextEditingController();
-  final _experience = TextEditingController();
-  final _styles = TextEditingController();
-  final _gym = TextEditingController();
-  final _city = TextEditingController();
-  final _country = TextEditingController();
+  final TextEditingController _firstName = TextEditingController();
+  final TextEditingController _lastName = TextEditingController();
+  final TextEditingController _bio = TextEditingController();
+  final TextEditingController _dob = TextEditingController();
+  final TextEditingController _weight = TextEditingController();
+  final TextEditingController _skill = TextEditingController();
+  final TextEditingController _experience = TextEditingController();
+  final TextEditingController _styles = TextEditingController();
+  final TextEditingController _gym = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+
+  String? _address;
+  String? _city;
+  String? _country;
+  double? _latitude;
+  double? _longitude;
 
   String _gender = 'Male';
   File? _profileImage;
@@ -96,9 +103,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
             _skill.text.isNotEmpty &&
             _experience.text.isNotEmpty;
       case 4:
-        return _gym.text.isNotEmpty &&
-            _city.text.isNotEmpty &&
-            _country.text.isNotEmpty;
+        return _gym.text.isNotEmpty && _addressController.text.isNotEmpty;
       default:
         return true;
     }
@@ -142,8 +147,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
       'years_experience': _experience.text,
       'preferred_styles': _styles.text,
       'gym_name': _gym.text,
-      'city': _city.text,
-      'country': _country.text,
+      'city': _city,
+      'country': _country,
+      'address': _address,
+      'latitude': _latitude,
+      'longitude': _longitude,
     };
     context
         .read<MyProfileBloc>()
@@ -155,10 +163,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
       case 0:
         return Column(children: [
           CustomInputField(
-              label: 'Name', hint: 'Enter your name', controller: _firstName),
+              label: 'Name *', hint: 'Enter your name', controller: _firstName),
           const SizedBox(height: 16),
           CustomInputField(
-              label: 'Last name',
+              label: 'Last name *',
               hint: 'Enter your last name',
               controller: _lastName),
           const SizedBox(height: 16),
@@ -176,7 +184,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
                 _dob.text = DateFormat('dd/MM/yyyy').format(date),
             controller: _dob,
             hint: 'Select your date of birth',
-            label: "Date of birth",
+            label: "Date of birth *",
           ),
           const SizedBox(height: 16),
           GenderSelector(onChanged: (value) => _gender = value),
@@ -184,42 +192,64 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
       case 3:
         return Column(children: [
           CustomInputField(
-              label: 'Weight class',
+              label: 'Weight class *',
               hint: 'Enter your weight class',
               controller: _weight),
           const SizedBox(height: 16),
           CustomDropdown(
               controller: _skill,
               levels: _levels,
-              label: 'Skill level',
+              label: 'Skill level *',
               hint: 'Select your skill level'),
           const SizedBox(height: 16),
           CustomInputField(
-              label: 'Years experience',
+              label: 'Years experience *',
               hint: 'Enter your years experience',
               controller: _experience),
           const SizedBox(height: 16),
           CustomInputField(
-              label: 'Preferred styles',
+              label: 'Preferred styles *',
               hint: 'Enter your preferred styles',
               controller: _styles),
         ]);
       case 4:
         return Column(children: [
           CustomInputField(
-              label: 'Gym name', hint: 'Enter your gym name', controller: _gym),
+              label: 'Gym name *',
+              hint: 'Enter your gym name',
+              controller: _gym),
           const SizedBox(height: 16),
           CustomInputField(
-              label: 'City', hint: 'Enter your city name', controller: _city),
-          const SizedBox(height: 16),
-          CustomInputField(
-              label: 'Country',
-              hint: 'Enter your country name',
-              controller: _country),
+            label: 'Address *',
+            readOnly: true,
+            hint: 'Tap to pick your address',
+            controller: _addressController,
+            onTap: _openAddressPicker,
+          )
         ]);
       default:
         return const SizedBox();
     }
+  }
+
+  Future<void> _openAddressPicker() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (ctx) => const AddressPickerScreen(),
+      ),
+    );
+
+    if (result == null) return;
+    setState(() {
+      _addressController.text = result["address"] as String;
+      _city = result["city"] as String;
+      _country = result["country"] as String;
+      _address = result["address"] as String;
+      _latitude = result["latitude"] as double;
+      _longitude = result["longitude"] as double;
+    });
   }
 
   @override
