@@ -69,6 +69,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
         ),
       ],
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: AppColors.background,
         extendBody: true,
         bottomNavigationBar: BottomNavBar(
