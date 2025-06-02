@@ -103,6 +103,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.background,
       body: GoogleMap(
         initialCameraPosition: _initialCameraPosition,

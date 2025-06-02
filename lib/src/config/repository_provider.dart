@@ -33,11 +33,11 @@ class RepositoryProviders {
       isPhysicalDevice = iosInfo.isPhysicalDevice ?? false;
     }
 
-    // final baseUrl = 'https://sparring-finder-app.duckdns.org/api';
-    final baseUrl = isPhysicalDevice
-        ? 'http://172.20.10.3:8000/api'
-        : 'http://localhost:8000/api';
+    // final baseUrl = isPhysicalDevice
+    //     ? 'http://172.20.10.3:8000/api'
+    //     : 'http://localhost:8000/api';
 
+    final baseUrl = 'https://sparring-finder-app.duckdns.org/api';
 
     apiService = ApiService(baseUrl: baseUrl);
     userRepository = UserRepository(apiService: apiService);
