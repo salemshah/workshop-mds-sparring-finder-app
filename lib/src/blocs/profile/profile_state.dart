@@ -20,6 +20,19 @@ class MyProfileLoadInProgress extends MyProfileState {
   const MyProfileLoadInProgress();
 }
 
+class MyProfileUpdateInProgress extends MyProfileState {
+  const MyProfileUpdateInProgress();
+}
+
+class MyProfileUpdateSuccess extends MyProfileState {
+ final Profile profile;
+
+  const MyProfileUpdateSuccess(this.profile);
+
+  @override
+  List<Object?> get props => [profile];
+}
+
 class MyProfileFailure extends MyProfileState {
   final String error;
 

@@ -1,4 +1,6 @@
 import 'package:provider/provider.dart';
+import 'package:sparring_finder/src/repositories/contact_repository.dart';
+
 import 'package:sparring_finder/src/services/api_service.dart';
 import 'package:sparring_finder/src/services/notification_service.dart';
 import 'package:sparring_finder/src/repositories/user_repository.dart';
@@ -17,6 +19,7 @@ class RepositoryProviders {
   static late SparringRepository sparringRepository;
   static late NotificationRepository notificationRepository;
   static late MessageRepository messageRepository;
+  static late ContactRepository contactRepository;
 
   /// Now synchronous: immediately returns a List<Provider>.
   static List<Provider> init(NotificationService notificationService) {
@@ -31,6 +34,8 @@ class RepositoryProviders {
     sparringRepository = SparringRepository(apiService: apiService);
     notificationRepository =
         NotificationRepository(apiService: apiService);
+    notificationRepository = NotificationRepository(apiService: apiService);
+    contactRepository = ContactRepository(apiService: apiService);
 
     messageRepository = MessageRepository(apiService: apiService);
     // Return a list of Providers, exactly as before
@@ -43,6 +48,7 @@ class RepositoryProviders {
       Provider<NotificationService>.value(value: notificationService),
       Provider<NotificationRepository>.value(value: notificationRepository),
       Provider<MessageRepository>.value(value: messageRepository),
+      Provider<ContactRepository>.value(value: contactRepository),
     ];
   }
 }
