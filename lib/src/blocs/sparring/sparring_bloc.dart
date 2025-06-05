@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:sparring_finder/src/blocs/availability/availability_state.dart';
 import 'package:sparring_finder/src/repositories/sparring_repository.dart';
 import 'sparring_event.dart';
 import 'sparring_state.dart';

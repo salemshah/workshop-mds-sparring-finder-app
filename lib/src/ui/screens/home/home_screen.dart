@@ -302,34 +302,29 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 10),
 
-          // --- “Athletes” label, ToggleSwitch, Clear Filters button ---
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Athletes',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextButton.icon(
-                onPressed: _isFilterActive ? _clearFilters : null,
-                icon: Icon(
-                  Icons.clear,
-                  color: _isFilterActive ? AppColors.white : Colors.white24,
-                ),
-                label: Text(
-                  'Clear Filters',
-                  style: TextStyle(
+              SizedBox(
+                height: 33,
+                child: TextButton.icon(
+                  onPressed: _isFilterActive ? _clearFilters : null,
+                  icon: Icon(
+                    Icons.clear,
                     color: _isFilterActive ? AppColors.white : Colors.white24,
                   ),
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor:
-                      _isFilterActive ? AppColors.primary : Colors.transparent,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  label: Text(
+                    'Clear Filters',
+                    style: TextStyle(
+                      color: _isFilterActive ? AppColors.white : Colors.white24,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    // elevation: ,
+                    backgroundColor:
+                        _isFilterActive ? AppColors.primary : Colors.transparent,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
                 ),
               ),
 

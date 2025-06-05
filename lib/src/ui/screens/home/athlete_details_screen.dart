@@ -3,10 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/src/ui/theme/app_colors.dart';
 import 'package:sparring_finder/src/utils/extensions.dart';
 import 'package:sparring_finder/src/utils/jwt.dart';
+import '../../../blocs/conversation/conversation_bloc.dart';
+import '../../../blocs/conversation/conversation_event.dart';
+import '../../../blocs/conversation/conversation_state.dart';
 import '../../../blocs/athletes/athletes_bloc.dart';
 import '../../../blocs/athletes/athletes_event.dart';
 import '../../../config/app_routes.dart';
 import '../../../models/profile/profile_model.dart';
+import '../message/chat_screen.dart';
 
 class AthleteDetailsScreen extends StatelessWidget {
   static const routeName = '/athlete';
@@ -38,10 +42,10 @@ class _AthleteDetailsBodyState extends State<_AthleteDetailsBody> {
   @override
   void initState() {
     super.initState();
-    _gerUserId();
+    _getUserId();
   }
 
-  Future<void> _gerUserId() async {
+  Future<void> _getUserId() async {
     final userInfo = await JwtStorageHelper.getDecodedAccessToken();
     setState(() {
       _currentUserId = userInfo["id"] as int;
@@ -69,76 +73,114 @@ class _AthleteDetailsBodyState extends State<_AthleteDetailsBody> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          expandedHeight: 320,
-          pinned: true,
-          stretch: true,
-          flexibleSpace: FlexibleSpaceBar(
-            background: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (widget.profile.photoUrl != null &&
-                    widget.profile.photoUrl!.isNotEmpty)
-                  Image.network(widget.profile.photoUrl!, fit: BoxFit.cover)
-                else
-                  Image.asset('assets/images/placeholder.png',
-                      fit: BoxFit.cover),
-                Container(color: Colors.black.withValues(alpha: 0.35)),
-              ],
+    return BlocListener<ConversationBloc, ConversationState>(
+      listener: (context, state) {
+        if (state is ConversationCreateSuccess) {
+          final convoId = state.newConversation.id;
+          final convoName =
+              '${widget.profile.firstName} ${widget.profile.lastName}';
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChatScreen(
+                conversationId: convoId,
+                conversationName: convoName,
+              ),
+            ),
+          );
+        } else if (state is ConversationFailure) {
+          print(state.error);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to start chat: ${state.error}'),
+            ),
+          );
+        }
+      },
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 320,
+            pinned: true,
+            stretch: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (widget.profile.photoUrl != null &&
+                      widget.profile.photoUrl!.isNotEmpty)
+                    Image.network(widget.profile.photoUrl!, fit: BoxFit.cover)
+                  else
+                    Image.asset(
+                      'assets/images/placeholder.png',
+                      fit: BoxFit.cover,
+                    ),
+                  Container(color: Colors.black.withOpacity(0.35)),
+                ],
+              ),
             ),
           ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    '${widget.profile.firstName} ${widget.profile.lastName}'
-                        .toUpperCase(),
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: Colors.redAccent,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    textAlign: TextAlign.center,
-                    '${widget.profile.bio ?? 'Verified MMA fighter'} from ${widget.profile.city}, ${widget.profile.country}. '
-                    '${widget.profile.weightClass} class, $yearsExperience years experience, skilled in ${styleList.join(', ')}.',
-                    style: TextStyle(color: AppColors.text, fontSize: 14),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    _ActionButton(
-                      icon: Icons.message,
-                      label: 'Message',
-                      onPressed: (widget.profile.userId == _currentUserId)
-                          ? null
-                          : () {
-                              // TODO: add message action
-                            },
+          SliverToBoxAdapter(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '${widget.profile.firstName} ${widget.profile.lastName}'
+                          .toUpperCase(),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
-                    _ActionButton(
-                      icon: Icons.favorite,
-                      label: 'Add',
-                      onPressed: () => context.read<AthletesBloc>().add(
-                            FavoriteToggledForAthlete(
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      '${widget.profile.bio ?? 'Verified MMA fighter'} from ${widget.profile.city}, ${widget.profile.country}. '
+                      '${widget.profile.weightClass} class, $yearsExperience years experience, skilled in ${styleList.join(', ')}.',
+                      style: TextStyle(color: AppColors.text, fontSize: 14),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _ActionButton(
+                        icon: Icons.message,
+                        label: 'Message',
+                        onPressed: (_currentUserId == null ||
+                                widget.profile.userId == _currentUserId)
+                            ? null
+                            : () {
+                                final myId = _currentUserId!;
+                                final otherId = widget.profile.userId;
+                                context.read<ConversationBloc>().add(
+                                      CreateConversation(
+                                        participantIds: [myId, otherId],
+                                        title: "Sparring",
+                                        avatarUrl: widget.profile.photoUrl,
+                                      ),
+                                    );
+                              },
+                      ),
+                      _ActionButton(
+                        icon: Icons.favorite,
+                        label: 'Add',
+                        onPressed: () => context.read<AthletesBloc>().add(
+                              FavoriteToggledForAthlete(
                                 targetUserId: widget.profile.userId,
-                                currentUserId: _currentUserId ?? -1),
-                          ),
-                    ),
-                    _ActionButton(
+                                currentUserId: _currentUserId ?? -1,
+                              ),
+                            ),
+                      ),
+                      _ActionButton(
                         icon: Icons.person_add_alt_1,
                         label: 'Spar Invite',
                         onPressed: (widget.profile.userId != _currentUserId)
@@ -149,67 +191,80 @@ class _AthleteDetailsBodyState extends State<_AthleteDetailsBody> {
                                   arguments: widget.profile.userId,
                                 );
                               }
-                            : null)
-                  ],
-                ),
-                const SizedBox(height: 20),
-                _InfoRow(
+                            : null,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  _InfoRow(
                     icon: Icons.verified,
                     iconColor: Colors.blue,
                     title: 'License',
-                    value: 'Verified'),
-                _InfoRow(
+                    value: 'Verified',
+                  ),
+                  _InfoRow(
                     icon: Icons.signal_cellular_alt_rounded,
                     title: 'Level',
-                    value: widget.profile.skillLevel),
-                _InfoRow(
+                    value: widget.profile.skillLevel,
+                  ),
+                  _InfoRow(
                     icon: Icons.cake_rounded,
                     title: 'Age',
-                    value: '$age Years'),
-                _InfoRow(
+                    value: '$age Years',
+                  ),
+                  _InfoRow(
                     icon: Icons.fitness_center_rounded,
                     title: 'Weight Class',
                     value: widget.profile.weightClass
                         .limit(10)
-                        .capitalizeEachWord()),
-                _InfoRow(
+                        .capitalizeEachWord(),
+                  ),
+                  _InfoRow(
                     icon: Icons.calendar_month_rounded,
                     title: 'Experience',
-                    value: yearsExperience),
-                _InfoRow(
+                    value: yearsExperience,
+                  ),
+                  _InfoRow(
                     icon: Icons.interests_rounded,
                     title: 'Styles',
-                    value: styleList.toString().limit(22)),
-                _InfoRow(
+                    value: styleList.toString().limit(22),
+                  ),
+                  _InfoRow(
                     icon: widget.profile.gender == "Female"
                         ? Icons.female_rounded
                         : Icons.male_rounded,
                     title: 'Gender',
-                    value: widget.profile.gender.capitalizeEachWord()),
-                _InfoRow(
+                    value: widget.profile.gender.capitalizeEachWord(),
+                  ),
+                  _InfoRow(
                     icon: Icons.fmd_bad_rounded,
                     title: 'Gym',
                     value:
-                        widget.profile.gymName.limit(15).capitalizeEachWord()),
-                _InfoRow(
+                        widget.profile.gymName.limit(15).capitalizeEachWord(),
+                  ),
+                  _InfoRow(
                     icon: Icons.location_city_rounded,
                     title: 'Location',
-                    value: widget.profile.city.limit(10).capitalizeEachWord()),
-                _InfoRow(
+                    value: widget.profile.city.limit(10).capitalizeEachWord(),
+                  ),
+                  _InfoRow(
                     icon: Icons.flag_circle_rounded,
-                    title: 'Location',
+                    title: 'Country',
                     value:
-                        widget.profile.country.limit(15).capitalizeEachWord()),
-                _InfoRow(
+                        widget.profile.country.limit(15).capitalizeEachWord(),
+                  ),
+                  _InfoRow(
                     icon: Icons.link,
                     title: 'Joined',
                     value:
-                        '${widget.profile.createdAt.month.toString().padLeft(2, '0')}/${widget.profile.createdAt.year}'),
-              ],
+                        '${widget.profile.createdAt.month.toString().padLeft(2, '0')}/${widget.profile.createdAt.year}',
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -220,11 +275,12 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
 
-  const _InfoRow(
-      {required this.title,
-      required this.value,
-      required this.icon,
-      this.iconColor = AppColors.primary});
+  const _InfoRow({
+    required this.title,
+    required this.value,
+    required this.icon,
+    this.iconColor = AppColors.primary,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -239,18 +295,25 @@ class _InfoRow extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, color: iconColor),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Expanded(
-                child: Text(title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.text,
-                        fontSize: 12))),
-            Text(value,
+              child: Text(
+                title,
                 style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.text,
-                    fontSize: 12)),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.text,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.text,
+                fontSize: 12,
+              ),
+            ),
           ],
         ),
       ),
@@ -261,12 +324,12 @@ class _InfoRow extends StatelessWidget {
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
-  final VoidCallback? onPressed; // make nullable
+  final VoidCallback? onPressed;
 
   const _ActionButton({
     required this.icon,
     required this.label,
-    this.onPressed, // allow null
+    this.onPressed,
   });
 
   @override
@@ -280,13 +343,13 @@ class _ActionButton extends StatelessWidget {
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
             backgroundColor: isDisabled ? Colors.grey : AppColors.primary,
-            foregroundColor: AppColors.white,
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 12),
           ),
           icon: Icon(icon, size: 18),
           label: Text(
             label,
-            style: const TextStyle(fontSize: 12, color: AppColors.white),
+            style: const TextStyle(fontSize: 12, color: Colors.white),
           ),
         ),
       ),

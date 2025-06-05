@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sparring_finder/src/constants/app_contants.dart';
+import '../config/app_constants.dart';
 
 
 class StorageService {

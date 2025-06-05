@@ -3,13 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sparring_finder/global.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
-import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:ui';
 
 import '../../../blocs/user/user_bloc.dart';
 import '../../../blocs/user/user_event.dart';
+import '../../theme/app_colors.dart';
 
 class SettingItem {
   final String title;
@@ -83,7 +83,7 @@ class _SettingPage extends State<SettingScreen> {
           title: Text(
             "Supprimer le compte",
             style: TextStyle(
-              color: kRed,
+              color: AppColors.primary,
               fontWeight: FontWeight.bold,
               fontSize: 18.sp,
             ),
@@ -92,7 +92,7 @@ class _SettingPage extends State<SettingScreen> {
             "Cette action est irréversible. Toutes vos données seront supprimées définitivement.",
             style: TextStyle(
               fontSize: 14.sp,
-              color: primaryColor,
+              color: AppColors.primary,
             ),
           ),
           actions: [
@@ -100,7 +100,7 @@ class _SettingPage extends State<SettingScreen> {
               child: Text(
                 "Annuler",
                 style: TextStyle(
-                  color: primaryColor,
+                  color: AppColors.primary,
                   fontSize: 14.sp,
                 ),
               ),
@@ -110,7 +110,7 @@ class _SettingPage extends State<SettingScreen> {
               child: Text(
                 "Supprimer",
                 style: TextStyle(
-                  color: kRed,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 14.sp,
                 ),
@@ -149,7 +149,7 @@ class _SettingPage extends State<SettingScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Erreur lors de la suppression: ${e.toString()}'),
-                      backgroundColor: kRed,
+                      backgroundColor: AppColors.background,
                     ),
                   );
                 } finally {
@@ -213,7 +213,7 @@ class _SettingPage extends State<SettingScreen> {
                 child: _buildSection(
                   title: "Compte",
                   icon: Icons.account_circle,
-                  iconColor: kRed,
+                  iconColor: AppColors.primary,
                   items: [
                     SettingItem(
                       title: "Editer mon profil",
@@ -330,14 +330,14 @@ class _SettingPage extends State<SettingScreen> {
             height: 60.w,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [kRed.withValues(alpha: 0.8), kRed],
+                colors: [AppColors.primary.withValues(alpha: 0.8), AppColors.primary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: kRed.withValues(alpha:0.3),
+                  color: AppColors.primary.withValues(alpha:0.3),
                   blurRadius: 15,
                   offset: Offset(0, 5),
                 ),
@@ -542,7 +542,7 @@ class _SettingPage extends State<SettingScreen> {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: kRed,
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -567,7 +567,7 @@ class _SettingPage extends State<SettingScreen> {
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: kRed,
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           elevation: 0,
           padding: EdgeInsets.symmetric(vertical: 16.h),
