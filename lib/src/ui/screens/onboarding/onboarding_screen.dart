@@ -21,23 +21,22 @@ class OnBoardingScreen extends StatefulWidget {
 class _OnBoardingScreenState extends State<OnBoardingScreen> with SingleTickerProviderStateMixin {
   final PageController pageController = PageController();
   late AnimationController _animationController;
-  late Animation<double> _backgroundAnimation;
 
   final List<Map<String, String>> onboardingData = [
     {
       'imagePath': ImageRes.onboarding,
-      'title': 'Welcome!',
-      'subTitle': 'Learn boxing and improve your skills',
+      'title': 'Welcome to Your\n Boxing Network!',
+      'subTitle': 'Connect, train, and grow your skills  — wherever you are.',
     },
     {
       'imagePath': ImageRes.onboarding,
-      'title': 'Find a Partner!',
-      'subTitle': 'Meet other boxers for training and sparring',
+      'title': 'Find the Perfect Partner',
+      'subTitle': 'Match with boxers near you based on level and goals.',
     },
     {
       'imagePath': ImageRes.onboarding,
-      'title': 'Book a Session!',
-      'subTitle': 'Easily schedule sparring and training sessions',
+      'title': 'Book and Train with Ease',
+      'subTitle': 'Plan your sessions, set your schedule, and get reminders.',
     },
   ];
 
@@ -48,9 +47,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with SingleTickerPr
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
-    );
-    _backgroundAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.forward();
   }
@@ -65,7 +61,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF00796B),
+      backgroundColor: AppColors.background,
       body: BlocBuilder<OnBoardBloc, OnBoardState>(
         builder: (context, state) {
           final isLastPage = state is OnBoardLastPageState && state.isLastPage;
