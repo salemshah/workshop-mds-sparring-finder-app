@@ -6,9 +6,12 @@ class Assets {
   static const String animationsEvent = 'assets/animations/event.json';
   static const String animationsRegister = 'assets/animations/register.json';
   static const String animationsSuccess = 'assets/animations/success.json';
+  static const String assetsIconsChatBackgroundIcon = 'assets/icons/chat_background_icon.png';
   static const String iconsAppleLogo = 'assets/icons/apple_logo.png';
+  static const String iconsChatBackgroundIcon = 'assets/icons/chat_background_icon.png';
   static const String iconsEdit = 'assets/icons/edit.png';
   static const String iconsGoogleLogo = 'assets/icons/google_logo.png';
+  static const String iconsMmaBackgroundIcon = 'assets/icons/mma_background_icon.png';
   static const String iconsProfile = 'assets/icons/profile.png';
   static const String imagesAvatar1 = 'assets/images/avatar1.png';
   static const String imagesAvatar2 = 'assets/images/avatar2.png';
@@ -19,7 +22,6 @@ class Assets {
   static const String imagesHeroImage = 'assets/images/hero_image.png';
   static const String imagesOnboardingImage1 = 'assets/images/onboarding_image_1.png';
   static const String imagesSparringFinderAppLogo = 'assets/images/sparring_finder_app_logo.png';
-  static const String mapStylesDarkMap = 'assets/map_styles/describe_dark_map_no_poi.js';
   static const String mapStylesDarkMapNoPoi = 'assets/map_styles/dark_map_no_poi.json';
 
 }

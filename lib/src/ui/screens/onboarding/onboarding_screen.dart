@@ -6,8 +6,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:sparring_finder/src/blocs/onboarding/onboarding_bloc.dart';
 import 'package:sparring_finder/src/blocs/onboarding/onboarding_event.dart';
 import 'package:sparring_finder/src/blocs/onboarding/onboarding_state.dart';
-import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/ui/screens/onboarding/widgets/widget.dart';
+import 'package:sparring_finder/src/ui/theme/app_colors.dart';
 import 'package:sparring_finder/src/utils/image_res.dart';
 
 
@@ -138,7 +138,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> with SingleTickerPr
                           spacing: 8.w,
                           expansionFactor: 3,
                           dotColor: Colors.white30,
-                          activeDotColor: kRed,
+                          activeDotColor: AppColors.primary,
                         ),
                       ),
                     ),

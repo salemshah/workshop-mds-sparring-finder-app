@@ -9,6 +9,9 @@ import 'package:sparring_finder/src/blocs/athletes/athletes_bloc.dart';
 import 'package:sparring_finder/src/blocs/profile/profile_bloc.dart';
 import 'package:sparring_finder/src/services/notification_service.dart';
 import 'package:sparring_finder/src/config/repository_provider.dart';
+import '../blocs/conversation/conversation_bloc.dart';
+import '../blocs/conversation/conversation_event.dart';
+import '../repositories/conversation_repository.dart';
 
 class BlocProviders {
   static List<BlocProvider> all(NotificationService notificationService) => [
@@ -43,6 +46,12 @@ class BlocProviders {
             notificationService,
             RepositoryProviders.notificationRepository,
           ),
+        ),
+        BlocProvider<ConversationBloc>(
+          create: (_) => ConversationBloc(
+            repository: ConversationRepository(
+                apiService: RepositoryProviders.apiService),
+          )..add(const LoadConversations()),
         ),
       ];
 }

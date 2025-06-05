@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sparring_finder/src/config/app_routes.dart';
-import 'package:sparring_finder/src/constants/app_contants.dart';
 import 'package:sparring_finder/src/models/profile/profile_model.dart';
 import 'package:sparring_finder/src/ui/skeletons/profile_screen_skeleton.dart';
 import 'package:sparring_finder/src/ui/widgets/text_auto_scroll.dart';
@@ -37,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryBackground,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: BlocBuilder<MyProfileBloc, MyProfileState>(
           builder: (context, state) {
@@ -52,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                     SizedBox(height: 16.h),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: kRed,
+                        backgroundColor: AppColors.primary,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
                       ),
                       onPressed: () => context.read<MyProfileBloc>().add(MyProfileRequested()),
@@ -113,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                     const Icon(
                         Icons.location_pin,
                         size: 20,
-                        color: kRed
+                        color: AppColors.primary
                     ),
                     Text(
                       " ${profile.city.capitalizeEachWord()}, ${profile.country.capitalizeEachWord()}",
@@ -208,7 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   height: 120.w,
                   width: 120.w,
                   placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(color: kRed),
+                    child: CircularProgressIndicator(color: AppColors.primary),
                   ),
                   errorWidget: (context, url, error) => CircleAvatar(
                     backgroundColor: Colors.white30,
@@ -243,7 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                 width: 35.w,
                 padding: EdgeInsets.all(7.w),
                 decoration: BoxDecoration(
-                  color: kRed,
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.all(Radius.circular(40.w)),
                 ),
                 child: Icon(Icons.add_a_photo_rounded, color: AppColors.white, size: 20.w),
@@ -262,7 +261,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16.h),
       decoration: BoxDecoration(
-        color: primaryColor,
+        color: AppColors.inputFill,
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(
@@ -332,7 +331,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
       builder: (BuildContext bc) {
         return Container(
           decoration: BoxDecoration(
-            color: primaryColor,
+            color: AppColors.primary,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
           child: SafeArea(

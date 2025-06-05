@@ -25,7 +25,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   String _email = '';
 
   final List<TextEditingController> _controllers =
-  List.generate(6, (_) => TextEditingController());
+      List.generate(6, (_) => TextEditingController());
 
   @override
   void initState() {
@@ -52,7 +52,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   void _submitCode() {
     if (_code.length == 6) {
-      context.read<UserBloc>().add(UserVerifyEmailRequested(code: _code.trim()));
+      context
+          .read<UserBloc>()
+          .add(UserVerifyEmailRequested(code: _code.trim()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter the full code')),
@@ -61,7 +63,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   void _resendCode() {
-    context.read<UserBloc>().add(UserResendVerificationRequested(email: _email));
+    context
+        .read<UserBloc>()
+        .add(UserResendVerificationRequested(email: _email));
     _startTimer();
   }
 
@@ -86,118 +90,126 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: BlocConsumer<UserBloc, UserState>(
-          listener: (context, state) {
-            if (state is UserSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message), backgroundColor: Colors.green),
-              );
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.loginScreen,
-                    (_) => false,
-              );
-            } else if (state is UserFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error), backgroundColor: Colors.red),
-              );
-            }
-          },
-          builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.email,
-                    size: 120,
-                    color: AppColors.primary,
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Verify Email",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+        child: SingleChildScrollView(
+          child: BlocConsumer<UserBloc, UserState>(
+            listener: (context, state) {
+              if (state is UserSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: Colors.green),
+                );
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.loginScreen,
+                  (_) => false,
+                );
+              } else if (state is UserFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text(state.error), backgroundColor: Colors.red),
+                );
+              }
+            },
+            builder: (context, state) {
+              return Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.email,
+                      size: 120,
+                      color: AppColors.primary,
                     ),
-                  ),
-                  const SizedBox(height: 25),
-                  const Text(
-                    "A Code Has Been Sent To Your Email.\nPlease Enter It Below.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.label),
-                  ),
-                  const SizedBox(height: 30),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Verify Email",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    const Text(
+                      "A Code Has Been Sent To Your Email.\nPlease Enter It Below.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.label),
+                    ),
+                    const SizedBox(height: 30),
 
-                  // Code input boxes
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(6, (i) {
-                      return Container(
-                        width: 50,
-                        height: 50,
-                        margin: const EdgeInsets.symmetric(horizontal: 3),
-                        decoration: BoxDecoration(
-                          color: AppColors.inputFill,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.border, width: 2),
-                        ),
-                        child: Center(
-                          child: TextField(
-                            controller: _controllers[i],
-                            maxLength: 1,
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              color: AppColors.text,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              counterText: '',
-                            ),
-                            onChanged: (val) {
-                              if (val.isNotEmpty && i < 5) {
-                                FocusScope.of(context).nextFocus();
-                              } else if (val.isEmpty && i > 0) {
-                                FocusScope.of(context).previousFocus();
-                              }
-                              _updateCode();
-                            },
+                    // Code input boxes
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(6, (i) {
+                        return Container(
+                          width: 50,
+                          height: 50,
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.inputFill,
+                            borderRadius: BorderRadius.circular(12),
+                            border:
+                                Border.all(color: AppColors.border, width: 2),
                           ),
-                        ),
-                      );
-                    }),
-                  ),
-
-                  const SizedBox(height: 20),
-                  _isResendEnabled
-                      ? TextButton(
-                    onPressed: _resendCode,
-                    child: const Text(
-                      "Resend The Code",
-                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+                          child: Center(
+                            child: TextField(
+                              controller: _controllers[i],
+                              maxLength: 1,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                color: AppColors.text,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                counterText: '',
+                              ),
+                              onChanged: (val) {
+                                if (val.isNotEmpty && i < 5) {
+                                  FocusScope.of(context).nextFocus();
+                                } else if (val.isEmpty && i > 0) {
+                                  FocusScope.of(context).previousFocus();
+                                }
+                                _updateCode();
+                              },
+                            ),
+                          ),
+                        );
+                      }),
                     ),
-                  )
-                      : Text(
-                    "Code Not Received? Resend The Code ($_start)",
-                    style: const TextStyle(color: AppColors.label),
-                  ),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    width: double.infinity,
-                    child: CustomButton(
+
+                    const SizedBox(height: 20),
+                    _isResendEnabled
+                        ? TextButton(
+                            onPressed: _resendCode,
+                            child: const Text(
+                              "Resend The Code",
+                              style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        : Text(
+                            "Code Not Received? Resend The Code ($_start)",
+                            style: const TextStyle(color: AppColors.label),
+                          ),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: CustomButton(
                         label: "Submit",
                         onPressed: _isFilled ? _submitCode : null,
                       ),
                     ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

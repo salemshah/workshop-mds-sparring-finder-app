@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/src/blocs/user/user_bloc.dart';
 import 'package:sparring_finder/src/blocs/user/user_state.dart';
 import 'package:sparring_finder/src/ui/screens/availability/availability_calender_screen.dart';
+import 'package:sparring_finder/src/ui/screens/message/chat_lits_screen.dart';
 import 'package:sparring_finder/src/ui/screens/session/sparring_session_screen.dart';
 import '../../../blocs/notification/notification_bloc.dart';
 import '../../../blocs/notification/notification_state.dart';
 import '../../../config/app_routes.dart';
-import '../../common/placeholder_screen.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/bottom_navi_bar.dart';
@@ -29,7 +29,8 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     SparringSessionScreen(),
-    PlaceholderScreen(title: "Messages", icon: Icons.message),
+    // PlaceholderScreen(title: "Messages", icon: Icons.message),
+    ChatListScreen(),
     AvailabilityCalendarScreen(),
     ProfileScreen(),
   ];

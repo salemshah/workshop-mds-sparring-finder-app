@@ -3,6 +3,8 @@ import 'package:sparring_finder/src/models/profile/profile_model.dart';
 import 'package:sparring_finder/src/ui/common/loading_screeen.dart';
 import 'package:sparring_finder/src/ui/screens/availability/availability_form_screen.dart';
 import 'package:sparring_finder/src/ui/screens/home/athlete_details_screen.dart';
+import 'package:sparring_finder/src/ui/screens/message/chat_lits_screen.dart';
+import 'package:sparring_finder/src/ui/screens/message/chat_screen.dart';
 import 'package:sparring_finder/src/ui/screens/notification/notification_screen.dart';
 import 'package:sparring_finder/src/ui/screens/profile/create_profile_screen.dart';
 import 'package:sparring_finder/src/ui/screens/home/athlete_availabilities_calender_screen.dart';
@@ -16,7 +18,6 @@ import 'package:sparring_finder/src/ui/screens/home/home_screen.dart';
 
 import '../models/availability/availability_model.dart';
 import '../ui/screens/application/application.dart';
-import '../ui/screens/availability/availability_list_screen.dart';
 import '../ui/screens/onboarding/onboarding_screen.dart';
 import '../ui/screens/profile/profile_screen.dart';
 import '../ui/screens/session/sparring_session_screen.dart';
@@ -43,9 +44,12 @@ class AppRoutes {
   static const String profileScreen = '/profile';
   static const String applicationScreen = '/application';
   static const String availabilityListScreen = '/availability-list';
-  static const String athleteAvailabilitiesCalenderScreen = '/athlete-availabilities-calender-screen';
+  static const String athleteAvailabilitiesCalenderScreen =
+      '/athlete-availabilities-calender-screen';
   static const String athletesMapScreen = 'athletes-map-screen';
   static const String addressPickerScreen = 'address-picker-screen';
+  static const String chatListScreen = 'chat-list-screen';
+  static const String chatScreen = 'chat-screen';
   static const String testForm = 'test-form-screen';
 
   /// For routes that **don't require arguments**
@@ -60,6 +64,8 @@ class AppRoutes {
     createProfileScreen: (_) => const CreateProfileScreen(),
     notificationScreen: (_) => const NotificationScreen(),
     addressPickerScreen: (_) => const AddressPickerScreen(),
+    chatListScreen: (_) => const ChatListScreen(),
+    // chatScreen: (_) => const ChatScreen(),
 
     // Sparring Sessions screens
     sparringSessionScreen: (_) => const SparringSessionScreen(),
@@ -73,13 +79,16 @@ class AppRoutes {
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      //TODO: must remove in feature ( replaced by
-      case availabilityListScreen:
-        final targetUserId = settings.arguments as int?;
+      case chatListScreen:
+        return MaterialPageRoute(builder: (_) => const ChatListScreen());
+      case chatScreen:
+        final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => AvailabilityListScreen(targetUserId: targetUserId),
+          builder: (_) => ChatScreen(
+            conversationId: args['conversationId'] as int,
+            conversationName: args['conversationName'] as String,
+          ),
         );
-
       case athleteAvailabilitiesCalenderScreen:
         final targetUserId = settings.arguments as int;
         return MaterialPageRoute(

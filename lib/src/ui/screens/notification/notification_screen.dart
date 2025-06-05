@@ -140,20 +140,20 @@ class NotificationScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  item.sender.firstName ?? 'Unknown',
+                                  item.sender.firstName,
                                   style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16),
                                 ),
                                 Text(
-                                  item.title ?? 'New Notification',
+                                  item.title,
                                   style: const TextStyle(
                                       color: Colors.white70, fontSize: 14),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  item.body ?? '',
+                                  item.body,
                                   style: const TextStyle(
                                       color: Colors.white38, fontSize: 13),
                                 ),
