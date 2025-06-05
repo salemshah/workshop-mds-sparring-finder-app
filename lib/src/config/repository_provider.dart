@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:sparring_finder/src/repositories/contact_repository.dart';
 
 import 'package:sparring_finder/src/services/api_service.dart';
 import 'package:sparring_finder/src/services/notification_service.dart';
@@ -19,6 +20,7 @@ class RepositoryProviders {
   static late AvailabilityRepository availabilityRepository;
   static late SparringRepository sparringRepository;
   static late NotificationRepository notificationRepository;
+  static late ContactRepository contactRepository;
 
   static Future<List<Provider>> init(
       NotificationService notificationService) async {
@@ -45,6 +47,7 @@ class RepositoryProviders {
     availabilityRepository = AvailabilityRepository(apiService: apiService);
     sparringRepository = SparringRepository(apiService: apiService);
     notificationRepository = NotificationRepository(apiService: apiService);
+    contactRepository = ContactRepository(apiService: apiService);
 
     return [
       Provider<ApiService>.value(value: apiService),
@@ -54,6 +57,7 @@ class RepositoryProviders {
       Provider<SparringRepository>.value(value: sparringRepository),
       Provider<NotificationService>.value(value: notificationService),
       Provider<NotificationRepository>.value(value: notificationRepository),
+      Provider<ContactRepository>.value(value: contactRepository),
     ];
   }
 }

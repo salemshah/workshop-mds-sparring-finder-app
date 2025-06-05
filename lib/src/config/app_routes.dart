@@ -6,6 +6,11 @@ import 'package:sparring_finder/src/ui/screens/home/athlete_details_screen.dart'
 import 'package:sparring_finder/src/ui/screens/notification/notification_screen.dart';
 import 'package:sparring_finder/src/ui/screens/profile/create_profile_screen.dart';
 import 'package:sparring_finder/src/ui/screens/home/athlete_availabilities_calender_screen.dart';
+import 'package:sparring_finder/src/ui/screens/profile/favorite_screen.dart';
+import 'package:sparring_finder/src/ui/screens/profile/update_profile_screen.dart';
+import 'package:sparring_finder/src/ui/screens/settings/contact_us_screen.dart';
+import 'package:sparring_finder/src/ui/screens/settings/privacy_policy_screen.dart';
+import 'package:sparring_finder/src/ui/screens/settings/term_of_service_screen.dart';
 import 'package:sparring_finder/src/ui/screens/test/address_picker_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/forgot_password_screen.dart';
 import 'package:sparring_finder/src/ui/screens/user/reset_password_screen.dart';
@@ -31,11 +36,14 @@ class AppRoutes {
   static const String forgotPasswordScreen = '/forgot-password';
   static const String resetPasswordScreen = '/reset-password';
   static const String createProfileScreen = '/create-profile';
+  static const String updateProfileScreen = '/update-profile';
   static const String loadingScreen = '/loading-screen';
   static const String athleteDetailsScreen = '/athlete-details';
   static const String sparringSessionScreen = '/sparring-screen';
   static const String availabilityFormScreen = '/availability-form';
   static const String notificationScreen = '/notification-screen';
+  static const String contactUsScreen = '/contact-us-screen';
+  static const String favoritesScreen = '/favorites-screen';
 
   static const String splashScreen = '/splash-screen';
   static const String settingsScreen = '/settings';
@@ -47,6 +55,8 @@ class AppRoutes {
   static const String athletesMapScreen = 'athletes-map-screen';
   static const String addressPickerScreen = 'address-picker-screen';
   static const String testForm = 'test-form-screen';
+  static const String privacyPolicyScreen = 'privacy-policy-screen';
+  static const String termsOfServiceScreen = 'terms-of-service-screen';
 
   /// For routes that **don't require arguments**
   static final Map<String, WidgetBuilder> staticRoutes = {
@@ -57,9 +67,13 @@ class AppRoutes {
     homeScreen: (_) => const HomeScreen(),
     forgotPasswordScreen: (_) => const ForgotPasswordScreen(),
     resetPasswordScreen: (_) => const ResetPasswordScreen(),
+    updateProfileScreen: (_) => const UpdateProfileScreen(), // Placeholder for UpdateProfileScreen
     createProfileScreen: (_) => const CreateProfileScreen(),
     notificationScreen: (_) => const NotificationScreen(),
     addressPickerScreen: (_) => const AddressPickerScreen(),
+    termsOfServiceScreen: (_) => const TermsOfServiceScreen(),
+    contactUsScreen: (_) => const ContactUsScreen(),
+    favoritesScreen: (_) => const FavoritesScreen(),
 
     // Sparring Sessions screens
     sparringSessionScreen: (_) => const SparringSessionScreen(),
@@ -69,6 +83,7 @@ class AppRoutes {
     onBoardingScreen: (_) => const OnBoardingScreen(),
     profileScreen: (_) => const ProfileScreen(),
     applicationScreen: (_) => const ApplicationScreen(),
+    privacyPolicyScreen: (_) => const PrivacyPolicyScreen(),
   };
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {

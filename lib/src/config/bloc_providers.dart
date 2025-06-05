@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sparring_finder/src/blocs/contact/contact_bloc.dart';
 import 'package:sparring_finder/src/blocs/onboarding/onboarding_bloc.dart';
 import 'package:sparring_finder/src/blocs/user/user_bloc.dart';
 import 'package:sparring_finder/src/blocs/availability/availability_bloc.dart';
@@ -42,6 +43,11 @@ class BlocProviders {
           create: (_) => NotificationBloc(
             notificationService,
             RepositoryProviders.notificationRepository,
+          ),
+        ),
+        BlocProvider<ContactBloc>(
+          create: (_) => ContactBloc(
+            repository: RepositoryProviders.contactRepository,
           ),
         ),
       ];

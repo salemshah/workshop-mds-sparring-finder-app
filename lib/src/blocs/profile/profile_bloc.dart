@@ -52,10 +52,10 @@ class MyProfileBloc extends Bloc<MyProfileEvent, MyProfileState> {
   }
 
   Future<void> _onProfileUpdated(MyProfileUpdated event, Emitter<MyProfileState> emit) async {
-    emit(const MyProfileLoadInProgress());
+    emit(const MyProfileUpdateInProgress());
     try {
       final response = await repository.updateProfile(event.data);
-      emit(MyProfileLoadSuccess(response.profiles.first));
+      emit(MyProfileUpdateSuccess(response.profiles.first));
     } catch (e) {
       emit(MyProfileFailure(e.toString()));
     }

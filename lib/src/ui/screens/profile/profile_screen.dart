@@ -129,10 +129,10 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                 Row(
                   children: [
                     _ActionButton(
-                        icon: Icons.insert_invitation_rounded,
+                        icon: Icons.favorite,
                         backgroundColor: AppColors.inputFill,
                         iconColor: AppColors.text,
-                        label: 'Availability', onPressed: () {Navigator.pushNamed(context, AppRoutes.availabilityFormScreen);}),
+                        label: 'Favorites', onPressed: () {Navigator.pushNamed(context, AppRoutes.favoritesScreen);}),
                     _ActionButton(
                         icon: Icons.settings,
                         iconColor: AppColors.text,
