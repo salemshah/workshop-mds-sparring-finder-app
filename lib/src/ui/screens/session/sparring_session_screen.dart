@@ -6,6 +6,7 @@ import 'package:sparring_finder/src/blocs/sparring/sparring_state.dart';
 import 'package:sparring_finder/src/models/sparring/sparring_model.dart';
 import 'package:sparring_finder/src/ui/skeletons/sparring_screen_skeleton.dart';
 import 'package:sparring_finder/src/ui/widgets/sparring_card.dart';
+import 'package:sparring_finder/src/ui/widgets/sparring_session_header.dart';
 import 'package:sparring_finder/src/utils/extensions.dart';
 import '../../theme/app_colors.dart';
 
@@ -27,62 +28,44 @@ class SparringSessionBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: SafeArea(
+    double height = MediaQuery.of(context).size.height;
+    return Stack(
+      children: [
+        DefaultTabController(
+          length: 3,
           child: Column(
             children: [
-              // ---------------- Header ----------------
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
+              Container(
+                height: height * .2,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      AppColors.primary,
+                      AppColors.primary.withOpacity(0.0),
+                    ],
+                  ),
+                ),
+                // child:         // Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text('SPARRING',
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
-                          Text('FINDER',
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
-                        ],
-                      ),
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.top,
                     ),
-                    const CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('assets/images/boxer.png'),
+                    CustomPaint(
+                      size: Size(450, height * 0.1 ),
+                      painter: SparringSessionHeader(),
                     ),
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'My Session',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: AppColors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
 
-              // ---------------- Tab Bar ----------------
+              // Tab bar & content
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 2, horizontal: 3),
@@ -111,7 +94,6 @@ class SparringSessionBody extends StatelessWidget {
 
               const SizedBox(height: 10),
 
-              // ---------------- TabBar View ----------------
               Expanded(
                 child: BlocBuilder<SparringBloc, SparringState>(
                   builder: (context, state) {
@@ -127,10 +109,11 @@ class SparringSessionBody extends StatelessWidget {
                       );
                     } else if (state is SparringFailure) {
                       return Center(
-                          child: Text(
-                        state.error,
-                        style: const TextStyle(color: AppColors.primary),
-                      ));
+                        child: Text(
+                          state.error,
+                          style: const TextStyle(color: AppColors.primary),
+                        ),
+                      );
                     }
                     return SparringScreenSkeleton();
                   },
@@ -139,7 +122,7 @@ class SparringSessionBody extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -165,14 +148,14 @@ class SparringSessionBody extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 16),
           child: SparringCard(
             firstName: requested?.firstName.capitalizeEachWord() ?? '',
-            lastName: requested?.lastName.capitalizeEachWord()  ?? '',
+            lastName: requested?.lastName.capitalizeEachWord() ?? '',
             age: _calculateAge(requested?.dateOfBirth),
             photoUrl: requested?.photoUrl ?? '',
             scheduledDate: session.scheduledDate.date,
-            location: session.location.capitalizeEachWord() ,
+            location: session.location.capitalizeEachWord(),
             startTime: session.startTime.time,
-            invitedFirstName: partner?.firstName.capitalizeEachWord()  ?? '',
-            invitedLastName: partner?.lastName.capitalizeEachWord()  ?? '',
+            invitedFirstName: partner?.firstName.capitalizeEachWord() ?? '',
+            invitedLastName: partner?.lastName.capitalizeEachWord() ?? '',
             invitedAge: _calculateAge(partner?.dateOfBirth),
             invitedPhotoUrl: partner?.photoUrl ?? '',
             cardStatus: session.status,
@@ -181,7 +164,6 @@ class SparringSessionBody extends StatelessWidget {
       },
     );
   }
-
 
   String _calculateAge(DateTime? birthDate) {
     if (birthDate == null) return '';

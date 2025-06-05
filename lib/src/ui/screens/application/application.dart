@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparring_finder/src/blocs/user/user_bloc.dart';
@@ -12,6 +14,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/bottom_navi_bar.dart';
 import '../home/home_screen.dart';
+import '../message/chat_screen.dart';
 import '../profile/profile_screen.dart';
 
 /// Main entry screen with bottom navigation and Firebase message listener.
@@ -60,11 +63,31 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
         BlocListener<NotificationBloc, NotificationState>(
           listener: (context, state) {
             if (state is NotificationNavigate) {
-              Navigator.pushNamed(
-                context,
-                state.routeName,
-                arguments: state.arguments,
-              );
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (state.routeName == "chat") {
+                  final id = int.tryParse(
+                      state.arguments?["conversationId"].toString() ?? '');
+                  final name = state.arguments?["title"] ?? '';
+
+                  if (id != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatScreen(
+                          conversationId: id,
+                          conversationName: name,
+                        ),
+                      ),
+                    );
+                  }
+                } else if (state.routeName == "notification") {
+                  Navigator.pushNamed(
+                    context,
+                    state.routeName,
+                    arguments: state.arguments,
+                  );
+                }
+              });
             }
           },
         ),

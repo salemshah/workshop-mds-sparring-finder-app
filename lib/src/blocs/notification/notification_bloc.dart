@@ -40,9 +40,15 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       NotificationReceived event, Emitter<NotificationState> emit) {
     final screen = event.data?["screen"];
 
-    if (screen == "notification") {
-      emit(NotificationNavigate(AppRoutes.notificationScreen));
+
+    if (screen != null) {
+      emit(NotificationNavigate(screen, arguments: event.data));
     }
+
+    // if (screen == "notification") {
+    //   emit(NotificationNavigate(AppRoutes.notificationScreen));
+    // }else if(screen == "chat"){
+    // }
     // emit(NotificationUnread(event.title, event.body));
   }
 
