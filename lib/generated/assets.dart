@@ -22,6 +22,7 @@ class Assets {
   static const String imagesHeroImage = 'assets/images/hero_image.png';
   static const String imagesOnboardingImage1 = 'assets/images/onboarding_image_1.png';
   static const String imagesSparringFinderAppLogo = 'assets/images/sparring_finder_app_logo.png';
+  static const String imagesSparringHeader = 'assets/images/sparring_header.png';
   static const String mapStylesDarkMapNoPoi = 'assets/map_styles/dark_map_no_poi.json';
 
 }

@@ -124,7 +124,7 @@ class _ChatScreenState extends State<ChatScreen> {
         'conversationId': widget.conversationId,
       });
       debugPrint(
-          'Emitted join_conversation → conversation_${widget.conversationId}');
+          'Emitted join_conversation > conversation_${widget.conversationId}');
     });
 
     // Wait for server ack that we’re in the room
