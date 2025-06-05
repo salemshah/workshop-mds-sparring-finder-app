@@ -1,5 +1,5 @@
 
-const bool isProduction = false;
+const bool isProduction = true;
 
 const String devHost = '172.20.10.3';
 
